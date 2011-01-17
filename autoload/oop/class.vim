@@ -3,7 +3,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-17
+" Updated : 2011-01-18
 " Version : 0.0.1
 " License : MIT license {{{
 "
@@ -42,14 +42,6 @@ function! oop#class#new(...)
     let class = class.super
   endwhile
   return _self
-endfunction
-
-function! s:Class.class_define(method_name, funcref)
-  let self[a:method_name] = a:funcref
-endfunction
-
-function! s:Class.define(method_name, funcref)
-  let self.prototype[a:method_name] = a:funcref
 endfunction
 
 function! s:Class.new(...)
