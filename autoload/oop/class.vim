@@ -28,12 +28,31 @@
 " }}}
 "=============================================================================
 
+function! oop#class#is_defined(name)
+  return has_key(s:class_table, a:name)
+endfunction
+
+function! oop#class#get(name)
+  if oop#class#is_defined(a:name)
+    return s:class_table[a:name]
+  else
+    throw "oop#class#get(): class " . a:name . " is not defined"
+  endif
+endfunction
+
+let s:class_table = {}
 let s:Class = { 'prototype': {} }
 
-function! oop#class#new(...)
+function! oop#class#new(name, ...)
   let _self = deepcopy(s:Class, 1)
   let _self.class = s:Class
-  let _self.super = (a:0 ? a:1 : oop#object#class())
+  if a:0
+    let _self.super = (type(a:1) == type("") ? oop#class#get(a:1) : a:1)
+  else
+    let _self.super = oop#class#get('Object')
+  endif
+  let _self.name  = a:name
+  let s:class_table[a:name] = _self
   " inherit methods from superclasses
   let class = _self.super
   while !empty(class)
@@ -52,18 +71,11 @@ function! s:Class.new(...)
   return obj
 endfunction
 
-function! s:Class.prototype.initialize(...)
+function! s:Class.to_s()
+  return '<Class:' . self.name . '>'
 endfunction
 
-function! s:Class.prototype.is_a(class)
-  let class = self.class
-  while !empty(class)
-    if class is a:class
-      return 1
-    endif
-    let class = class.super
-  endwhile
-  return 0
-endfunction
+" bootstrap
+execute 'source' expand('<sfile>:p:h') . '/object.vim'
 
 " vim: filetype=vim

@@ -3,7 +3,7 @@
 "
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-17
+" Updated : 2011-01-18
 " Version : 0.0.2
 " License : MIT license {{{
 "
@@ -28,10 +28,20 @@
 " }}}
 "=============================================================================
 
-let s:Object = oop#class#new({})
+let s:Object = oop#class#new('Object', {})
 
-function! oop#object#class()
-  return s:Object
+function! s:Object.prototype.initialize(...)
+endfunction
+
+function! s:Object.prototype.is_a(class)
+  let class = self.class
+  while !empty(class)
+    if class is a:class
+      return 1
+    endif
+    let class = class.super
+  endwhile
+  return 0
 endfunction
 
 " vim: filetype=vim
