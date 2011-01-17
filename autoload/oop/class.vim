@@ -54,10 +54,10 @@ endfunction
 
 function! s:Class.new(...)
   " instantiate
-  let _self = copy(self.prototype)
-  let _self.class = self
-  call call(_self.initialize, a:000, _self)
-  return _self
+  let obj = copy(self.prototype)
+  let obj.class = self
+  call call(obj.initialize, a:000, obj)
+  return obj
 endfunction
 
 function! s:Class.prototype.initialize(...)
