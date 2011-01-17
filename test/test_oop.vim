@@ -4,37 +4,35 @@ let s:Object = oop#object#class()
 
 let s:Foo = oop#class#new()
 
-function! s:Foo_class_hello()
+function! s:Foo.hello()
   return "Foo"
 endfunction
-call s:Foo.class_define('hello', function('s:Foo_class_hello'))
 
-function! s:Foo_hello()
+function! s:Foo.prototype.initialize()
+  let self.initialized = 1
+endfunction
+
+function! s:Foo.prototype.hello()
   return "foo"
 endfunction
-call s:Foo.define('hello', function('s:Foo_hello'))
 
-function! s:Foo_class_goodbye()
+function! s:Foo.goodbye()
   return "Foo"
 endfunction
-call s:Foo.class_define('goodbye', function('s:Foo_class_goodbye'))
 
-function! s:Foo_goodbye()
+function! s:Foo.prototype.goodbye()
   return "foo"
 endfunction
-call s:Foo.define('goodbye', function('s:Foo_goodbye'))
 
 let s:Bar = oop#class#new(s:Foo)
 
-function! s:Bar_class_hello()
+function! s:Bar.hello()
   return "Bar"
 endfunction
-call s:Bar.class_define('hello', function('s:Bar_class_hello'))
 
-function! s:Bar_hello()
+function! s:Bar.prototype.hello()
   return "bar"
 endfunction
-call s:Bar.define('hello', function('s:Bar_hello'))
 
 "-----------------------------------------------------------------------------
 
@@ -73,6 +71,10 @@ endfunction
 
 function! tc.instance_method_should_be_inherited()
   call assert#equal("foo", self.bar.goodbye())
+endfunction
+
+function! tc.foo_should_be_initialized()
+  call assert#true(has_key(self.foo, 'initialized'))
 endfunction
 
 function! tc.foo_is_an_Object()
