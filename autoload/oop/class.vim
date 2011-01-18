@@ -61,6 +61,11 @@ function! oop#class#new(name, ...)
   return _self
 endfunction
 
+function! s:SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+let s:sid = s:SID()
+
 let s:class_table = {}
 let s:Class = { 'prototype': {} }
 let s:object_id = 0
@@ -70,15 +75,17 @@ function! s:get_object_id()
   return s:object_id
 endfunction
 
-function! s:Class.class_define(method_name, funcref)
+function! s:Class_class_define(method_name, funcref) dict
   let self[a:method_name] = a:funcref
 endfunction
+let s:Class.class_define = function(s:sid . 'Class_class_define')
 
-function! s:Class.define(method_name, funcref)
+function! s:Class_define(method_name, funcref) dict
   let self.prototype[a:method_name] = a:funcref
 endfunction
+let s:Class.define = function(s:sid . 'Class_define')
 
-function! s:Class.new(...)
+function! s:Class_new(...) dict
   " instantiate
   let obj = copy(self.prototype)
   let obj.object_id = s:get_object_id()
@@ -86,10 +93,12 @@ function! s:Class.new(...)
   call call(obj.initialize, a:000, obj)
   return obj
 endfunction
+let s:Class.new = function(s:sid . 'Class_new')
 
-function! s:Class.to_s()
+function! s:Class_to_s() dict
   return '<Class:' . self.name . '>'
 endfunction
+let s:Class.to_s = function(s:sid . 'Class_to_s')
 
 " bootstrap
 execute 'source' expand('<sfile>:p:h') . '/object.vim'

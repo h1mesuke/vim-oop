@@ -3,7 +3,7 @@
 "
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-18
+" Updated : 2011-01-19
 " Version : 0.0.5
 " License : MIT license {{{
 "
@@ -28,12 +28,18 @@
 " }}}
 "=============================================================================
 
+function! s:SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+let s:sid = s:SID()
+
 let s:Object = oop#class#new('Object', {})
 
-function! s:Object.prototype.initialize(...)
+function! s:Object_initialize(...) dict
 endfunction
+call s:Object.define('initialize', function(s:sid . 'Object_initialize'))
 
-function! s:Object.prototype.is_a(class)
+function! s:Object_is_a(class) dict
   let class = self.class
   while !empty(class)
     if class is a:class
@@ -43,9 +49,11 @@ function! s:Object.prototype.is_a(class)
   endwhile
   return 0
 endfunction
+call s:Object.define('is_a', function(s:sid . 'Object_is_a'))
 
-function! s:Object.prototype.to_s()
+function! s:Object_to_s() dict
   return '<' . self.class.name . ':0x' . printf('%08x', self.object_id) . '>'
 endfunction
+call s:Object.define('to_s', function(s:sid . 'Object_to_s'))
 
 " vim: filetype=vim
