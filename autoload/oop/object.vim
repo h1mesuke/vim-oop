@@ -44,4 +44,8 @@ function! s:Object.prototype.is_a(class)
   return 0
 endfunction
 
+function! s:Object.prototype.to_s()
+  return '<' . self.class.name . ':0x' . printf('%08x', self.object_id) . '>'
+endfunction
+
 " vim: filetype=vim

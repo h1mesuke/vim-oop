@@ -42,9 +42,16 @@ endfunction
 
 let s:class_table = {}
 let s:Class = { 'prototype': {} }
+let s:object_id = 0
+
+function! s:get_object_id()
+  let s:object_id += 1
+  return s:object_id
+endfunction
 
 function! oop#class#new(name, ...)
   let _self = deepcopy(s:Class, 1)
+  let _self.object_id = s:get_object_id()
   let _self.class = s:Class
   if a:0
     let _self.super = (type(a:1) == type("") ? oop#class#get(a:1) : a:1)
@@ -66,6 +73,7 @@ endfunction
 function! s:Class.new(...)
   " instantiate
   let obj = copy(self.prototype)
+  let obj.object_id = s:get_object_id()
   let obj.class = self
   call call(obj.initialize, a:000, obj)
   return obj
