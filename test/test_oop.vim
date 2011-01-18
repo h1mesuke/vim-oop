@@ -1,38 +1,52 @@
 " vim-oop's test suite
 
+function! s:SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+let s:sid = s:SID()
+
 let s:Object = oop#class#get('Object')
 
 let s:Foo = oop#class#new('Foo')
 
-function! s:Foo.hello()
+function! s:Foo_class_hello() dict
   return "Foo"
 endfunction
+call s:Foo.class_define('hello', function(s:sid . 'Foo_class_hello'))
 
-function! s:Foo.prototype.initialize()
+function! s:Foo_initialize() dict
   let self.initialized = 1
 endfunction
+call s:Foo.define('initialize', function(s:sid . 'Foo_initialize'))
 
-function! s:Foo.prototype.hello()
+function! s:Foo_hello() dict
   return "foo"
 endfunction
+call s:Foo.define('hello', function(s:sid . 'Foo_hello'))
 
-function! s:Foo.goodbye()
+function! s:Foo_class_goodbye() dict
   return "Foo"
 endfunction
+call s:Foo.class_define('goodbye', function(s:sid . 'Foo_class_goodbye'))
 
-function! s:Foo.prototype.goodbye()
+function! s:Foo_goodbye() dict
   return "foo"
 endfunction
+call s:Foo.define('goodbye', function(s:sid . 'Foo_goodbye'))
 
 let s:Bar = oop#class#new('Bar', s:Foo)
 
-function! s:Bar.hello()
+function! s:Bar_class_hello() dict
   return "Bar"
 endfunction
+call s:Bar.class_define('hello', function(s:sid . 'Bar_class_hello'))
 
-function! s:Bar.prototype.hello()
+function! s:Bar_hello() dict
   return "bar"
 endfunction
+call s:Bar.define('hello', function(s:sid . 'Bar_hello'))
+
+let s:Baz = oop#class#new('Baz', 'Foo')
 
 "-----------------------------------------------------------------------------
 
