@@ -1,8 +1,8 @@
 " vim-oop's test suite
 
-let s:Object = oop#object#class()
+let s:Object = oop#class#get('Object')
 
-let s:Foo = oop#class#new()
+let s:Foo = oop#class#new('Foo')
 
 function! s:Foo.hello()
   return "Foo"
@@ -24,7 +24,7 @@ function! s:Foo.prototype.goodbye()
   return "foo"
 endfunction
 
-let s:Bar = oop#class#new(s:Foo)
+let s:Bar = oop#class#new('Bar', s:Foo)
 
 function! s:Bar.hello()
   return "Bar"
@@ -43,6 +43,22 @@ function! tc.setup()
   let self.bar = s:Bar.new()
 endfunction
 
+function! tc.Object_class_should_be_defined()
+  call assert#true(oop#class#is_defined('Object'))
+endfunction
+
+function! tc.Foo_class_should_be_defined()
+  call assert#true(oop#class#is_defined('Foo'))
+endfunction
+
+function! tc.Object_class_should_be_registered_to_class_table()
+  call assert#is(s:Object, oop#class#get('Object'))
+endfunction
+
+function! tc.Foo_class_should_be_registered_to_class_table()
+  call assert#is(s:Foo, oop#class#get('Foo'))
+endfunction
+
 function! tc.superclass_of_Object_should_be_empty()
   call assert#true(empty(s:Object.super))
 endfunction
@@ -55,7 +71,7 @@ function! tc.superclass_of_Bar_should_be_Foo()
   call assert#is(s:Foo, s:Bar.super)
 endfunction
 
-function! tc.class_define_should_define_class_method()
+function! tc.class_method_should_be_defined()
   call assert#equal("Foo", s:Foo.hello())
   call assert#equal("Bar", s:Bar.hello())
 endfunction
@@ -64,7 +80,7 @@ function! tc.class_method_should_be_inherited()
   call assert#equal("Foo", s:Bar.goodbye())
 endfunction
 
-function! tc.define_should_define_instance_method()
+function! tc.instance_method_should_be_defined()
   call assert#equal("foo", self.foo.hello())
   call assert#equal("bar", self.bar.hello())
 endfunction
@@ -77,16 +93,51 @@ function! tc.foo_should_be_initialized()
   call assert#true(has_key(self.foo, 'initialized'))
 endfunction
 
-function! tc.foo_is_an_Object()
+function! tc.foo_should_be_an_Object()
   call assert#true(self.foo.is_a(s:Object))
 endfunction
 
-function! tc.foo_is_a_Foo()
+function! tc.foo_should_be_Foo()
   call assert#true(self.foo.is_a(s:Foo))
 endfunction
 
-function! tc.foo_is_not_a_Bar()
+function! tc.foo_should_not_be_Bar()
   call assert#false(self.foo.is_a(s:Bar))
+endfunction
+
+function! tc.Class_name_should_be_class_name()
+  call assert#equal('Object', s:Object.name)
+  call assert#equal('Foo', s:Foo.name)
+endfunction
+
+function! tc.Class_object_id_should_be_unique_Number()
+  call assert#is_Number(s:Object.object_id)
+  call assert#is_Number(s:Foo.object_id)
+  call assert#not_equal(s:Object.object_id, s:Foo.object_id)
+endfunction
+
+function! tc.Class_to_s_should_return_string_rep()
+  call assert#equal('<Class:Object>', s:Object.to_s())
+  call assert#equal('<Class:Foo>', s:Foo.to_s())
+
+  call self.puts()
+  call self.puts(s:Object.to_s())
+  call self.puts(s:Foo.to_s())
+endfunction
+
+function! tc.Object_object_id_should_be_unique_Number()
+  call assert#is_Number(self.foo.object_id)
+  call assert#is_Number(self.bar.object_id)
+  call assert#not_equal(self.foo.object_id, self.bar.object_id)
+endfunction
+
+function! tc.Object_to_s_should_return_string_rep()
+  call assert#match('<Foo:0x\x\{8}>', self.foo.to_s())
+  call assert#match('<Bar:0x\x\{8}>', self.bar.to_s())
+
+  call self.puts()
+  call self.puts(self.foo.to_s())
+  call self.puts(self.bar.to_s())
 endfunction
 
 unlet tc
