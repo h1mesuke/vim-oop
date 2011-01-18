@@ -3,7 +3,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-18
+" Updated : 2011-01-19
 " Version : 0.0.3
 " License : MIT license {{{
 "
@@ -40,15 +40,6 @@ function! oop#class#get(name)
   endif
 endfunction
 
-let s:class_table = {}
-let s:Class = { 'prototype': {} }
-let s:object_id = 0
-
-function! s:get_object_id()
-  let s:object_id += 1
-  return s:object_id
-endfunction
-
 function! oop#class#new(name, ...)
   let _self = deepcopy(s:Class, 1)
   let _self.object_id = s:get_object_id()
@@ -68,6 +59,23 @@ function! oop#class#new(name, ...)
     let class = class.super
   endwhile
   return _self
+endfunction
+
+let s:class_table = {}
+let s:Class = { 'prototype': {} }
+let s:object_id = 0
+
+function! s:get_object_id()
+  let s:object_id += 1
+  return s:object_id
+endfunction
+
+function! s:Class.class_define(method_name, funcref)
+  let self[a:method_name] = a:funcref
+endfunction
+
+function! s:Class.define(method_name, funcref)
+  let self.prototype[a:method_name] = a:funcref
 endfunction
 
 function! s:Class.new(...)
