@@ -45,7 +45,7 @@ function! s:Object_is_a(class) dict
     if class is a:class
       return 1
     endif
-    let class = class.super
+    let class = class.superclass
   endwhile
   return 0
 endfunction
@@ -64,7 +64,7 @@ function! s:Object_super(method_name, ...) dict
         return call(class.prototype[a:method_name], a:000, self)
       endif
     endif
-    let class = class.super
+    let class = class.superclass
   endwhile
   throw "oop: " . self.class.name . "#" . a:method_name .
         \ "()'s super implementation was not found"

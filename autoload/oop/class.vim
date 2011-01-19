@@ -3,7 +3,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-19
+" Updated : 2011-01-20
 " Version : 0.0.5
 " License : MIT license {{{
 "
@@ -36,7 +36,7 @@ function! oop#class#get(name)
   if oop#class#is_defined(a:name)
     return s:class_table[a:name]
   else
-    throw "oop#class#get(): class " . a:name . " is not defined"
+    throw "oop: class " . a:name . " is not defined"
   endif
 endfunction
 
@@ -45,18 +45,18 @@ function! oop#class#new(name, ...)
   let _self.object_id = s:get_object_id()
   let _self.class = s:Class
   if a:0
-    let _self.super = (type(a:1) == type("") ? oop#class#get(a:1) : a:1)
+    let _self.superclass = (type(a:1) == type("") ? oop#class#get(a:1) : a:1)
   else
-    let _self.super = oop#class#get('Object')
+    let _self.superclass = oop#class#get('Object')
   endif
   let _self.name  = a:name
   let s:class_table[a:name] = _self
   " inherit methods from superclasses
-  let class = _self.super
+  let class = _self.superclass
   while !empty(class)
     call extend(_self, class, 'keep')
     call extend(_self.prototype, class.prototype, 'keep')
-    let class = class.super
+    let class = class.superclass
   endwhile
   return _self
 endfunction
