@@ -66,8 +66,7 @@ function! s:Object_super(method_name, ...) dict
     endif
     let class = class.superclass
   endwhile
-  throw "oop: " . self.class.name . "#" . a:method_name .
-        \ "()'s super implementation was not found"
+  throw "oop: " . self.class.name . "#" . a:method_name . "()'s super implementation was not found"
 endfunction
 call s:Object.bind(s:sid, 'super')
 
