@@ -66,8 +66,8 @@ function! s:SID()
 endfunction
 let s:sid = s:SID()
 
-let s:class_table = {}
 let s:Class = { 'prototype': {} }
+let s:class_table = { 'Class': s:Class }
 let s:object_id = 0
 
 function! s:get_object_id()
@@ -84,6 +84,11 @@ function! s:Class_bind(sid, method_name) dict
   let self.prototype[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
 endfunction
 let s:Class.bind = function(s:sid . 'Class_bind')
+
+function! s:Class_is_a(class) dict
+  return (a:class is s:Class)
+endfunction
+let s:Class.is_a = function(s:sid . 'Class_is_a')
 
 function! s:Class_new(...) dict
   " instantiate
