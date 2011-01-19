@@ -3,7 +3,7 @@
 "
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-19
+" Updated : 2011-01-20
 " Version : 0.0.5
 " License : MIT license {{{
 "
@@ -50,6 +50,26 @@ function! s:Object_is_a(class) dict
   return 0
 endfunction
 call s:Object.bind(s:sid, 'is_a')
+
+function! s:Object_super(method_name, ...) dict
+  let defined_here = (has_key(self, a:method_name) &&
+        \ type(self[a:method_name]) == type(function('tr')))
+  let class = self.class
+  while !empty(class)
+    if has_key(class.prototype, a:method_name)
+      if type(class.prototype[a:method_name]) != type(function('tr'))
+        throw "oop: " . class.name . "#" . a:method_name . " is not a method"
+      elseif !defined_here ||
+            \ (defined_here && self[a:method_name] != class.prototype[a:method_name])
+        return call(class.prototype[a:method_name], a:000, self)
+      endif
+    endif
+    let class = class.super
+  endwhile
+  throw "oop: " . self.class.name . "#" . a:method_name .
+        \ "()'s super implementation was not found"
+endfunction
+call s:Object.bind(s:sid, 'super')
 
 function! s:Object_to_s() dict
   return '<' . self.class.name . ':0x' . printf('%08x', self.object_id) . '>'
