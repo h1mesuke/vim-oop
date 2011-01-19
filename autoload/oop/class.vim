@@ -95,6 +95,25 @@ function! s:Class_new(...) dict
 endfunction
 let s:Class.new = function(s:sid . 'Class_new')
 
+function! s:Class_super(method_name, ...) dict
+  let defined_here = (has_key(self, a:method_name) &&
+        \ type(self[a:method_name]) == type(function('tr')))
+  let class = self
+  while !empty(class)
+    if has_key(class, a:method_name)
+      if type(class[a:method_name]) != type(function('tr'))
+        throw "oop: " . class.name . "." . a:method_name . " is not a method"
+      elseif !defined_here ||
+            \ (defined_here && self[a:method_name] != class[a:method_name])
+        return call(class[a:method_name], a:000, self)
+      endif
+    endif
+    let class = class.superclass
+  endwhile
+  throw "oop: " . self.name . "." . a:method_name . "()'s super implementation was not found"
+endfunction
+let s:Class.super = function(s:sid . 'Class_super')
+
 function! s:Class_to_s() dict
   return '<Class:' . self.name . '>'
 endfunction
