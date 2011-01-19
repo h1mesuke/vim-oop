@@ -75,15 +75,15 @@ function! s:get_object_id()
   return s:object_id
 endfunction
 
-function! s:Class_class_define(method_name, funcref) dict
-  let self[a:method_name] = a:funcref
+function! s:Class_class_bind(sid, method_name) dict
+  let self[a:method_name] = function(a:sid . self.name . '_class_' . a:method_name)
 endfunction
-let s:Class.class_define = function(s:sid . 'Class_class_define')
+let s:Class.class_bind = function(s:sid . 'Class_class_bind')
 
-function! s:Class_define(method_name, funcref) dict
-  let self.prototype[a:method_name] = a:funcref
+function! s:Class_bind(sid, method_name) dict
+  let self.prototype[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
 endfunction
-let s:Class.define = function(s:sid . 'Class_define')
+let s:Class.bind = function(s:sid . 'Class_bind')
 
 function! s:Class_new(...) dict
   " instantiate

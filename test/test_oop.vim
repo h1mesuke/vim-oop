@@ -5,48 +5,60 @@ function! s:SID()
 endfunction
 let s:sid = s:SID()
 
+"---------------------------------------
+" Object
+
 let s:Object = oop#class#get('Object')
+
+"---------------------------------------
+" Foo < Object
 
 let s:Foo = oop#class#new('Foo')
 
 function! s:Foo_class_hello() dict
   return "Foo"
 endfunction
-call s:Foo.class_define('hello', function(s:sid . 'Foo_class_hello'))
+call s:Foo.class_bind(s:sid, 'hello')
 
 function! s:Foo_initialize() dict
   let self.initialized = 1
 endfunction
-call s:Foo.define('initialize', function(s:sid . 'Foo_initialize'))
+call s:Foo.bind(s:sid, 'initialize')
 
 function! s:Foo_hello() dict
   return "foo"
 endfunction
-call s:Foo.define('hello', function(s:sid . 'Foo_hello'))
+call s:Foo.bind(s:sid, 'hello')
 
 function! s:Foo_class_goodbye() dict
   return "Foo"
 endfunction
-call s:Foo.class_define('goodbye', function(s:sid . 'Foo_class_goodbye'))
+call s:Foo.class_bind(s:sid, 'goodbye')
 
 function! s:Foo_goodbye() dict
   return "foo"
 endfunction
-call s:Foo.define('goodbye', function(s:sid . 'Foo_goodbye'))
+call s:Foo.bind(s:sid, 'goodbye')
+
+"---------------------------------------
+" Bar < Foo
 
 let s:Bar = oop#class#new('Bar', s:Foo)
 
 function! s:Bar_class_hello() dict
   return "Bar"
 endfunction
-call s:Bar.class_define('hello', function(s:sid . 'Bar_class_hello'))
+call s:Bar.class_bind(s:sid, 'hello')
 
 function! s:Bar_hello() dict
   return "bar"
 endfunction
-call s:Bar.define('hello', function(s:sid . 'Bar_hello'))
+call s:Bar.bind(s:sid, 'hello')
 
-let s:Baz = oop#class#new('Baz', 'Foo')
+"---------------------------------------
+" Baz < Bar
+
+let s:Baz = oop#class#new('Baz', 'Bar')
 
 "-----------------------------------------------------------------------------
 

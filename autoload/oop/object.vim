@@ -37,7 +37,7 @@ let s:Object = oop#class#new('Object', {})
 
 function! s:Object_initialize(...) dict
 endfunction
-call s:Object.define('initialize', function(s:sid . 'Object_initialize'))
+call s:Object.bind(s:sid, 'initialize')
 
 function! s:Object_is_a(class) dict
   let class = self.class
@@ -49,11 +49,11 @@ function! s:Object_is_a(class) dict
   endwhile
   return 0
 endfunction
-call s:Object.define('is_a', function(s:sid . 'Object_is_a'))
+call s:Object.bind(s:sid, 'is_a')
 
 function! s:Object_to_s() dict
   return '<' . self.class.name . ':0x' . printf('%08x', self.object_id) . '>'
 endfunction
-call s:Object.define('to_s', function(s:sid . 'Object_to_s'))
+call s:Object.bind(s:sid, 'to_s')
 
 " vim: filetype=vim
