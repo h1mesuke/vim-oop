@@ -3,7 +3,7 @@
 "
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-20
+" Updated : 2011-01-21
 " Version : 0.0.6
 " License : MIT license {{{
 "
@@ -28,16 +28,16 @@
 " }}}
 "=============================================================================
 
-function! s:SID()
+function! s:get_SID()
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
-let s:sid = s:SID()
+let s:SID = s:get_SID()
 
 let s:Object = oop#class#new('Object', {})
 
 function! s:Object_initialize(...) dict
 endfunction
-call s:Object.bind(s:sid, 'initialize')
+call s:Object.bind(s:SID, 'initialize')
 
 function! s:Object_is_a(class) dict
   let class = self.class
@@ -49,7 +49,7 @@ function! s:Object_is_a(class) dict
   endwhile
   return 0
 endfunction
-call s:Object.bind(s:sid, 'is_a')
+call s:Object.bind(s:SID, 'is_a')
 
 function! s:Object_super(method_name, ...) dict
   let defined_here = (has_key(self, a:method_name) &&
@@ -68,11 +68,11 @@ function! s:Object_super(method_name, ...) dict
   endwhile
   throw "oop: " . self.class.name . "#" . a:method_name . "()'s super implementation was not found"
 endfunction
-call s:Object.bind(s:sid, 'super')
+call s:Object.bind(s:SID, 'super')
 
 function! s:Object_to_s() dict
   return '<' . self.class.name . ':0x' . printf('%08x', self.object_id) . '>'
 endfunction
-call s:Object.bind(s:sid, 'to_s')
+call s:Object.bind(s:SID, 'to_s')
 
 " vim: filetype=vim
