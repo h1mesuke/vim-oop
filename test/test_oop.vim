@@ -148,40 +148,10 @@ function! tc.instance_method_should_be_defined()
   call assert#equal("bar", self.bar.hello())
 endfunction
 
-" Class#is_a()
-function! tc.Object_should_be_Class()
-  call assert#true(s:Object.is_a(oop#class#get('Class')))
-endfunction
-
-function! tc.Foo_should_be_Class()
-  call assert#true(s:Foo.is_a(oop#class#get('Class')))
-endfunction
-
 " Class#name
 function! tc.Class_name_should_be_class_name()
   call assert#equal('Object', s:Object.name)
   call assert#equal('Foo', s:Foo.name)
-endfunction
-
-" Class#object_id
-function! tc.Class_object_id_should_be_unique_Number()
-  call assert#is_Number(s:Object.object_id)
-  call assert#is_Number(s:Foo.object_id)
-  call assert#not_equal(s:Object.object_id, s:Foo.object_id)
-endfunction
-
-" Class#super()
-function! tc.Class_super_should_call_super_impl()
-  call assert#equal('Bar < Foo',       s:Bar.hello_super())
-  call assert#equal('Baz < Bar < Foo', s:Baz.hello_super())
-endfunction
-
-function! tc.Class_super_should_raise_if_not_method()
-  call assert#raise('^oop: ', 'call unittest#testcase().Baz.super("object_id")')
-endfunction
-
-function! tc.Class_super_should_raise_if_no_super_impl()
-  call assert#raise('^oop: ', 'call unittest#testcase().Baz.hello_no_super()')
 endfunction
 
 " Class#superclass
@@ -195,16 +165,6 @@ endfunction
 
 function! tc.superclass_of_Bar_should_be_Foo()
   call assert#is(s:Foo, s:Bar.superclass)
-endfunction
-
-" Class#to_s()
-function! tc.Class_to_s_should_return_string_rep()
-  call assert#equal('<Class:Object>', s:Object.to_s())
-  call assert#equal('<Class:Foo>', s:Foo.to_s())
-
-  call self.puts()
-  call self.puts(s:Object.to_s())
-  call self.puts(s:Foo.to_s())
 endfunction
 
 "---------------------------------------
@@ -226,37 +186,6 @@ endfunction
 
 function! tc.foo_should_not_be_Bar()
   call assert#false(self.foo.is_a(s:Bar))
-endfunction
-
-" Object#object_id
-function! tc.Object_object_id_should_be_unique_Number()
-  call assert#is_Number(self.foo.object_id)
-  call assert#is_Number(self.bar.object_id)
-  call assert#not_equal(self.foo.object_id, self.bar.object_id)
-endfunction
-
-" Object#super()
-function! tc.Object_super_should_call_super_impl()
-  call assert#equal('bar < foo',       self.bar.hello_super())
-  call assert#equal('baz < bar < foo', self.baz.hello_super())
-endfunction
-
-function! tc.Object_super_should_raise_if_not_method()
-  call assert#raise('^oop: ', 'call unittest#testcase().baz.super("object_id")')
-endfunction
-
-function! tc.Object_super_should_raise_if_no_super_impl()
-  call assert#raise('^oop: ', 'call unittest#testcase().baz.hello_no_super()')
-endfunction
-
-" Object#to_s()
-function! tc.Object_to_s_should_return_string_rep()
-  call assert#match('<Foo:0x\x\{8}>', self.foo.to_s())
-  call assert#match('<Bar:0x\x\{8}>', self.bar.to_s())
-
-  call self.puts()
-  call self.puts(self.foo.to_s())
-  call self.puts(self.bar.to_s())
 endfunction
 
 unlet tc
