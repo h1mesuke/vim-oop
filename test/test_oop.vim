@@ -73,39 +73,12 @@ function! s:Bar_hello_super() dict
 endfunction
 call s:Bar.bind(s:SID, 'hello_super')
 
-"---------------------------------------
-" Baz < Bar
-
-let s:Baz = oop#class#new('Baz', 'Bar')
-let tc.Baz = s:Baz
-
-function! s:Baz_class_hello_super() dict
-  return "Baz < " . self.super('hello_super')
-endfunction
-call s:Baz.class_bind(s:SID, 'hello_super')
-
-function! s:Baz_class_hello_no_super() dict
-  return "Baz < " . self.super('hello_no_super')
-endfunction
-call s:Baz.class_bind(s:SID, 'hello_no_super')
-
-function! s:Baz_hello_super() dict
-  return "baz < " . self.super('hello_super')
-endfunction
-call s:Baz.bind(s:SID, 'hello_super')
-
-function! s:Baz_hello_no_super() dict
-  return "baz < " . self.super('hello_no_super')
-endfunction
-call s:Baz.bind(s:SID, 'hello_no_super')
-
 "-----------------------------------------------------------------------------
 " Tests
 
 function! tc.setup()
   let self.foo = s:Foo.new()
   let self.bar = s:Bar.new()
-  let self.baz = s:Baz.new()
 endfunction
 
 "---------------------------------------
