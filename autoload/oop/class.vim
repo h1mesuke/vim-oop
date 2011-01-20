@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-20
+" Updated : 2011-01-21
 " Version : 0.0.6
 " License : MIT license {{{
 "
@@ -61,10 +61,10 @@ function! oop#class#new(name, ...)
   return _self
 endfunction
 
-function! s:SID()
+function! s:get_SID()
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
-let s:sid = s:SID()
+let s:SID = s:get_SID()
 
 let s:Class = { 'prototype': {} }
 let s:class_table = { 'Class': s:Class }
@@ -72,12 +72,12 @@ let s:class_table = { 'Class': s:Class }
 function! s:Class_class_bind(sid, method_name) dict
   let self[a:method_name] = function(a:sid . self.name . '_class_' . a:method_name)
 endfunction
-let s:Class.class_bind = function(s:sid . 'Class_class_bind')
+let s:Class.class_bind = function(s:SID . 'Class_class_bind')
 
 function! s:Class_bind(sid, method_name) dict
   let self.prototype[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
 endfunction
-let s:Class.bind = function(s:sid . 'Class_bind')
+let s:Class.bind = function(s:SID . 'Class_bind')
 
 function! s:Class_new(...) dict
   " instantiate
@@ -86,7 +86,7 @@ function! s:Class_new(...) dict
   call call(obj.initialize, a:000, obj)
   return obj
 endfunction
-let s:Class.new = function(s:sid . 'Class_new')
+let s:Class.new = function(s:SID . 'Class_new')
 
 " bootstrap
 execute 'source' expand('<sfile>:p:h') . '/object.vim'

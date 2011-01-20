@@ -2,10 +2,10 @@
 
 let tc = unittest#testcase#new('test_oop')
 
-function! s:SID()
+function! s:get_SID()
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
-let s:sid = s:SID()
+let s:SID = s:get_SID()
 
 "-----------------------------------------------------------------------------
 " Classes
@@ -25,27 +25,27 @@ let tc.Foo = s:Foo
 function! s:Foo_class_hello() dict
   return "Foo"
 endfunction
-call s:Foo.class_bind(s:sid, 'hello')
+call s:Foo.class_bind(s:SID, 'hello')
 
 function! s:Foo_initialize() dict
   let self.initialized = 1
 endfunction
-call s:Foo.bind(s:sid, 'initialize')
+call s:Foo.bind(s:SID, 'initialize')
 
 function! s:Foo_hello() dict
   return "foo"
 endfunction
-call s:Foo.bind(s:sid, 'hello')
+call s:Foo.bind(s:SID, 'hello')
 
 function! s:Foo_class_goodbye() dict
   return "Foo"
 endfunction
-call s:Foo.class_bind(s:sid, 'goodbye')
+call s:Foo.class_bind(s:SID, 'goodbye')
 
 function! s:Foo_goodbye() dict
   return "foo"
 endfunction
-call s:Foo.bind(s:sid, 'goodbye')
+call s:Foo.bind(s:SID, 'goodbye')
 
 "---------------------------------------
 " Bar < Foo
@@ -56,22 +56,22 @@ let tc.Bar = s:Bar
 function! s:Bar_class_hello() dict
   return "Bar"
 endfunction
-call s:Bar.class_bind(s:sid, 'hello')
+call s:Bar.class_bind(s:SID, 'hello')
 
 function! s:Bar_class_hello_super() dict
   return "Bar < " . self.super('hello')
 endfunction
-call s:Bar.class_bind(s:sid, 'hello_super')
+call s:Bar.class_bind(s:SID, 'hello_super')
 
 function! s:Bar_hello() dict
   return "bar"
 endfunction
-call s:Bar.bind(s:sid, 'hello')
+call s:Bar.bind(s:SID, 'hello')
 
 function! s:Bar_hello_super() dict
   return "bar < " . self.super('hello')
 endfunction
-call s:Bar.bind(s:sid, 'hello_super')
+call s:Bar.bind(s:SID, 'hello_super')
 
 "---------------------------------------
 " Baz < Bar
@@ -82,22 +82,22 @@ let tc.Baz = s:Baz
 function! s:Baz_class_hello_super() dict
   return "Baz < " . self.super('hello_super')
 endfunction
-call s:Baz.class_bind(s:sid, 'hello_super')
+call s:Baz.class_bind(s:SID, 'hello_super')
 
 function! s:Baz_class_hello_no_super() dict
   return "Baz < " . self.super('hello_no_super')
 endfunction
-call s:Baz.class_bind(s:sid, 'hello_no_super')
+call s:Baz.class_bind(s:SID, 'hello_no_super')
 
 function! s:Baz_hello_super() dict
   return "baz < " . self.super('hello_super')
 endfunction
-call s:Baz.bind(s:sid, 'hello_super')
+call s:Baz.bind(s:SID, 'hello_super')
 
 function! s:Baz_hello_no_super() dict
   return "baz < " . self.super('hello_no_super')
 endfunction
-call s:Baz.bind(s:sid, 'hello_no_super')
+call s:Baz.bind(s:SID, 'hello_no_super')
 
 "-----------------------------------------------------------------------------
 " Tests
