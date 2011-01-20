@@ -1,6 +1,6 @@
 " vim-oop's test suite
 
-let tc = unittest#testcase#new(expand('<sfile>:p'))
+let tc = unittest#testcase#new('test_oop')
 
 function! s:SID()
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
