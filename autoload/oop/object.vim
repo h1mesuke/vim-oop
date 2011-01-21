@@ -40,9 +40,16 @@ endfunction
 call s:Object.bind(s:SID, 'initialize')
 
 function! s:Object_is_a(class) dict
+  if oop#is_class(a:class)
+    let kind_class = a:class
+  elseif type(a:class) == type("")
+    let kind_class = oop#class#get(a:class)
+  else
+    throw "oop: class required, but got " . string(a:class)
+  endif
   let class = self.class
   while !empty(class)
-    if class is a:class
+    if class is kind_class
       return 1
     endif
     let class = class.superclass
