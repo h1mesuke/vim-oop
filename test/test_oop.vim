@@ -26,6 +26,7 @@ function! s:Foo_class_hello() dict
   return "Foo"
 endfunction
 call s:Foo.class_bind(s:SID, 'hello')
+call s:Foo.class_alias('hello_alias', 'hello')
 
 function! s:Foo_initialize() dict
   let self.initialized = 1
@@ -36,6 +37,10 @@ function! s:Foo_hello() dict
   return "foo"
 endfunction
 call s:Foo.bind(s:SID, 'hello')
+call s:Foo.alias('hello_alias', 'hello')
+
+call s:Foo.alias('hello_export', 'hello')
+call s:Foo.export('hello_export')
 
 function! s:Foo_class_goodbye() dict
   return "Foo"
@@ -166,30 +171,64 @@ function! tc.instance_method_should_be_inherited()
   call assert#equal("foo", self.bar.goodbye())
 endfunction
 
-" Class#class_define()
-function! tc.class_method_should_be_defined()
+" Class#class_alias()
+function! tc.Class_class_alias_should_define_alias_of_class_method()
+  call assert#equal(s:Foo.hello, s:Foo.hello_alias)
+endfunction
+
+" Class#class_bind()
+function! tc.Class_class_bind_should_bind_Funcref_as_class_method()
   call assert#equal("Foo", s:Foo.hello())
   call assert#equal("Bar", s:Bar.hello())
 endfunction
 
-" Class#define()
-function! tc.instance_method_should_be_defined()
+" Class#alias()
+function! tc.Class_alias_should_define_alias_of_instance_method()
+  call assert#equal(self.foo.hello, self.foo.hello_alias)
+endfunction
+
+" Class#bind()
+function! tc.Class_bind_should_bind_Funcref_as_instance_method()
   call assert#equal("foo", self.foo.hello())
   call assert#equal("bar", self.bar.hello())
 endfunction
 
+" Class#export()
+function! tc.Class_export_should_export_instance_method_as_class_method()
+  call assert#equal(s:Foo.hello_export, self.foo.hello_export)
+endfunction
+
 " Class#is_a()
+function! tc.Class_is_a_should_be_alias_of_Class_is_kind_of()
+  call assert#equal(s:Foo.is_kind_of, s:Foo.is_a)
+endfunction
+
+" Class#is_instance_of()
 function! tc.Object_should_be_Class()
-  call assert#true(s:Object.is_a(oop#class#get('Class')))
+  call assert#true(s:Object.is_instance_of(oop#class#get('Class')))
 endfunction
 
 function! tc.Foo_should_be_Class()
-  call assert#true(s:Foo.is_a(oop#class#get('Class')))
+  call assert#true(s:Foo.is_instance_of(oop#class#get('Class')))
 endfunction
 
-function! tc.Class_is_a_should_raise_if_no_class_given()
-  call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_a({})')
-  call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_a("")')
+function! tc.Class_is_instance_of_should_raise_if_no_class_given()
+  call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_instance_of({})')
+  call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_instance_of("")')
+endfunction
+
+" Class#is_kind_of()
+function! tc.Object_should_be_Class()
+  call assert#true(s:Object.is_kind_of(oop#class#get('Class')))
+endfunction
+
+function! tc.Foo_should_be_Class()
+  call assert#true(s:Foo.is_kind_of(oop#class#get('Class')))
+endfunction
+
+function! tc.Class_is_kind_of_should_raise_if_no_class_given()
+  call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_kind_of({})')
+  call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_kind_of("")')
 endfunction
 
 " Class#name
@@ -246,29 +285,55 @@ endfunction
 " Object
 
 " Object#initialize()
-function! tc.foo_should_be_initialized()
+function! tc.instance_should_be_initialized()
   call assert#true(has_key(self.foo, 'initialized'))
 endfunction
 
 " Object#is_a()
-function! tc.foo_should_be_Object()
-  call assert#true(self.foo.is_a(s:Object))
-  call assert#true(self.foo.is_a('Object'))
+function! tc.Object_is_a_should_be_alias_of_Object_is_kind_of()
+  call assert#equal(self.foo.is_kind_of, self.foo.is_a)
 endfunction
 
-function! tc.foo_should_be_Foo()
-  call assert#true(self.foo.is_a(s:Foo))
-  call assert#true(self.foo.is_a('Foo'))
+" Object#is_instance_of()
+function! tc.foo_should_not_be_instance_of_Object()
+  call assert#false(self.foo.is_instance_of(s:Object))
+  call assert#false(self.foo.is_instance_of('Object'))
 endfunction
 
-function! tc.foo_should_not_be_Bar()
-  call assert#false(self.foo.is_a(s:Bar))
-  call assert#false(self.foo.is_a('Bar'))
+function! tc.foo_should_be_instance_of_Foo()
+  call assert#true(self.foo.is_instance_of(s:Foo))
+  call assert#true(self.foo.is_instance_of('Foo'))
 endfunction
 
-function! tc.Object_is_a_should_raise_if_no_class_given()
-  call assert#raise('^oop: ', 'call unittest#testcase().foo.is_a({})')
-  call assert#raise('^oop: ', 'call unittest#testcase().foo.is_a("")')
+function! tc.foo_should_not_be_instance_of_Bar()
+  call assert#false(self.foo.is_instance_of(s:Bar))
+  call assert#false(self.foo.is_instance_of('Bar'))
+endfunction
+
+function! tc.Object_is_instance_of_should_raise_if_no_class_given()
+  call assert#raise('^oop: ', 'call unittest#testcase().foo.is_instance_of({})')
+  call assert#raise('^oop: ', 'call unittest#testcase().foo.is_instance_of("")')
+endfunction
+
+" Object#is_kind_of()
+function! tc.foo_should_be_kind_of_Object()
+  call assert#true(self.foo.is_kind_of(s:Object))
+  call assert#true(self.foo.is_kind_of('Object'))
+endfunction
+
+function! tc.foo_should_be_kind_of_Foo()
+  call assert#true(self.foo.is_kind_of(s:Foo))
+  call assert#true(self.foo.is_kind_of('Foo'))
+endfunction
+
+function! tc.foo_should_not_be_kind_of_Bar()
+  call assert#false(self.foo.is_kind_of(s:Bar))
+  call assert#false(self.foo.is_kind_of('Bar'))
+endfunction
+
+function! tc.Object_is_kind_of_should_raise_if_no_class_given()
+  call assert#raise('^oop: ', 'call unittest#testcase().foo.is_kind_of({})')
+  call assert#raise('^oop: ', 'call unittest#testcase().foo.is_kind_of("")')
 endfunction
 
 " Object#object_id
