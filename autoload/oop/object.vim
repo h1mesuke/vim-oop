@@ -94,4 +94,11 @@ function! s:Object_to_s() dict
 endfunction
 call s:Object.bind(s:SID, 'to_s')
 
+" classes as objects
+let s:Object_instance_methods = copy(s:Object.prototype)
+unlet s:Object_instance_methods.initialize
+call extend(s:Object, s:Object_instance_methods, 'keep')
+call extend(oop#class#get('Class'), s:Object_instance_methods, 'keep')
+unlet s:Object_instance_methods
+
 " vim: filetype=vim
