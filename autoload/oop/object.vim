@@ -4,7 +4,7 @@
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
 " Updated : 2011-01-21
-" Version : 0.0.6
+" Version : 0.0.7
 " License : MIT license {{{
 "
 "   Permission is hereby granted, free of charge, to any person obtaining
