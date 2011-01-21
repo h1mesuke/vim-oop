@@ -28,34 +28,29 @@
 " }}}
 "=============================================================================
 
-function! oop#class#is_defined(name)
-  return has_key(s:class_table, a:name)
+function! oop#class#get(name)
+  if type(a:name) == type("")
+    if oop#class#is_defined(a:name)
+      return s:class_table[a:name]
+    else
+      throw "oop: class " . a:name . " is not defined"
+    endif
+  elseif oop#is_class(a:name)
+    return a:name
+  else
+    throw "oop: class required, but got " . string(a:name)
+  endif
 endfunction
 
-function! oop#class#get(name)
-  if oop#class#is_defined(a:name)
-    return s:class_table[a:name]
-  else
-    throw "oop: class " . a:name . " is not defined"
-  endif
+function! oop#class#is_defined(name)
+  return has_key(s:class_table, a:name)
 endfunction
 
 function! oop#class#new(name, ...)
   let _self = deepcopy(s:Class, 1)
   let _self.object_id = s:get_object_id()
   let _self.class = s:Class
-  if a:0
-    let superclass = a:1
-    if oop#is_class(superclass)
-      let _self.superclass = superclass
-    elseif type(superclass) == type("")
-      let _self.superclass = oop#class#get(superclass)
-    else
-      throw "oop: class required, but got " . string(superclass)
-    endif
-  else
-    let _self.superclass = oop#class#get('Object')
-  endif
+  let _self.superclass = oop#class#get(a:0 ? a:1 : 'Object')
   let _self.name  = a:name
   let s:class_table[a:name] = _self
   " inherit methods from superclasses
