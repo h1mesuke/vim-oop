@@ -66,7 +66,7 @@ function! s:get_SID()
 endfunction
 let s:SID = s:get_SID()
 
-let s:Class = { 'prototype': {} }
+let s:Class = { 'class': {}, 'prototype': {} }
 let s:class_table = { 'Class': s:Class }
 let s:object_id = 0
 
