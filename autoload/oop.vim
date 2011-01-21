@@ -30,9 +30,9 @@
 "=============================================================================
 
 function! oop#is_class(obj)
-  let Class_class = oop#class#get('Class')
+  let Class = oop#class#get('Class')
   return (type(a:obj) == type({}) && has_key(a:obj, 'class') &&
-        \ (a:obj.class is Class_class || a:obj is Class_class))
+        \ (a:obj.class is Class || a:obj is Class))
 endfunction
 
 " vim: filetype=vim
