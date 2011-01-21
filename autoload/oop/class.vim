@@ -112,6 +112,16 @@ function! s:Class_bind(sid, method_name) dict
 endfunction
 let s:Class.bind = function(s:SID . 'Class_bind')
 
+function! s:Class_export(method_name) dict
+  if has_key(self.prototype, a:method_name) &&
+        \ type(self.prototype[a:method_name]) == type(function('tr'))
+    let self[a:method_name] = self.prototype[a:method_name]
+  else
+    throw "oop: " . self.name . "#" . a:method_name . "() is not defined"
+  endif
+endfunction
+let s:Class.export = function(s:SID . 'Class_export')
+
 function! s:Class_is_a(class) dict
   if a:class is s:Class
     return 1
