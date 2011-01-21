@@ -39,6 +39,17 @@ function! s:Object_initialize(...) dict
 endfunction
 call s:Object.bind(s:SID, 'initialize')
 
+function! s:Object_is_instance_of(class) dict
+  if oop#is_class(a:class)
+    return (self.class is a:class)
+  elseif type(a:class) == type("")
+    return (self.class is oop#class#get(a:class))
+  else
+    throw "oop: class required, but got " . string(a:class)
+  endif
+endfunction
+call s:Object.bind(s:SID, 'is_instance_of')
+
 function! s:Object_is_kind_of(class) dict
   if oop#is_class(a:class)
     let kind_class = a:class
