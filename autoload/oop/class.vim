@@ -3,7 +3,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-21
+" Updated : 2011-01-22
 " Version : 0.0.7
 " License : MIT license {{{
 "
@@ -87,6 +87,16 @@ function! s:Class_class_bind(sid, method_name) dict
   let self[a:method_name] = function(a:sid . self.name . '_class_' . a:method_name)
 endfunction
 let s:Class.class_bind = function(s:SID . 'Class_class_bind')
+
+function! s:Class_alias(alias, method_name) dict
+  if has_key(self.prototype, a:method_name) &&
+        \ type(self.prototype[a:method_name]) == type(function('tr'))
+    let self.prototype[a:alias] = self.prototype[a:method_name]
+  else
+    throw "oop: " . self.name . "#" . a:method_name . "() is not defined"
+  endif
+endfunction
+let s:Class.alias = function(s:SID . 'Class_alias')
 
 function! s:Class_bind(sid, method_name) dict
   let self.prototype[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
