@@ -109,6 +109,36 @@ function! tc.setup()
 endfunction
 
 "---------------------------------------
+" OOP
+
+" oop#is_class()
+function! tc.test_oop_is_class()
+  call assert#true(oop#is_class(s:Object))
+  call assert#true(oop#is_class(s:Foo))
+  call assert#false(oop#is_class(self.foo))
+  call assert#false(oop#is_class({}))
+  call assert#false(oop#is_class(""))
+endfunction
+
+" oop#is_instance()
+function! tc.test_oop_is_instance()
+  call assert#false(oop#is_instance(s:Object))
+  call assert#false(oop#is_instance(s:Foo))
+  call assert#true(oop#is_instance(self.foo))
+  call assert#false(oop#is_instance({}))
+  call assert#false(oop#is_instance(""))
+endfunction
+
+" oop#is_object()
+function! tc.test_oop_is_object()
+  call assert#true(oop#is_object(s:Object))
+  call assert#true(oop#is_object(s:Foo))
+  call assert#true(oop#is_object(self.foo))
+  call assert#false(oop#is_object({}))
+  call assert#false(oop#is_object(""))
+endfunction
+
+"---------------------------------------
 " Class
 
 " Class.new()
@@ -155,6 +185,11 @@ endfunction
 
 function! tc.Foo_should_be_Class()
   call assert#true(s:Foo.is_a(oop#class#get('Class')))
+endfunction
+
+function! tc.Class_is_a_should_raise_if_no_class_given()
+  call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_a({})')
+  call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_a("")')
 endfunction
 
 " Class#name
@@ -218,14 +253,22 @@ endfunction
 " Object#is_a()
 function! tc.foo_should_be_Object()
   call assert#true(self.foo.is_a(s:Object))
+  call assert#true(self.foo.is_a('Object'))
 endfunction
 
 function! tc.foo_should_be_Foo()
   call assert#true(self.foo.is_a(s:Foo))
+  call assert#true(self.foo.is_a('Foo'))
 endfunction
 
 function! tc.foo_should_not_be_Bar()
   call assert#false(self.foo.is_a(s:Bar))
+  call assert#false(self.foo.is_a('Bar'))
+endfunction
+
+function! tc.Object_is_a_should_raise_if_no_class_given()
+  call assert#raise('^oop: ', 'call unittest#testcase().foo.is_a({})')
+  call assert#raise('^oop: ', 'call unittest#testcase().foo.is_a("")')
 endfunction
 
 " Object#object_id
