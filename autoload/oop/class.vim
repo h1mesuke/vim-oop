@@ -86,7 +86,13 @@ endfunction
 let s:Class.bind = function(s:SID . 'Class_bind')
 
 function! s:Class_is_a(class) dict
-  return (a:class is s:Class)
+  if a:class is s:Class
+    return 1
+  elseif type(a:class) == type("")
+    return (oop#class#get(a:class) is s:Class)
+  else
+    throw "oop: class required, but got " . string(a:class)
+  endif
 endfunction
 let s:Class.is_a = function(s:SID . 'Class_is_a')
 
