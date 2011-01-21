@@ -3,7 +3,7 @@
 "
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-21
+" Updated : 2011-01-22
 " Version : 0.0.7
 " License : MIT license {{{
 "
@@ -39,7 +39,7 @@ function! s:Object_initialize(...) dict
 endfunction
 call s:Object.bind(s:SID, 'initialize')
 
-function! s:Object_is_a(class) dict
+function! s:Object_is_kind_of(class) dict
   if oop#is_class(a:class)
     let kind_class = a:class
   elseif type(a:class) == type("")
@@ -56,7 +56,8 @@ function! s:Object_is_a(class) dict
   endwhile
   return 0
 endfunction
-call s:Object.bind(s:SID, 'is_a')
+call s:Object.bind(s:SID, 'is_kind_of')
+call s:Object.alias('is_a', 'is_kind_of')
 
 function! s:Object_super(method_name, ...) dict
   let defined_here = (has_key(self, a:method_name) &&
