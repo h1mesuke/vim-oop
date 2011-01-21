@@ -33,7 +33,7 @@ function! s:get_SID()
 endfunction
 let s:SID = s:get_SID()
 
-let s:Object = oop#class#new('Object', {})
+let s:Object = oop#class#new('Object', '__nil__')
 
 function! s:Object_initialize(...) dict
 endfunction

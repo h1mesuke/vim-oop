@@ -45,7 +45,14 @@ function! oop#class#new(name, ...)
   let _self.object_id = s:get_object_id()
   let _self.class = s:Class
   if a:0
-    let _self.superclass = (type(a:1) == type("") ? oop#class#get(a:1) : a:1)
+    let superclass = a:1
+    if oop#is_class(superclass)
+      let _self.superclass = superclass
+    elseif type(superclass) == type("")
+      let _self.superclass = oop#class#get(superclass)
+    else
+      throw "oop: class required, but got " . string(superclass)
+    endif
   else
     let _self.superclass = oop#class#get('Object')
   endif
@@ -67,7 +74,8 @@ endfunction
 let s:SID = s:get_SID()
 
 let s:Class = { 'class': {}, 'prototype': {} }
-let s:class_table = { 'Class': s:Class }
+let s:class_table = { 'Class': s:Class, '__nil__': {} }
+
 let s:object_id = 0
 
 function! s:get_object_id()
