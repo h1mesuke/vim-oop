@@ -3,7 +3,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-21
+" Updated : 2011-01-22
 " Version : 0.0.7
 " License : MIT license {{{
 "
@@ -29,15 +29,17 @@
 "=============================================================================
 
 function! oop#is_class(obj)
-  return (type(a:obj) == type({}) && has_key(a:obj, 'class') && a:obj.class is oop#class#get('Class'))
+  let Class_class = oop#class#get('Class')
+  return (type(a:obj) == type({}) && has_key(a:obj, 'class') &&
+        \ (a:obj.class is Class_class || a:obj is Class_class))
 endfunction
 
 function! oop#is_instance(obj)
-  return (type(a:obj) == type({}) && has_key(a:obj, 'class') && oop#is_class(a:obj.class))
+  return (oop#is_object(a:obj) && !oop#is_class(a:obj))
 endfunction
 
 function! oop#is_object(obj)
-  return (oop#is_instance(a:obj) || oop#is_class(a:obj))
+  return (type(a:obj) == type({}) && has_key(a:obj, 'class') && oop#is_class(a:obj.class))
 endfunction
 
 " vim: filetype=vim
