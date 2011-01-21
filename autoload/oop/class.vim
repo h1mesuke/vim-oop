@@ -83,6 +83,15 @@ function! s:get_object_id()
   return s:object_id
 endfunction
 
+function! s:Class_class_alias(alias, method_name) dict
+  if has_key(self, a:method_name) && type(self[a:method_name]) == type(function('tr'))
+    let self[a:alias] = self[a:method_name]
+  else
+    throw "oop: " . self.name . "." . a:method_name . "() is not defined"
+  endif
+endfunction
+let s:Class.class_alias = function(s:SID . 'Class_class_alias')
+
 function! s:Class_class_bind(sid, method_name) dict
   let self[a:method_name] = function(a:sid . self.name . '_class_' . a:method_name)
 endfunction
