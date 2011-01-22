@@ -110,6 +110,23 @@ function! s:Class_export(method_name) dict
 endfunction
 let s:Class.export = function(s:SID . 'Class_export')
 
+function! s:Class_is_kind_of(class) dict
+  let kind_class = oop#class#get(a:class)
+  if kind_class is s:Class
+    return 1
+  endif
+  let class = self
+  while !empty(class)
+    if class is kind_class
+      return 1
+    endif
+    let class = class.superclass
+  endwhile
+  return 0
+endfunction
+let s:Class.is_kind_of = function(s:SID . 'Class_is_kind_of')
+let s:Class.is_a = s:Class.is_kind_of
+
 function! s:Class_new(...) dict
   " instantiate
   let obj = copy(self.prototype)
