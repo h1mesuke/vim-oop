@@ -226,6 +226,14 @@ function! tc.Foo_should_be_Class()
   call assert#true(s:Foo.is_kind_of(oop#class#get('Class')))
 endfunction
 
+function! tc.Foo_should_be_Object()
+  call assert#true(s:Foo.is_kind_of(s:Object))
+endfunction
+
+function! tc.Foo_should_not_be_Bar()
+  call assert#false(s:Foo.is_kind_of(s:Bar))
+endfunction
+
 function! tc.Class_is_kind_of_should_raise_if_no_class_given()
   call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_kind_of({})')
   call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_kind_of("")')
