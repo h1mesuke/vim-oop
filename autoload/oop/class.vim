@@ -29,24 +29,36 @@
 " }}}
 "=============================================================================
 
+function! s:get_SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+
 function! oop#class#_initialize()
-  let Object = oop#object#_initialize()
-  let Module = oop#module#_initialize()
+  let SID = s:get_SID()
 
-  let s:Class.superclass = Object
-  let Module.superclass = s:Class
+  let s:Class = { 'object_id': 1001 }
+  let s:Class.class = s:Class
+  let s:Class.name = 'Class'
+  let s:Class.prototype = {}
 
-  let Object_instance_methods = copy(Object.prototype)
-  unlet Object_instance_methods.initialize
-  unlet Object_instance_methods.super
+  let s:class_table = { 'Class': s:Class, '__nil__': {} }
 
-  call extend(Object, Object_instance_methods, 'keep')
+  let s:Class.get = function(SID . 'class_Class_get')
+  let s:Class.is_defined = function(SID . 'class_Class_is_defined')
+  let s:Class.new = function(SID . 'class_Class_new')
 
-  call extend(s:Class, Object_instance_methods, 'keep')
-  call extend(s:Class.prototype, Object_instance_methods, 'keep')
+  let s:Class.prototype.alias = function(SID . 'Class_alias')
+  let s:Class.prototype.bind = function(SID . 'Class_bind')
+  let s:Class.prototype.class_alias = function(SID . 'Class_class_alias')
+  let s:Class.prototype.class_bind = function(SID . 'Class_class_bind')
+  let s:Class.prototype.export = function(SID . 'Class_export')
+  let s:Class.prototype.new = function(SID . 'Class_new')
+  let s:Class.prototype.super = function(SID . 'Class_super')
+  let s:Class.prototype.to_s = function(SID . 'Class_to_s')
 
-  call extend(Module, Object_instance_methods, 'keep')
-  call extend(Module.prototype, Object_instance_methods, 'keep')
+  call extend(s:Class, s:Class.prototype, 'keep')
+
+  return s:Class
 endfunction
 
 function! oop#class#get(...)
@@ -63,18 +75,6 @@ endfunction
 
 "-----------------------------------------------------------------------------
 
-function! s:get_SID()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-endfunction
-let s:SID = s:get_SID()
-
-let s:Class = { 'object_id': 1001 }
-let s:Class.class = s:Class
-let s:Class.name = 'Class'
-let s:Class.prototype = {}
-
-let s:class_table = { 'Class': s:Class, '__nil__': {} }
-
 function! s:class_Class_get(name) dict
   if type(a:name) == type("")
     if s:Class.is_defined(a:name)
@@ -88,12 +88,10 @@ function! s:class_Class_get(name) dict
     throw "oop: class required, but got " . oop#to_s(a:name)
   endif
 endfunction
-let s:Class.get = function(s:SID . 'class_Class_get')
 
 function! s:class_Class_is_defined(name) dict
   return has_key(s:class_table, a:name)
 endfunction
-let s:Class.is_defined = function(s:SID . 'class_Class_is_defined')
 
 function! s:class_Class_new(name, ...) dict
   let _self = copy(s:Class.prototype)
@@ -111,21 +109,6 @@ function! s:class_Class_new(name, ...) dict
   endwhile
   return _self
 endfunction
-let s:Class.new = function(s:SID . 'class_Class_new')
-
-function! s:Class_class_alias(alias, method_name) dict
-  if has_key(self, a:method_name) && type(self[a:method_name]) == type(function('tr'))
-    let self[a:alias] = self[a:method_name]
-  else
-    throw "oop: " . self.name . "." . a:method_name . "() is not defined"
-  endif
-endfunction
-let s:Class.prototype.class_alias = function(s:SID . 'Class_class_alias')
-
-function! s:Class_class_bind(sid, method_name) dict
-  let self[a:method_name] = function(a:sid . 'class_' . self.name . '_' . a:method_name)
-endfunction
-let s:Class.prototype.class_bind = function(s:SID . 'Class_class_bind')
 
 function! s:Class_alias(alias, method_name) dict
   if has_key(self.prototype, a:method_name) &&
@@ -135,12 +118,22 @@ function! s:Class_alias(alias, method_name) dict
     throw "oop: " . self.name . "#" . a:method_name . "() is not defined"
   endif
 endfunction
-let s:Class.prototype.alias = function(s:SID . 'Class_alias')
 
 function! s:Class_bind(sid, method_name) dict
   let self.prototype[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
 endfunction
-let s:Class.prototype.bind = function(s:SID . 'Class_bind')
+
+function! s:Class_class_alias(alias, method_name) dict
+  if has_key(self, a:method_name) && type(self[a:method_name]) == type(function('tr'))
+    let self[a:alias] = self[a:method_name]
+  else
+    throw "oop: " . self.name . "." . a:method_name . "() is not defined"
+  endif
+endfunction
+
+function! s:Class_class_bind(sid, method_name) dict
+  let self[a:method_name] = function(a:sid . 'class_' . self.name . '_' . a:method_name)
+endfunction
 
 function! s:Class_export(method_name) dict
   if has_key(self.prototype, a:method_name) &&
@@ -150,7 +143,6 @@ function! s:Class_export(method_name) dict
     throw "oop: " . self.name . "#" . a:method_name . "() is not defined"
   endif
 endfunction
-let s:Class.prototype.export = function(s:SID . 'Class_export')
 
 function! s:Class_new(...) dict
   " instantiate
@@ -160,7 +152,6 @@ function! s:Class_new(...) dict
   call call(obj.initialize, a:000, obj)
   return obj
 endfunction
-let s:Class.prototype.new = function(s:SID . 'Class_new')
 
 function! s:Class_super(method_name, ...) dict
   let defined_here = (has_key(self, a:method_name) &&
@@ -179,13 +170,13 @@ function! s:Class_super(method_name, ...) dict
   endwhile
   throw "oop: " . self.name . "." . a:method_name . "()'s super implementation was not found"
 endfunction
-let s:Class.prototype.super = function(s:SID . 'Class_super')
 
 function! s:Class_to_s() dict
   return self.name
 endfunction
-let s:Class.prototype.to_s = function(s:SID . 'Class_to_s')
 
-call extend(s:Class, s:Class.prototype, 'keep')
+if !oop#_is_initialized()
+  call oop#_initialize()
+endif
 
 " vim: filetype=vim

@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-25
+" Updated : 2011-01-26
 " Version : 0.1.0
 " License : MIT license {{{
 "
@@ -29,7 +29,24 @@
 " }}}
 "=============================================================================
 
+function! s:get_SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+
 function! oop#module#_initialize()
+  let SID = s:get_SID()
+
+  let s:Module = oop#class#new('Module')
+  let s:module_table = {}
+
+  call s:Module.class_bind(SID, 'get')
+  call s:Module.class_bind(SID, 'is_defined')
+  call s:Module.class_bind(SID, 'new')
+
+  call s:Module.bind(SID, 'alias')
+  call s:Module.bind(SID, 'bind')
+  call s:Module.bind(SID, 'to_s')
+
   return s:Module
 endfunction
 
@@ -47,14 +64,6 @@ endfunction
 
 "-----------------------------------------------------------------------------
 
-function! s:get_SID()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-endfunction
-let s:SID = s:get_SID()
-
-let s:Module = oop#class#new('Module')
-let s:module_table = {}
-
 function! s:class_Module_get(name) dict
   if type(a:name) == type("")
     if oop#module#is_defined(a:name)
@@ -68,12 +77,10 @@ function! s:class_Module_get(name) dict
     throw "oop: module required, but got " . string(a:name)
   endif
 endfunction
-call s:Module.class_bind(s:SID, 'get')
 
 function! s:class_Module_is_defined(name) dict
   return has_key(s:module_table, a:name)
 endfunction
-call s:Module.class_bind(s:SID, 'is_defined')
 
 function! s:class_Module_new(name, ...) dict
   let _self = copy(s:Module.prototype)
@@ -82,7 +89,6 @@ function! s:class_Module_new(name, ...) dict
   let _self.name  = a:name | let s:module_table[a:name] = _self
   return _self
 endfunction
-call s:Module.class_bind(s:SID, 'new')
 
 function! s:Module_alias(alias, method_name) dict
   if has_key(self, a:method_name) && type(self[a:method_name]) == type(function('tr'))
@@ -91,16 +97,17 @@ function! s:Module_alias(alias, method_name) dict
     throw "oop: " . self.name . "." . a:method_name . "() is not defined"
   endif
 endfunction
-call s:Module.bind(s:SID, 'alias')
 
 function! s:Module_bind(sid, method_name) dict
   let self[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
 endfunction
-call s:Module.bind(s:SID, 'bind')
 
 function! s:Module_to_s() dict
   return self.name
 endfunction
-call s:Module.bind(s:SID, 'to_s')
+
+if !oop#_is_initialized()
+  call oop#_initialize()
+endif
 
 " vim: filetype=vim

@@ -29,7 +29,24 @@
 " }}}
 "=============================================================================
 
+function! s:get_SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+
 function! oop#object#_initialize()
+  let SID = s:get_SID()
+
+  let s:object_id = 1001
+  let s:Object = oop#class#new('Object', '__nil__')
+
+  call s:Object.bind(SID, 'initialize')
+  call s:Object.bind(SID, 'inspect')
+  call s:Object.bind(SID, 'is_instance_of')
+  call s:Object.bind(SID, 'is_kind_of')
+  call s:Object.alias('is_a', 'is_kind_of')
+  call s:Object.bind(SID, 'super')
+  call s:Object.bind(SID, 'to_s')
+
   return s:Object
 endfunction
 
@@ -40,28 +57,17 @@ endfunction
 
 "-----------------------------------------------------------------------------
 
-function! s:get_SID()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-endfunction
-let s:SID = s:get_SID()
-
-let s:object_id = 1001
-let s:Object = oop#class#new('Object', '__nil__')
-
 function! s:Object_initialize(...) dict
 endfunction
-call s:Object.bind(s:SID, 'initialize')
 
 function! s:Object_inspect() dict
   let _self = map(copy(self), 'oop#is_object(v:val) ? v:val.to_s() : v:val')
   return string(_self)
 endfunction
-call s:Object.bind(s:SID, 'inspect')
 
 function! s:Object_is_instance_of(class) dict
   return (self.class is oop#class#get(a:class))
 endfunction
-call s:Object.bind(s:SID, 'is_instance_of')
 
 function! s:Object_is_kind_of(class) dict
   let kind_class = oop#class#get(a:class)
@@ -74,8 +80,6 @@ function! s:Object_is_kind_of(class) dict
   endwhile
   return 0
 endfunction
-call s:Object.bind(s:SID, 'is_kind_of')
-call s:Object.alias('is_a', 'is_kind_of')
 
 function! s:Object_super(method_name, ...) dict
   let defined_here = (has_key(self, a:method_name) &&
@@ -94,11 +98,13 @@ function! s:Object_super(method_name, ...) dict
   endwhile
   throw "oop: " . self.class.name . "#" . a:method_name . "()'s super implementation was not found"
 endfunction
-call s:Object.bind(s:SID, 'super')
 
 function! s:Object_to_s() dict
   return '<' . self.class.name . ':0x' . printf('%08x', self.object_id) . '>'
 endfunction
-call s:Object.bind(s:SID, 'to_s')
+
+if !oop#_is_initialized()
+  call oop#_initialize()
+endif
 
 " vim: filetype=vim
