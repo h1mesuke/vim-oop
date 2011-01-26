@@ -1,10 +1,11 @@
 "=============================================================================
-" Simple OOP Layer for Vimscript
+" vim-oop
+" Class-based OOP Layer for Vimscript
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-22
-" Version : 0.0.8
+" Updated : 2011-01-26
+" Version : 0.1.0
 " License : MIT license {{{
 "
 "   Permission is hereby granted, free of charge, to any person obtaining
@@ -28,18 +29,50 @@
 " }}}
 "=============================================================================
 
-function! oop#is_class(obj)
-  let Class = oop#class#get('Class')
-  return (type(a:obj) == type({}) && has_key(a:obj, 'class') &&
-        \ (a:obj.class is Class || a:obj is Class))
-endfunction
+let s:initialized = 0
 
-function! oop#is_instance(obj)
-  return (oop#is_object(a:obj) && !oop#is_class(a:obj))
+function! oop#initialize()
+  if s:initialized
+    return
+  endif
+  call oop#class#_initialize()
+  let s:initialized = 1
 endfunction
 
 function! oop#is_object(obj)
-  return (type(a:obj) == type({}) && has_key(a:obj, 'class') && oop#is_class(a:obj.class))
+  return (type(a:obj) == type({}) && has_key(a:obj, 'class') &&
+        \ type(a:obj.class) == type({}) && has_key(a:obj.class, 'class') &&
+        \ a:obj.class.class is oop#class#get('Class'))
+endfunction
+
+function! oop#is_class(obj)
+  return (oop#is_object(a:obj) && a:obj.class is oop#class#get('Class'))
+endfunction
+
+function! oop#is_module(obj)
+  return (oop#is_object(a:obj) && a:obj.class is oop#class#get('Module'))
+endfunction
+
+function! oop#is_instance(obj)
+  return (oop#is_object(a:obj) && 
+        \ a:obj.class isnot oop#class#get('Module') &&
+        \ a:obj.class isnot oop#class#get('Class'))
+endfunction
+
+function! oop#inspect(value)
+  if oop#is_object(a:value)
+    return a:value.inspect()
+  else
+    return string(a:value)
+  endif
+endfunction
+
+function! oop#to_s(value)
+  if oop#is_object(a:value)
+    return a:value.to_s()
+  else
+    return string(a:value)
+  endif
 endfunction
 
 " vim: filetype=vim
