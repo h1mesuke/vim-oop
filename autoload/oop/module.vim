@@ -5,7 +5,7 @@
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
 " Updated : 2011-01-26
-" Version : 0.1.0
+" Version : 0.1.1
 " License : MIT license {{{
 "
 "   Permission is hereby granted, free of charge, to any person obtaining
