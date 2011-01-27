@@ -4,8 +4,8 @@ execute 'source' expand('<sfile>:p:h') . '/init_oop.vim'
 let tc = unittest#testcase#new('test_base')
 
 let s:Object = oop#class#get('Object')
-let s:Module = oop#class#get('Module')
 let s:Class  = oop#class#get('Class')
+let s:Module = oop#class#get('Module')
 
 "-----------------------------------------------------------------------------
 
