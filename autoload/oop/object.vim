@@ -58,11 +58,6 @@ function! s:Object_inspect() dict
 endfunction
 call s:Object.bind(s:SID, 'inspect')
 
-function! s:Object_is_instance_of(class) dict
-  return (self.class is oop#class#get(a:class))
-endfunction
-call s:Object.bind(s:SID, 'is_instance_of')
-
 function! s:Object_is_kind_of(class) dict
   let kind_class = oop#class#get(a:class)
   let class = self.class
