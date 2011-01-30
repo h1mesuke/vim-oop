@@ -53,11 +53,13 @@ function! oop#class#_initialize()
   let s:Class.prototype.class_alias  = function(SID . 'Class_class_alias')
   let s:Class.prototype.class_bind   = function(SID . 'Class_class_bind')
   let s:Class.prototype.class_unbind = function(SID . 'Class_class_unbind')
+" let s:Class.prototype.class_mixin  = s:Object.prototype.mixin
 
   let s:Class.prototype.alias        = function(SID . 'Class_alias')
   let s:Class.prototype.bind         = function(SID . 'Class_bind')
   let s:Class.prototype.unbind       = function(SID . 'Class_unbind')
   let s:Class.prototype.export       = function(SID . 'Class_export')
+  let s:Class.prototype.mixin        = function(SID . 'Class_mixin')
   let s:Class.prototype.new          = function(SID . 'Class_new')
   let s:Class.prototype.super        = function(SID . 'Class_super')
   let s:Class.prototype.to_s         = function(SID . 'Class_to_s')
@@ -159,6 +161,12 @@ function! s:Class_export(method_name) dict
   else
     throw "oop: " . self.name . "#" . a:method_name . "() is not defined"
   endif
+endfunction
+
+function! s:Class_mixin(module, ...) dict
+  let module = oop#module#get(a:module)
+  let mode = (a:0 ? a:1 : 'force')
+  call extend(self.prototype, module.get_methods(), mode)
 endfunction
 
 function! s:Class_new(...) dict

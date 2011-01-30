@@ -34,10 +34,10 @@ function! s:get_SID()
 endfunction
 
 function! oop#module#_initialize()
+  let SID = s:get_SID()
+
   let s:Module = oop#class#new('Module', 'Class')
   let s:module_table = {}
-
-  let SID = s:get_SID()
 
   " override class methods
   call s:Module.class_bind(SID, 'get')
@@ -47,6 +47,7 @@ function! oop#module#_initialize()
   " override instance methods
   call s:Module.bind(SID, 'alias')
   call s:Module.bind(SID, 'bind')
+  call s:Module.bind(SID, 'get_methods')
   call s:Module.bind(SID, 'super')
   " re-define underscored aliases
   for method_name in ['alias', 'bind']
@@ -80,7 +81,7 @@ function! s:class_Module_get(name) dict
   elseif oop#is_module(a:name)
     return a:name
   else
-    throw "oop: module required, but got " . string(a:name)
+    throw "oop: module required, but got " . oop#to_s(a:name)
   endif
 endfunction
 
@@ -93,6 +94,7 @@ function! s:class_Module_new(name, ...) dict
   let _self.object_id = oop#object#_get_object_id()
   let _self.class = s:Module
   let _self.name  = a:name | let s:module_table[a:name] = _self
+  let _self.__exported_methods__ = {}
   return _self
 endfunction
 
@@ -106,6 +108,11 @@ endfunction
 
 function! s:Module_bind(sid, method_name) dict
   let self[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
+  let self.__exported_methods__[a:method_name] = 1
+endfunction
+
+function! s:Module_get_methods() dict
+  return filter(copy(self), 'has_key(self.__exported_methods__, v:key)')
 endfunction
 
 function! s:Module_super(method_name, ...) dict

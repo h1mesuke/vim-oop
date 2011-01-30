@@ -4,7 +4,7 @@
 "
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-26
+" Updated : 2011-01-30
 " Version : 0.1.1
 " License : MIT license {{{
 "
@@ -44,6 +44,7 @@ function! oop#object#_initialize()
   call s:Object.bind(SID, 'is_instance_of')
   call s:Object.bind(SID, 'is_kind_of')
   call s:Object.alias('is_a', 'is_kind_of')
+  call s:Object.bind(SID, 'mixin')
   call s:Object.bind(SID, 'super')
   call s:Object.bind(SID, 'to_s')
 
@@ -79,6 +80,12 @@ function! s:Object_is_kind_of(class) dict
     let class = class.superclass
   endwhile
   return 0
+endfunction
+
+function! s:Object_mixin(module, ...) dict
+  let module = oop#module#get(a:module)
+  let mode = (a:0 ? a:1 : 'force')
+  call extend(self, module.get_methods(), mode)
 endfunction
 
 function! s:Object_super(method_name, ...) dict

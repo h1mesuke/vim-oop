@@ -40,6 +40,7 @@ function! oop#_initialize()
   let s:initialized = 1
 
   let Class = oop#class#_initialize()
+
   let Object = oop#object#_initialize()
   let Module = oop#module#_initialize()
 
@@ -55,6 +56,7 @@ function! oop#_initialize()
 
   call extend(Class, Object_instance_methods, 'keep')
   call extend(Class.prototype, Object_instance_methods, 'keep')
+  let Class.prototype.class_mixin = Object_instance_methods.mixin
 
   call extend(Module, Object_instance_methods, 'keep')
   call extend(Module.prototype, Object_instance_methods, 'keep')
