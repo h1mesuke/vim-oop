@@ -195,7 +195,7 @@ endfunction
 function! s:Class_mixin(module, ...) dict
   let module = oop#module#get(a:module)
   let mode = (a:0 ? a:1 : 'force')
-  call extend(self.prototype, module.get_methods(), mode)
+  call extend(self.prototype, module.methods(), mode)
 endfunction
 
 function! s:Class_new(...) dict

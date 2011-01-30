@@ -84,7 +84,7 @@ endfunction
 function! s:Object_mixin(module, ...) dict
   let module = oop#module#get(a:module)
   let mode = (a:0 ? a:1 : 'force')
-  call extend(self, module.get_methods(), mode)
+  call extend(self, module.methods(), mode)
 endfunction
 
 function! s:Object_to_s() dict

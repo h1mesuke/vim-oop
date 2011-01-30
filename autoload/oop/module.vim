@@ -47,7 +47,7 @@ function! oop#module#_initialize()
   " override instance methods
   call s:Module.bind(SID, 'alias')
   call s:Module.bind(SID, 'bind')
-  call s:Module.bind(SID, 'get_methods')
+  call s:Module.bind(SID, 'methods')
   call s:Module.bind(SID, 'super')
   " re-define underscored aliases
   for method_name in ['alias', 'bind']
@@ -111,7 +111,7 @@ function! s:Module_bind(sid, method_name) dict
   let self.__exported_methods__[a:method_name] = 1
 endfunction
 
-function! s:Module_get_methods() dict
+function! s:Module_methods() dict
   return filter(copy(self), 'has_key(self.__exported_methods__, v:key)')
 endfunction
 
