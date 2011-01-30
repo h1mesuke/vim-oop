@@ -4,8 +4,6 @@ if exists('s:SID')
   finish
 endif
 
-call oop#initialize()
-
 function! s:get_SID()
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction

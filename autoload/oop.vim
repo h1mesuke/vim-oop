@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-27
+" Updated : 2011-01-30
 " Version : 0.1.1
 " License : MIT license {{{
 "
@@ -31,12 +31,27 @@
 
 let s:initialized = 0
 
-function! oop#initialize()
-  if s:initialized
-    return
-  endif
-  call oop#class#_initialize()
+function! oop#_is_initialized()
+  return s:initialized
+endfunction
+
+function! oop#_initialize()
+  if s:initialized | return | endif
   let s:initialized = 1
+
+  let Class = oop#class#_initialize()
+  let Object = oop#object#_initialize()
+
+  let Class.superclass = Object
+
+  let Object_instance_methods = copy(Object.prototype)
+  unlet Object_instance_methods.initialize
+  unlet Object_instance_methods.super
+
+  call extend(Object, Object_instance_methods, 'keep')
+
+  call extend(Class, Object_instance_methods, 'keep')
+  call extend(Class.prototype, Object_instance_methods, 'keep')
 endfunction
 
 function! oop#is_object(obj)
@@ -68,5 +83,9 @@ function! oop#to_s(value)
     return string(a:value)
   endif
 endfunction
+
+if !s:initialized
+  call oop#_initialize()
+endif
 
 " vim: filetype=vim
