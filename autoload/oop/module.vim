@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-26
+" Updated : 2011-01-30
 " Version : 0.1.1
 " License : MIT license {{{
 "
@@ -34,18 +34,24 @@ function! s:get_SID()
 endfunction
 
 function! oop#module#_initialize()
-  let SID = s:get_SID()
-
-  let s:Module = oop#class#new('Module')
+  let s:Module = oop#class#new('Module', 'Class')
   let s:module_table = {}
 
+  let SID = s:get_SID()
+
+  " override class methods
   call s:Module.class_bind(SID, 'get')
   call s:Module.class_bind(SID, 'is_defined')
   call s:Module.class_bind(SID, 'new')
 
+  " override instance methods
   call s:Module.bind(SID, 'alias')
   call s:Module.bind(SID, 'bind')
-  call s:Module.bind(SID, 'to_s')
+  call s:Module.bind(SID, 'super')
+  " re-define underscored aliases
+  for method_name in ['alias', 'bind']
+    call s:Module.alias('__' . method_name . '__', method_name)
+  endfor
 
   return s:Module
 endfunction
@@ -102,8 +108,8 @@ function! s:Module_bind(sid, method_name) dict
   let self[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
 endfunction
 
-function! s:Module_to_s() dict
-  return self.name
+function! s:Module_super(method_name, ...) dict
+  throw "oop: module has no superclass"
 endfunction
 
 if !oop#_is_initialized()

@@ -37,7 +37,7 @@ function! oop#class#_initialize()
   let SID = s:get_SID()
 
   let s:Class = { 'object_id': 1001 }
-  let s:Class.class = s:Class
+  let s:Class.class = s:Class | let s:Class.superclass = {}
   let s:Class.name = 'Class'
 
   let s:class_table = { 'Class': s:Class, '__nil__': {} }

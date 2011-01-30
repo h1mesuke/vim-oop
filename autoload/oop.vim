@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-26
+" Updated : 2011-01-30
 " Version : 0.1.1
 " License : MIT license {{{
 "
@@ -43,6 +43,7 @@ function! oop#_initialize()
   let Object = oop#object#_initialize()
   let Module = oop#module#_initialize()
 
+  " Module < Class < Object
   let Class.superclass = Object
   let Module.superclass = Class
 
