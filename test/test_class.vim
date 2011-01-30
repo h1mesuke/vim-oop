@@ -77,6 +77,20 @@ function! tc.Class_class_bind_should_bind_Funcref_as_class_method()
   call assert#equal("Bar", s:Bar.hello())
 endfunction
 
+" Class#class_super()
+function! tc.Class_class_super_should_call_super_impl()
+  call assert#equal('Bar < Foo',       s:Bar.hello_super())
+  call assert#equal('Baz < Bar < Foo', s:Baz.hello_super())
+endfunction
+
+function! tc.Class_class_super_should_raise_if_not_method()
+  call assert#raise('^oop: ', 'call unittest#testcase().Baz.class_super("object_id", [], {})')
+endfunction
+
+function! tc.Class_class_super_should_raise_if_no_super_impl()
+  call assert#raise('^oop: ', 'call unittest#testcase().Baz.hello_no_super()')
+endfunction
+
 " Class#export()
 function! tc.Class_export_should_export_instance_method_as_class_method()
   call assert#equal(s:Foo.hello_export, self.foo.hello_export)
@@ -126,16 +140,16 @@ endfunction
 
 " Class#super()
 function! tc.Class_super_should_call_super_impl()
-  call assert#equal('Bar < Foo',       s:Bar.hello_super())
-  call assert#equal('Baz < Bar < Foo', s:Baz.hello_super())
+  call assert#equal('bar < foo',       self.bar.hello_super())
+  call assert#equal('baz < bar < foo', self.baz.hello_super())
 endfunction
 
 function! tc.Class_super_should_raise_if_not_method()
-  call assert#raise('^oop: ', 'call unittest#testcase().Baz.super("object_id")')
+  call assert#raise('^oop: ', 'call unittest#testcase().Baz.super("object_id", [], {})')
 endfunction
 
 function! tc.Class_super_should_raise_if_no_super_impl()
-  call assert#raise('^oop: ', 'call unittest#testcase().Baz.hello_no_super()')
+  call assert#raise('^oop: ', 'call unittest#testcase().baz.hello_no_super()')
 endfunction
 
 " Class#superclass
