@@ -45,6 +45,12 @@ function! tc.Class_alias_should_define_alias_of_instance_method()
   call assert#equal(self.foo.hello, self.foo.hello_alias)
 endfunction
 
+" Class#ancestors()
+function! tc.Class_ancestors_should_return_superclass_list()
+  call assert#equal(s:Baz.ancestors(),  [s:Bar, s:Foo, s:Object])
+  call assert#equal(s:Baz.ancestors(1), [s:Baz, s:Bar, s:Foo, s:Object])
+endfunction
+
 " Class#bind()
 function! tc.Class_bind_should_bind_Funcref_as_instance_method()
   call assert#equal("foo", self.foo.hello())
