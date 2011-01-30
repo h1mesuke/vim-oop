@@ -51,6 +51,15 @@ function! tc.Class_bind_should_bind_Funcref_as_instance_method()
   call assert#equal("bar", self.bar.hello())
 endfunction
 
+function! tc.Class_bind_should_has_underscored_alias()
+  call assert#equal(s:Class.__bind__, s:Class.bind)
+endfunction
+
+" Class#unbind()
+function! tc.Class_unbind_should_has_underscored_alias()
+  call assert#equal(s:Class.__unbind__, s:Class.unbind)
+endfunction
+
 " Class#class_alias()
 function! tc.Class_class_alias_should_define_alias_of_class_method()
   call assert#equal(s:Foo.hello, s:Foo.hello_alias)
@@ -65,6 +74,10 @@ endfunction
 " Class#export()
 function! tc.Class_export_should_export_instance_method_as_class_method()
   call assert#equal(s:Foo.hello_export, self.foo.hello_export)
+endfunction
+
+function! tc.Class_export_should_has_underscored_alias()
+  call assert#equal(s:Class.__export__, s:Class.export)
 endfunction
 
 " Class#inspect()

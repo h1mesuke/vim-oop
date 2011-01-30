@@ -52,7 +52,7 @@ function! tc.foo_should_not_be_instance_of_Bar()
   call assert#false(self.foo.is_instance_of('Bar'))
 endfunction
 
-function! tc.Object_is_instance_of_should_raise_if_no_class_given()
+function! tc.Object_is_instance_of_should_raise_if_not_class_value_given()
   for value_str in s:not_class_value_strings()
     call assert#raise('^oop: ', 'call unittest#testcase().foo.is_instance_of(' . value_str . ')')
   endfor
@@ -74,7 +74,7 @@ function! tc.foo_should_not_be_kind_of_Bar()
   call assert#false(self.foo.is_kind_of('Bar'))
 endfunction
 
-function! tc.Object_is_kind_of_should_raise_if_no_class_given()
+function! tc.Object_is_kind_of_should_raise_if_not_class_value_given()
   for value_str in s:not_class_value_strings()
     call assert#raise('^oop: ', 'call unittest#testcase().foo.is_kind_of(' . value_str . ')')
   endfor

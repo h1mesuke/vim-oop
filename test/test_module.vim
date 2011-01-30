@@ -32,6 +32,15 @@ function! tc.Module_bind_should_bind_Funcref_as_module_method()
   call assert#equal("Buzz", s:Buzz.hello())
 endfunction
 
+function! tc.Module_bind_should_has_underscored_alias()
+  call assert#equal(s:Module.__bind__, s:Module.bind)
+endfunction
+
+" Module#unbind()
+function! tc.Module_unbind_should_has_underscored_alias()
+  call assert#equal(s:Module.__unbind__, s:Module.unbind)
+endfunction
+
 " Module#inspect()
 function! tc.Module_inspect_should_return_string_rep()
   call assert#nothing_raised('call unittest#testcase().Fizz.inspect()')
