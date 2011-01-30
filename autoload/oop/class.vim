@@ -39,13 +39,20 @@ function! oop#class#_initialize()
   let s:Class = { 'object_id': 1001 }
   let s:Class.class = s:Class
   let s:Class.name = 'Class'
-  let s:Class.prototype = {}
 
   let s:class_table = { 'Class': s:Class, '__nil__': {} }
 
-  let s:Class.get = function(SID . 'class_Class_get')
-  let s:Class.is_defined = function(SID . 'class_Class_is_defined')
-  let s:Class.new = function(SID . 'class_Class_new')
+  " bind class methods
+  let s:Class.get                    = function(SID . 'class_Class_get')
+  let s:Class.is_defined             = function(SID . 'class_Class_is_defined')
+  let s:Class.new                    = function(SID . 'class_Class_new')
+
+  let s:Class.prototype = {}
+
+  " bind instance methods
+  let s:Class.prototype.class_alias  = function(SID . 'Class_class_alias')
+  let s:Class.prototype.class_bind   = function(SID . 'Class_class_bind')
+  let s:Class.prototype.class_unbind = function(SID . 'Class_class_unbind')
 
   let s:Class.prototype.alias = function(SID . 'Class_alias')
   let s:Class.prototype.bind = function(SID . 'Class_bind')
@@ -110,6 +117,21 @@ function! s:class_Class_new(name, ...) dict
   return _self
 endfunction
 
+function! s:Class_class_alias(alias, method_name) dict
+  if has_key(self, a:method_name) && type(self[a:method_name]) == type(function('tr'))
+    let self[a:alias] = self[a:method_name]
+  else
+    throw "oop: " . self.name . "." . a:method_name . "() is not defined"
+  endif
+endfunction
+
+function! s:Class_class_bind(sid, method_name) dict
+  let self[a:method_name] = function(a:sid . 'class_' . self.name . '_' . a:method_name)
+endfunction
+function! s:Class_class_unbind(method_name) dict
+  unlet self[a:method_name]
+endfunction
+
 function! s:Class_alias(alias, method_name) dict
   if has_key(self.prototype, a:method_name) &&
         \ type(self.prototype[a:method_name]) == type(function('tr'))
@@ -122,17 +144,8 @@ endfunction
 function! s:Class_bind(sid, method_name) dict
   let self.prototype[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
 endfunction
-
-function! s:Class_class_alias(alias, method_name) dict
-  if has_key(self, a:method_name) && type(self[a:method_name]) == type(function('tr'))
-    let self[a:alias] = self[a:method_name]
-  else
-    throw "oop: " . self.name . "." . a:method_name . "() is not defined"
-  endif
-endfunction
-
-function! s:Class_class_bind(sid, method_name) dict
-  let self[a:method_name] = function(a:sid . 'class_' . self.name . '_' . a:method_name)
+function! s:Class_unbind(method_name) dict
+  unlet self.prototype[a:method_name]
 endfunction
 
 function! s:Class_export(method_name) dict
