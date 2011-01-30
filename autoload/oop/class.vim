@@ -54,14 +54,18 @@ function! oop#class#_initialize()
   let s:Class.prototype.class_bind   = function(SID . 'Class_class_bind')
   let s:Class.prototype.class_unbind = function(SID . 'Class_class_unbind')
 
-  let s:Class.prototype.alias = function(SID . 'Class_alias')
-  let s:Class.prototype.bind = function(SID . 'Class_bind')
-  let s:Class.prototype.class_alias = function(SID . 'Class_class_alias')
-  let s:Class.prototype.class_bind = function(SID . 'Class_class_bind')
-  let s:Class.prototype.export = function(SID . 'Class_export')
-  let s:Class.prototype.new = function(SID . 'Class_new')
-  let s:Class.prototype.super = function(SID . 'Class_super')
-  let s:Class.prototype.to_s = function(SID . 'Class_to_s')
+  let s:Class.prototype.alias        = function(SID . 'Class_alias')
+  let s:Class.prototype.bind         = function(SID . 'Class_bind')
+  let s:Class.prototype.unbind       = function(SID . 'Class_unbind')
+  let s:Class.prototype.export       = function(SID . 'Class_export')
+  let s:Class.prototype.new          = function(SID . 'Class_new')
+  let s:Class.prototype.super        = function(SID . 'Class_super')
+  let s:Class.prototype.to_s         = function(SID . 'Class_to_s')
+
+  " define underscored aliases
+  for method_name in ['bind', 'unbind', 'export']
+    let s:Class.prototype['__' . method_name . '__'] = s:Class.prototype[method_name]
+  endfor
 
   call extend(s:Class, s:Class.prototype, 'keep')
 
