@@ -7,10 +7,19 @@ let s:Object = oop#class#get('Object')
 let s:Class  = oop#class#get('Class')
 let s:Module = oop#class#get('Module')
 
+let s:Baz    = oop#class#get('Baz')   | let tc.Baz  = s:Baz
+
 let s:Fizz   = oop#module#get('Fizz') | let tc.Fizz = s:Fizz
 let s:Buzz   = oop#module#get('Buzz') | let tc.Buzz = s:Buzz
 
+call s:Baz.class_mixin('Fizz')
+call s:Baz.mixin('Buzz')
+
 "-----------------------------------------------------------------------------
+
+function! tc.setup()
+  let self.baz = s:Baz.new()
+endfunction
 
 " Module.is_defined()
 function! tc.Fizz_should_be_defined()
@@ -102,6 +111,38 @@ endfunction
 
 function! s:not_class_value_strings()
   return ['unittest#testcase().Fizz', '0', '""', 'function("tr")', '[]', '{}', '0.0']
+endfunction
+
+" Class#class_mixin
+function! tc.Class_class_mixin_should_mixin_module_method()
+  call assert#equal('Fizz', s:Baz.hello())
+endfunction
+
+function! tc.Class_class_mixin_should_raise_if_not_module_value_given()
+  for value_str in s:not_module_value_strings()
+    call assert#raise('^oop: ', 'call unittest#testcase().Baz.mixin(' . value_str . ')')
+  endfor
+endfunction
+
+" Class#mixin
+function! tc.Class_mixin_should_mixin_module_method()
+  call assert#equal('Buzz', self.baz.hello())
+endfunction
+
+function! tc.Class_mixin_should_raise_if_not_module_value_given()
+  for value_str in s:not_module_value_strings()
+    call assert#raise('^oop: ', 'call unittest#testcase().baz.mixin(' . value_str . ')')
+  endfor
+endfunction
+
+" Object#mixin
+function! tc.Object_mixin_should_mixin_module_method()
+  call self.baz.mixin('Fizz')
+  call assert#equal('Fizz', self.baz.hello())
+endfunction
+
+function! s:not_module_value_strings()
+  return ['unittest#testcase().baz', '0', '""', 'function("tr")', '[]', '{}', '0.0']
 endfunction
 
 unlet tc
