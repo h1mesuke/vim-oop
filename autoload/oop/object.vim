@@ -79,8 +79,7 @@ endfunction
 function! s:Object_super(method_name, ...) dict
   let defined_here = (has_key(self, a:method_name) &&
         \ type(self[a:method_name]) == type(function('tr')))
-  let class = self.class
-  while !empty(class)
+  for class in self.class.ancestors()
     if has_key(class.prototype, a:method_name)
       if type(class.prototype[a:method_name]) != type(function('tr'))
         throw "oop: " . class.name . "#" . a:method_name . " is not a method"
@@ -89,8 +88,7 @@ function! s:Object_super(method_name, ...) dict
         return call(class.prototype[a:method_name], a:000, self)
       endif
     endif
-    let class = class.superclass
-  endwhile
+  endfor
   throw "oop: " . self.class.name . "#" . a:method_name . "()'s super implementation was not found"
 endfunction
 

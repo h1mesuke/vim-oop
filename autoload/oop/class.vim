@@ -55,6 +55,7 @@ function! oop#class#_initialize()
   let s:Class.prototype.class_unbind = function(SID . 'Class_class_unbind')
 
   let s:Class.prototype.alias        = function(SID . 'Class_alias')
+  let s:Class.prototype.ancestors    = function(SID . 'Class_ancestors')
   let s:Class.prototype.bind         = function(SID . 'Class_bind')
   let s:Class.prototype.unbind       = function(SID . 'Class_unbind')
   let s:Class.prototype.export       = function(SID . 'Class_export')
@@ -145,6 +146,17 @@ function! s:Class_alias(alias, method_name) dict
   endif
 endfunction
 
+function! s:Class_ancestors(...) dict
+  let inclusive = (a:0 ? a:1 : 0)
+  let ancestors = []
+  let class = (inclusive ? self : self.superclass)
+  while !empty(class)
+    call add(ancestors, class)
+    let class = class.superclass
+  endwhile
+  return ancestors
+endfunction
+
 function! s:Class_bind(sid, method_name) dict
   let self.prototype[a:method_name] = function(a:sid . self.name . '_' . a:method_name)
 endfunction
@@ -173,8 +185,7 @@ endfunction
 function! s:Class_super(method_name, ...) dict
   let defined_here = (has_key(self, a:method_name) &&
         \ type(self[a:method_name]) == type(function('tr')))
-  let class = self
-  while !empty(class)
+  for class in self.ancestors()
     if has_key(class, a:method_name)
       if type(class[a:method_name]) != type(function('tr'))
         throw "oop: " . class.name . "." . a:method_name . " is not a method"
@@ -183,8 +194,7 @@ function! s:Class_super(method_name, ...) dict
         return call(class[a:method_name], a:000, self)
       endif
     endif
-    let class = class.superclass
-  endwhile
+  endfor
   throw "oop: " . self.name . "." . a:method_name . "()'s super implementation was not found"
 endfunction
 
