@@ -50,7 +50,6 @@ function! oop#_initialize()
 
   let Object_instance_methods = copy(Object.prototype)
   unlet Object_instance_methods.initialize
-  unlet Object_instance_methods.super
 
   call extend(Object, Object_instance_methods, 'keep')
 

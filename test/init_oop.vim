@@ -58,7 +58,7 @@ endfunction
 call s:Bar.class_bind(s:SID, 'hello')
 
 function! s:class_Bar_hello_super() dict
-  return "Bar < " . self.super('hello')
+  return "Bar < " . s:Bar.class_super('hello', [], self)
 endfunction
 call s:Bar.class_bind(s:SID, 'hello_super')
 
@@ -68,7 +68,7 @@ endfunction
 call s:Bar.bind(s:SID, 'hello')
 
 function! s:Bar_hello_super() dict
-  return "bar < " . self.super('hello')
+  return "bar < " . s:Bar.super('hello', [], self)
 endfunction
 call s:Bar.bind(s:SID, 'hello_super')
 
@@ -78,22 +78,22 @@ call s:Bar.bind(s:SID, 'hello_super')
 let s:Baz = oop#class#new('Baz', 'Bar')
 
 function! s:class_Baz_hello_super() dict
-  return "Baz < " . self.super('hello_super')
+  return "Baz < " . s:Baz.class_super('hello_super', [], self)
 endfunction
 call s:Baz.class_bind(s:SID, 'hello_super')
 
 function! s:class_Baz_hello_no_super() dict
-  return "Baz < " . self.super('hello_no_super')
+  return "Baz < " . s:Baz.class_super('hello_no_super', [], self)
 endfunction
 call s:Baz.class_bind(s:SID, 'hello_no_super')
 
 function! s:Baz_hello_super() dict
-  return "baz < " . self.super('hello_super')
+  return "baz < " . s:Baz.super('hello_super', [], self)
 endfunction
 call s:Baz.bind(s:SID, 'hello_super')
 
 function! s:Baz_hello_no_super() dict
-  return "baz < " . self.super('hello_no_super')
+  return "baz < " . s:Baz.super('hello_no_super', [], self)
 endfunction
 call s:Baz.bind(s:SID, 'hello_no_super')
 

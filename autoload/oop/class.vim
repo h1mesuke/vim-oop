@@ -54,6 +54,7 @@ function! oop#class#_initialize()
   let s:Class.prototype.class_bind   = function(SID . 'Class_class_bind')
   let s:Class.prototype.class_unbind = function(SID . 'Class_class_unbind')
 " let s:Class.prototype.class_mixin  = s:Object.prototype.mixin
+  let s:Class.prototype.class_super  = function(SID . 'Class_class_super')
 
   let s:Class.prototype.alias        = function(SID . 'Class_alias')
   let s:Class.prototype.ancestors    = function(SID . 'Class_ancestors')
@@ -139,6 +140,22 @@ function! s:Class_class_unbind(method_name) dict
   unlet self[a:method_name]
 endfunction
 
+function! s:Class_class_super(method_name, args, _self) dict
+  let defined_here = (has_key(self, a:method_name) &&
+        \ type(self[a:method_name]) == type(function('tr')))
+  for class in self.ancestors()
+    if has_key(class, a:method_name)
+      if type(class[a:method_name]) != type(function('tr'))
+        throw "oop: " . class.name . "." . a:method_name . " is not a method"
+      elseif !defined_here ||
+            \ (defined_here && self[a:method_name] != class[a:method_name])
+        return call(class[a:method_name], a:args, a:_self)
+      endif
+    endif
+  endfor
+  throw "oop: " . self.name . "." . a:method_name . "()'s super implementation was not found"
+endfunction
+
 function! s:Class_alias(alias, method_name) dict
   if has_key(self.prototype, a:method_name) &&
         \ type(self.prototype[a:method_name]) == type(function('tr'))
@@ -190,20 +207,20 @@ function! s:Class_new(...) dict
   return obj
 endfunction
 
-function! s:Class_super(method_name, ...) dict
-  let defined_here = (has_key(self, a:method_name) &&
-        \ type(self[a:method_name]) == type(function('tr')))
+function! s:Class_super(method_name, args, _self) dict
+  let defined_here = (has_key(self.prototype, a:method_name) &&
+        \ type(self.prototype[a:method_name]) == type(function('tr')))
   for class in self.ancestors()
-    if has_key(class, a:method_name)
-      if type(class[a:method_name]) != type(function('tr'))
-        throw "oop: " . class.name . "." . a:method_name . " is not a method"
+    if has_key(class.prototype, a:method_name)
+      if type(class.prototype[a:method_name]) != type(function('tr'))
+        throw "oop: " . class.name . "#" . a:method_name . " is not a method"
       elseif !defined_here ||
-            \ (defined_here && self[a:method_name] != class[a:method_name])
-        return call(class[a:method_name], a:000, self)
+            \ (defined_here && self.prototype[a:method_name] != class.prototype[a:method_name])
+        return call(class.prototype[a:method_name], a:args, a:_self)
       endif
     endif
   endfor
-  throw "oop: " . self.name . "." . a:method_name . "()'s super implementation was not found"
+  throw "oop: " . self.name . "#" . a:method_name . "()'s super implementation was not found"
 endfunction
 
 function! s:Class_to_s() dict

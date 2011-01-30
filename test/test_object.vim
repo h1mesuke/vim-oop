@@ -87,20 +87,6 @@ function! tc.Object_object_id_should_be_unique_Number()
   call assert#not_equal(self.foo.object_id, self.bar.object_id)
 endfunction
 
-" Object#super()
-function! tc.Object_super_should_call_super_impl()
-  call assert#equal('bar < foo',       self.bar.hello_super())
-  call assert#equal('baz < bar < foo', self.baz.hello_super())
-endfunction
-
-function! tc.Object_super_should_raise_if_not_method()
-  call assert#raise('^oop: ', 'call unittest#testcase().baz.super("object_id")')
-endfunction
-
-function! tc.Object_super_should_raise_if_no_super_impl()
-  call assert#raise('^oop: ', 'call unittest#testcase().baz.hello_no_super()')
-endfunction
-
 " Object#to_s()
 function! tc.Object_to_s_should_return_string_rep()
   call assert#match('<Foo:0x\x\{8}>', self.foo.to_s())

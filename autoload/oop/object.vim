@@ -45,7 +45,6 @@ function! oop#object#_initialize()
   call s:Object.bind(SID, 'is_kind_of')
   call s:Object.alias('is_a', 'is_kind_of')
   call s:Object.bind(SID, 'mixin')
-  call s:Object.bind(SID, 'super')
   call s:Object.bind(SID, 'to_s')
 
   return s:Object
@@ -86,22 +85,6 @@ function! s:Object_mixin(module, ...) dict
   let module = oop#module#get(a:module)
   let mode = (a:0 ? a:1 : 'force')
   call extend(self, module.get_methods(), mode)
-endfunction
-
-function! s:Object_super(method_name, ...) dict
-  let defined_here = (has_key(self, a:method_name) &&
-        \ type(self[a:method_name]) == type(function('tr')))
-  for class in self.class.ancestors()
-    if has_key(class.prototype, a:method_name)
-      if type(class.prototype[a:method_name]) != type(function('tr'))
-        throw "oop: " . class.name . "#" . a:method_name . " is not a method"
-      elseif !defined_here ||
-            \ (defined_here && self[a:method_name] != class.prototype[a:method_name])
-        return call(class.prototype[a:method_name], a:000, self)
-      endif
-    endif
-  endfor
-  throw "oop: " . self.class.name . "#" . a:method_name . "()'s super implementation was not found"
 endfunction
 
 function! s:Object_to_s() dict
