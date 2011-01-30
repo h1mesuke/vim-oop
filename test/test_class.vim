@@ -40,6 +40,31 @@ function! tc.instance_methods_should_be_inherited()
   call assert#equal("foo", self.baz.goodbye())
 endfunction
 
+" Class#class_alias()
+function! tc.Class_class_alias_should_define_alias_of_class_method()
+  call assert#equal(s:Foo.hello, s:Foo.hello_alias)
+endfunction
+
+" Class#class_bind()
+function! tc.Class_class_bind_should_bind_Funcref_as_class_method()
+  call assert#equal("Foo", s:Foo.hello())
+  call assert#equal("Bar", s:Bar.hello())
+endfunction
+
+" Class#class_super()
+function! tc.Class_class_super_should_call_super_impl()
+  call assert#equal('Bar < Foo',       s:Bar.hello_super())
+  call assert#equal('Baz < Bar < Foo', s:Baz.hello_super())
+endfunction
+
+function! tc.Class_class_super_should_raise_if_not_method()
+  call assert#raise('^oop: ', 'call unittest#testcase().Baz.class_super("object_id", [], {})')
+endfunction
+
+function! tc.Class_class_super_should_raise_if_no_super_impl()
+  call assert#raise('^oop: ', 'call unittest#testcase().Baz.hello_no_super()')
+endfunction
+
 " Class#alias()
 function! tc.Class_alias_should_define_alias_of_instance_method()
   call assert#equal(self.foo.hello, self.foo.hello_alias)
@@ -66,31 +91,6 @@ function! tc.Class_unbind_should_has_underscored_alias()
   call assert#equal(s:Class.__unbind__, s:Class.unbind)
 endfunction
 
-" Class#class_alias()
-function! tc.Class_class_alias_should_define_alias_of_class_method()
-  call assert#equal(s:Foo.hello, s:Foo.hello_alias)
-endfunction
-
-" Class#class_bind()
-function! tc.Class_class_bind_should_bind_Funcref_as_class_method()
-  call assert#equal("Foo", s:Foo.hello())
-  call assert#equal("Bar", s:Bar.hello())
-endfunction
-
-" Class#class_super()
-function! tc.Class_class_super_should_call_super_impl()
-  call assert#equal('Bar < Foo',       s:Bar.hello_super())
-  call assert#equal('Baz < Bar < Foo', s:Baz.hello_super())
-endfunction
-
-function! tc.Class_class_super_should_raise_if_not_method()
-  call assert#raise('^oop: ', 'call unittest#testcase().Baz.class_super("object_id", [], {})')
-endfunction
-
-function! tc.Class_class_super_should_raise_if_no_super_impl()
-  call assert#raise('^oop: ', 'call unittest#testcase().Baz.hello_no_super()')
-endfunction
-
 " Class#export()
 function! tc.Class_export_should_export_instance_method_as_class_method()
   call assert#equal(s:Foo.hello_export, self.foo.hello_export)
@@ -112,6 +112,44 @@ endfunction
 " Class#is_a()
 function! tc.Class_is_a_should_be_alias_of_Class_is_kind_of()
   call assert#equal(s:Foo.is_kind_of, s:Foo.is_a)
+endfunction
+
+" Class#is_ancestor_of()
+function! tc.Bar_should_not_be_ancestor_of_Foo()
+  call assert#false(s:Bar.is_ancestor_of(s:Foo))
+endfunction
+
+function! tc.Bar_should_not_be_ancestor_of_Bar()
+  call assert#false(s:Bar.is_ancestor_of(s:Bar))
+endfunction
+
+function! tc.Bar_should_be_ancestor_of_Baz()
+  call assert#true(s:Bar.is_ancestor_of(s:Baz))
+endfunction
+
+function! tc.Class_is_ancestor_of_should_raise_if_not_class_value_given()
+  for value_str in s:not_class_value_strings()
+    call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_ancestor_of(' . value_str . ')')
+  endfor
+endfunction
+
+" Class#is_descendant_of()
+function! tc.Bar_should_be_descendant_of_Foo()
+  call assert#true(s:Bar.is_descendant_of(s:Foo))
+endfunction
+
+function! tc.Bar_should_not_be_descendant_of_Bar()
+  call assert#false(s:Bar.is_descendant_of(s:Bar))
+endfunction
+
+function! tc.Bar_should_not_be_descendant_of_Baz()
+  call assert#false(s:Bar.is_descendant_of(s:Baz))
+endfunction
+
+function! tc.Class_is_descendant_of_should_raise_if_not_class_value_given()
+  for value_str in s:not_class_value_strings()
+    call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_descendant_of(' . value_str . ')')
+  endfor
 endfunction
 
 " Class#is_instance_of()
