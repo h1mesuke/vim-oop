@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-30
+" Updated : 2011-01-31
 " Version : 0.1.3
 " License : MIT license {{{
 "
@@ -71,13 +71,22 @@ function! oop#inspect(value)
   if oop#is_object(a:value)
     return a:value.inspect()
   else
-    return string(a:value)
+    return s:safe_dump(a:value)
   endif
 endfunction
 
 function! oop#to_s(value)
   if oop#is_object(a:value)
     return a:value.to_s()
+  else
+    return s:safe_dump(a:value)
+  endif
+endfunction
+
+function! s:safe_dump(value)
+  let value_type = type(a:value)
+  if value_type == type({}) || value_type == type([])
+    return string(map(copy(a:value), 'oop#is_object(v:val) ? v:val.to_s() : v:val'))
   else
     return string(a:value)
   endif

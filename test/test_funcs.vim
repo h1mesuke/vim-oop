@@ -54,6 +54,36 @@ function! tc.test_oop_is_instance()
   endfor
 endfunction
 
+" oop#inspect()
+function! tc.test_oop_inspect()
+  " should not raise an error
+  for s:value in s:not_object_values()
+    call oop#inspect(s:value)
+    unlet s:value
+  endfor
+
+  call self.puts()
+  call self.puts(oop#inspect(self.foo))
+  call self.puts()
+  call self.puts(oop#inspect([self.foo]))
+  call self.puts(oop#inspect({ 'foo': self.foo }))
+endfunction
+
+" oop#to_s()
+function! tc.test_oop_to_s()
+  " should not raise an error
+  for s:value in s:not_object_values()
+    call oop#to_s(s:value)
+    unlet s:value
+  endfor
+
+  call self.puts()
+  call self.puts(oop#to_s(self.foo))
+  call self.puts()
+  call self.puts(oop#to_s({ 'foo': self.foo }))
+  call self.puts(oop#to_s([self.foo]))
+endfunction
+
 function! s:not_object_values()
   return [0, "", function('tr'), [], {}, 0.0]
 endfunction
