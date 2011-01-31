@@ -4,7 +4,7 @@
 "
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-30
+" Updated : 2011-01-31
 " Version : 0.1.3
 " License : MIT license {{{
 "
@@ -71,13 +71,11 @@ endfunction
 
 function! s:Object_is_kind_of(class) dict
   let kind_class = oop#class#get(a:class)
-  let class = self.class
-  while !empty(class)
+  for class in self.class.ancestors(1)
     if class is kind_class
       return 1
     endif
-    let class = class.superclass
-  endwhile
+  endfor
   return 0
 endfunction
 
