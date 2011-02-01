@@ -118,6 +118,20 @@ function! tc.Object_is_kind_of_should_raise_if_not_class_value_given()
   endfor
 endfunction
 
+" Object#methods()
+function! tc.Object_methods_should_return_Dict_of_methods()
+  let methods = self.foo.methods()
+
+  call assert#is_Dictionary(methods)
+  call assert#true(len(methods) > 0)
+  call assert#equal(
+        \ len(methods),
+        \ len(filter(copy(methods), 'type(v:val) == type(function("tr"))')))
+
+  call self.puts()
+  call self.puts(oop#to_s(self.foo.methods()))
+endfunction
+
 " Object#object_id
 function! tc.Object_object_id_should_be_unique_Number()
   call assert#is_Number(self.foo.object_id)

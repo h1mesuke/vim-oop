@@ -45,6 +45,7 @@ function! oop#object#_initialize()
   call s:Object.bind(SID, 'is_instance_of')
   call s:Object.bind(SID, 'is_kind_of')
   call s:Object.alias('is_a', 'is_kind_of')
+  call s:Object.bind(SID, 'methods')
   call s:Object.bind(SID, 'mixin')
   call s:Object.bind(SID, 'to_s')
 
@@ -98,6 +99,10 @@ function! s:Object_is_kind_of(class) dict
     endif
   endfor
   return 0
+endfunction
+
+function! s:Object_methods() dict
+  return filter(copy(self), 'type(v:val) == type(function("tr"))')
 endfunction
 
 function! s:Object_mixin(module, ...) dict
