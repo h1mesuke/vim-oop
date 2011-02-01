@@ -75,7 +75,7 @@ function! oop#inspect(value)
   endif
 endfunction
 
-function! oop#to_s(value)
+function! oop#string(value)
   if oop#is_object(a:value)
     return a:value.to_s()
   else

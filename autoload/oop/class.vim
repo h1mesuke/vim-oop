@@ -99,7 +99,7 @@ function! s:class_Class_get(name) dict
   elseif oop#is_class(a:name)
     return a:name
   else
-    throw "oop: class required, but got " . oop#to_s(a:name)
+    throw "oop: class required, but got " . oop#string(a:name)
   endif
 endfunction
 
