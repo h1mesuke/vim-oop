@@ -56,32 +56,63 @@ endfunction
 
 " oop#inspect()
 function! tc.test_oop_inspect()
+  let str = oop#inspect(self.foo)
+
+  call assert#match("'class': 'Foo'", str)
+  call assert#match("'hello': function('<SNR>\\d\\+_Foo_hello')", str)
+
+  call self.puts()
+  call self.puts(str)
+
+  let dict = { 'foo': self.foo, 'dict': { 'foo': self.foo } }
+  let list = [self.foo, [self.foo]]
+
+  let copy_dict = copy(dict)
+  let copy_list = copy(list)
+
+  call self.puts()
+  " should not raise an error
+  call self.puts(oop#inspect(dict))
+  call self.puts(oop#inspect(list))
+  " should not change
+  call assert#equal(copy_dict, dict)
+  call assert#equal(copy_list, list)
+
   " should not raise an error
   for s:value in s:not_object_values()
     call oop#inspect(s:value)
     unlet s:value
   endfor
-
-  call self.puts()
-  call self.puts(oop#inspect(self.foo))
-  call self.puts()
-  call self.puts(oop#inspect([self.foo]))
-  call self.puts(oop#inspect({ 'foo': self.foo }))
 endfunction
 
 " oop#to_s()
 function! tc.test_oop_to_s()
+  let str = oop#to_s(self.foo)
+
+  call assert#match('<Foo:0x\x\{8}>', str)
+
+  call self.puts()
+  call self.puts(str)
+
+  let dict = { 'foo': self.foo, 'dict': { 'foo': self.foo } }
+  let list = [self.foo, [self.foo]]
+
+  let copy_dict = copy(dict)
+  let copy_list = copy(list)
+
+  call self.puts()
+  " should not raise an error
+  call self.puts(oop#to_s(dict))
+  call self.puts(oop#to_s(list))
+  " should not change
+  call assert#equal(copy_dict, dict)
+  call assert#equal(copy_list, list)
+
   " should not raise an error
   for s:value in s:not_object_values()
     call oop#to_s(s:value)
     unlet s:value
   endfor
-
-  call self.puts()
-  call self.puts(oop#to_s(self.foo))
-  call self.puts()
-  call self.puts(oop#to_s({ 'foo': self.foo }))
-  call self.puts(oop#to_s([self.foo]))
 endfunction
 
 function! s:not_object_values()
