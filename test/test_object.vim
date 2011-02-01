@@ -22,6 +22,44 @@ function! tc.instance_should_be_initialized()
   call assert#true(has_key(self.foo, 'initialized'))
 endfunction
 
+" Object#attributes()
+function! tc.setup_Object_attributes()
+  let self.foo.a = 10
+  let self.foo.b = 11
+  let self.foo.c = 12
+endfunction
+
+function! tc.Object_attributes_should_return_Dict_of_attributes()
+  let attrs = self.foo.attributes()
+
+  call assert#is_Dictionary(attrs)
+  call assert#true(has_key(attrs, 'a'))
+  call assert#false(has_key(attrs, 'class'))
+  call assert#false(has_key(attrs, 'object_id'))
+  call assert#equal(
+        \ len(attrs),
+        \ len(filter(copy(attrs), 'type(v:val) != type(function("tr"))')))
+
+  call self.puts()
+  call self.puts(oop#to_s(attrs))
+endfunction
+
+function! tc.Object_attributes_1_should_return_Dict_of_all_attributes()
+  let attrs = self.foo.attributes(1)
+
+  call assert#is_Dictionary(attrs)
+  call assert#true(has_key(attrs, 'a'))
+  call assert#false(has_key(attrs, 'class'))
+  call assert#true(has_key(attrs, '__class__'))
+  call assert#true(has_key(attrs, 'object_id'))
+  call assert#equal(
+        \ len(attrs),
+        \ len(filter(copy(attrs), 'type(v:val) != type(function("tr"))')))
+
+  call self.puts()
+  call self.puts(oop#to_s(attrs))
+endfunction
+
 " Object#inspect()
 function! tc.Object_inspect_should_return_string_rep()
   call assert#nothing_raised('call unittest#testcase().foo.inspect()')
