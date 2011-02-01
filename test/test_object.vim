@@ -41,7 +41,7 @@ function! tc.Object_attributes_should_return_Dict_of_attributes()
         \ len(filter(copy(attrs), 'type(v:val) != type(function("tr"))')))
 
   call self.puts()
-  call self.puts(oop#to_s(attrs))
+  call self.puts(oop#string(attrs))
 endfunction
 
 function! tc.Object_attributes_1_should_return_Dict_of_all_attributes()
@@ -57,7 +57,7 @@ function! tc.Object_attributes_1_should_return_Dict_of_all_attributes()
         \ len(filter(copy(attrs), 'type(v:val) != type(function("tr"))')))
 
   call self.puts()
-  call self.puts(oop#to_s(attrs))
+  call self.puts(oop#string(attrs))
 endfunction
 
 " Object#inspect()
@@ -129,7 +129,7 @@ function! tc.Object_methods_should_return_Dict_of_methods()
         \ len(filter(copy(methods), 'type(v:val) == type(function("tr"))')))
 
   call self.puts()
-  call self.puts(oop#to_s(self.foo.methods()))
+  call self.puts(oop#string(self.foo.methods()))
 endfunction
 
 " Object#object_id

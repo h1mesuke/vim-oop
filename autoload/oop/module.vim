@@ -81,7 +81,7 @@ function! s:class_Module_get(name) dict
   elseif oop#is_module(a:name)
     return a:name
   else
-    throw "oop: module required, but got " . oop#to_s(a:name)
+    throw "oop: module required, but got " . oop#string(a:name)
   endif
 endfunction
 

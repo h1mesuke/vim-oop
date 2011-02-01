@@ -108,9 +108,9 @@ function! tc.test_oop_inspect()
   endfor
 endfunction
 
-" oop#to_s()
-function! tc.test_oop_to_s()
-  let str = oop#to_s(self.foo)
+" oop#string()
+function! tc.test_oop_string()
+  let str = oop#string(self.foo)
 
   call assert#match('<Foo:0x\x\{8}>', str)
 
@@ -125,15 +125,15 @@ function! tc.test_oop_to_s()
 
   call self.puts()
   " should not raise an error
-  call self.puts(oop#to_s(dict))
-  call self.puts(oop#to_s(list))
+  call self.puts(oop#string(dict))
+  call self.puts(oop#string(list))
   " should not change
   call assert#equal(copy_dict, dict)
   call assert#equal(copy_list, list)
 
   " should not raise an error
   for s:value in s:not_object_values()
-    call oop#to_s(s:value)
+    call oop#string(s:value)
     unlet s:value
   endfor
 endfunction
