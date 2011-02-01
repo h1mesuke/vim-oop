@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-01-31
+" Updated : 2011-02-01
 " Version : 0.1.5
 " License : MIT license {{{
 "
@@ -98,11 +98,14 @@ function! oop#to_s(value)
 endfunction
 
 function! s:safe_dump(value)
+  return string(s:_safe_dump(a:value))
+endfunction
+function! s:_safe_dump(value)
   let value_type = type(a:value)
   if value_type == type({}) || value_type == type([])
-    return string(map(copy(a:value), 'oop#is_object(v:val) ? v:val.to_s() : v:val'))
+    return map(copy(a:value), 'oop#is_object(v:val) ? v:val.to_s() : s:_safe_dump(v:val)')
   else
-    return string(a:value)
+    return a:value
   endif
 endfunction
 
