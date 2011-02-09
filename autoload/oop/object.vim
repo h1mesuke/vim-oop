@@ -1,6 +1,6 @@
 "=============================================================================
 " vim-oop
-" Class-based OOP Layer for Vimscript
+" Class-based OOP Layer for Vim script
 "
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
