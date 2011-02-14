@@ -18,61 +18,61 @@ endfunction
 
 " oop#is_object()
 function! tc.test_oop_is_object()
-  call assert#true(oop#is_object(s:Object))
-  call assert#true(oop#is_object(s:Module))
-  call assert#true(oop#is_object(s:Class))
-  call assert#true(oop#is_object(s:Foo))
-  call assert#true(oop#is_object(s:Fizz))
-  call assert#true(oop#is_object(self.foo))
+  call assert#_(oop#is_object(s:Object))
+  call assert#_(oop#is_object(s:Module))
+  call assert#_(oop#is_object(s:Class))
+  call assert#_(oop#is_object(s:Foo))
+  call assert#_(oop#is_object(s:Fizz))
+  call assert#_(oop#is_object(self.foo))
 
   for s:value in s:not_object_values()
-    call assert#false(oop#is_object(s:value))
+    call assert#not(oop#is_object(s:value))
     unlet s:value
   endfor
 endfunction
 
 " oop#is_module()
 function! tc.test_oop_is_module()
-  call assert#false(oop#is_module(s:Object))
-  call assert#false(oop#is_module(s:Class))
-  call assert#false(oop#is_module(s:Module))
-  call assert#false(oop#is_module(s:Foo))
-  call assert#true(oop#is_module(s:Fizz))
-  call assert#false(oop#is_module(self.foo))
+  call assert#not(oop#is_module(s:Object))
+  call assert#not(oop#is_module(s:Class))
+  call assert#not(oop#is_module(s:Module))
+  call assert#not(oop#is_module(s:Foo))
+  call assert#_(oop#is_module(s:Fizz))
+  call assert#not(oop#is_module(self.foo))
 
   for s:value in s:not_object_values()
-    call assert#false(oop#is_module(s:value))
+    call assert#not(oop#is_module(s:value))
     unlet s:value
   endfor
 endfunction
 
 " oop#is_class()
 function! tc.test_oop_is_class()
-  call assert#true(oop#is_class(s:Object))
-  call assert#true(oop#is_class(s:Class))
-  call assert#true(oop#is_class(s:Module))
-  call assert#true(oop#is_class(s:Foo))
-  call assert#false(oop#is_class(s:Fizz))
-  call assert#false(oop#is_class(self.foo))
+  call assert#_(oop#is_class(s:Object))
+  call assert#_(oop#is_class(s:Class))
+  call assert#_(oop#is_class(s:Module))
+  call assert#_(oop#is_class(s:Foo))
+  call assert#not(oop#is_class(s:Fizz))
+  call assert#not(oop#is_class(self.foo))
 
   for s:value in s:not_object_values()
-    call assert#false(oop#is_class(s:value))
+    call assert#not(oop#is_class(s:value))
     unlet s:value
   endfor
 endfunction
 
 " oop#is_instance()
 function! tc.test_oop_is_instance()
-  call assert#false(oop#is_instance(s:Object))
-  call assert#false(oop#is_instance(s:Class))
-  call assert#false(oop#is_instance(s:Module))
-  call assert#false(oop#is_instance(s:Object))
-  call assert#false(oop#is_instance(s:Foo))
-  call assert#false(oop#is_instance(s:Fizz))
-  call assert#true(oop#is_instance(self.foo))
+  call assert#not(oop#is_instance(s:Object))
+  call assert#not(oop#is_instance(s:Class))
+  call assert#not(oop#is_instance(s:Module))
+  call assert#not(oop#is_instance(s:Object))
+  call assert#not(oop#is_instance(s:Foo))
+  call assert#not(oop#is_instance(s:Fizz))
+  call assert#_(oop#is_instance(self.foo))
 
   for s:value in s:not_object_values()
-    call assert#false(oop#is_instance(s:value))
+    call assert#not(oop#is_instance(s:value))
     unlet s:value
   endfor
 endfunction

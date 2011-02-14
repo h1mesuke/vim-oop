@@ -23,11 +23,11 @@ endfunction
 
 " Module.is_defined()
 function! tc.Fizz_should_be_defined()
-  call assert#true(oop#module#is_defined('Fizz'))
+  call assert#_(oop#module#is_defined('Fizz'))
 endfunction
 
 function! tc.Foo_should_not_be_defined()
-  call assert#false(oop#module#is_defined('Foo'))
+  call assert#not(oop#module#is_defined('Foo'))
 endfunction
 
 " Module#alias()
@@ -66,7 +66,7 @@ endfunction
 
 " Module#is_instance_of()
 function! tc.Fizz_should_be_instance_of_Module()
-  call assert#true(s:Fizz.is_instance_of(s:Module))
+  call assert#_(s:Fizz.is_instance_of(s:Module))
 endfunction
 
 function! tc.Module_is_instance_of_should_raise_if_not_class_value_given()
@@ -77,7 +77,7 @@ endfunction
 
 " Module#is_kind_of()
 function! tc.Fizz_should_be_kind_of_Module()
-  call assert#true(s:Fizz.is_kind_of(s:Module))
+  call assert#_(s:Fizz.is_kind_of(s:Module))
 endfunction
 
 function! tc.Module_is_kind_of_should_raise_if_not_class_value_given()

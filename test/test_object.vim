@@ -19,7 +19,7 @@ endfunction
 
 " Object#initialize()
 function! tc.instance_should_be_initialized()
-  call assert#true(has_key(self.foo, 'initialized'))
+  call assert#_(has_key(self.foo, 'initialized'))
 endfunction
 
 " Object#attributes()
@@ -33,9 +33,9 @@ function! tc.Object_attributes_should_return_Dict_of_attributes()
   let attrs = self.foo.attributes()
 
   call assert#is_Dictionary(attrs)
-  call assert#true(has_key(attrs, 'a'))
-  call assert#false(has_key(attrs, 'class'))
-  call assert#false(has_key(attrs, 'object_id'))
+  call assert#_(has_key(attrs, 'a'))
+  call assert#not(has_key(attrs, 'class'))
+  call assert#not(has_key(attrs, 'object_id'))
   call assert#equal(
         \ len(attrs),
         \ len(filter(copy(attrs), 'type(v:val) != type(function("tr"))')))
@@ -48,10 +48,10 @@ function! tc.Object_attributes_1_should_return_Dict_of_all_attributes()
   let attrs = self.foo.attributes(1)
 
   call assert#is_Dictionary(attrs)
-  call assert#true(has_key(attrs, 'a'))
-  call assert#false(has_key(attrs, 'class'))
-  call assert#true(has_key(attrs, '__class__'))
-  call assert#true(has_key(attrs, 'object_id'))
+  call assert#_(has_key(attrs, 'a'))
+  call assert#not(has_key(attrs, 'class'))
+  call assert#_(has_key(attrs, '__class__'))
+  call assert#_(has_key(attrs, 'object_id'))
   call assert#equal(
         \ len(attrs),
         \ len(filter(copy(attrs), 'type(v:val) != type(function("tr"))')))
@@ -76,18 +76,18 @@ endfunction
 
 " Object#is_instance_of()
 function! tc.foo_should_not_be_instance_of_Object()
-  call assert#false(self.foo.is_instance_of(s:Object))
-  call assert#false(self.foo.is_instance_of('Object'))
+  call assert#not(self.foo.is_instance_of(s:Object))
+  call assert#not(self.foo.is_instance_of('Object'))
 endfunction
 
 function! tc.foo_should_be_instance_of_Foo()
-  call assert#true(self.foo.is_instance_of(s:Foo))
-  call assert#true(self.foo.is_instance_of('Foo'))
+  call assert#_(self.foo.is_instance_of(s:Foo))
+  call assert#_(self.foo.is_instance_of('Foo'))
 endfunction
 
 function! tc.foo_should_not_be_instance_of_Bar()
-  call assert#false(self.foo.is_instance_of(s:Bar))
-  call assert#false(self.foo.is_instance_of('Bar'))
+  call assert#not(self.foo.is_instance_of(s:Bar))
+  call assert#not(self.foo.is_instance_of('Bar'))
 endfunction
 
 function! tc.Object_is_instance_of_should_raise_if_not_class_value_given()
@@ -98,18 +98,18 @@ endfunction
 
 " Object#is_kind_of()
 function! tc.foo_should_be_kind_of_Object()
-  call assert#true(self.foo.is_kind_of(s:Object))
-  call assert#true(self.foo.is_kind_of('Object'))
+  call assert#_(self.foo.is_kind_of(s:Object))
+  call assert#_(self.foo.is_kind_of('Object'))
 endfunction
 
 function! tc.foo_should_be_kind_of_Foo()
-  call assert#true(self.foo.is_kind_of(s:Foo))
-  call assert#true(self.foo.is_kind_of('Foo'))
+  call assert#_(self.foo.is_kind_of(s:Foo))
+  call assert#_(self.foo.is_kind_of('Foo'))
 endfunction
 
 function! tc.foo_should_not_be_kind_of_Bar()
-  call assert#false(self.foo.is_kind_of(s:Bar))
-  call assert#false(self.foo.is_kind_of('Bar'))
+  call assert#not(self.foo.is_kind_of(s:Bar))
+  call assert#not(self.foo.is_kind_of('Bar'))
 endfunction
 
 function! tc.Object_is_kind_of_should_raise_if_not_class_value_given()
@@ -123,7 +123,7 @@ function! tc.Object_methods_should_return_Dict_of_methods()
   let methods = self.foo.methods()
 
   call assert#is_Dictionary(methods)
-  call assert#true(len(methods) > 0)
+  call assert#_(len(methods) > 0)
   call assert#equal(
         \ len(methods),
         \ len(filter(copy(methods), 'type(v:val) == type(function("tr"))')))

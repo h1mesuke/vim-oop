@@ -20,11 +20,11 @@ endfunction
 
 " Class.is_defined()
 function! tc.Foo_should_be_defined()
-  call assert#true(oop#class#is_defined('Foo'))
+  call assert#_(oop#class#is_defined('Foo'))
 endfunction
 
 function! tc.Fizz_should_not_be_defined()
-  call assert#false(oop#class#is_defined('Fizz'))
+  call assert#not(oop#class#is_defined('Fizz'))
 endfunction
 
 " Class.new()
@@ -116,15 +116,15 @@ endfunction
 
 " Class#is_ancestor_of()
 function! tc.Bar_should_not_be_ancestor_of_Foo()
-  call assert#false(s:Bar.is_ancestor_of(s:Foo))
+  call assert#not(s:Bar.is_ancestor_of(s:Foo))
 endfunction
 
 function! tc.Bar_should_not_be_ancestor_of_Bar()
-  call assert#false(s:Bar.is_ancestor_of(s:Bar))
+  call assert#not(s:Bar.is_ancestor_of(s:Bar))
 endfunction
 
 function! tc.Bar_should_be_ancestor_of_Baz()
-  call assert#true(s:Bar.is_ancestor_of(s:Baz))
+  call assert#_(s:Bar.is_ancestor_of(s:Baz))
 endfunction
 
 function! tc.Class_is_ancestor_of_should_raise_if_not_class_value_given()
@@ -135,15 +135,15 @@ endfunction
 
 " Class#is_descendant_of()
 function! tc.Bar_should_be_descendant_of_Foo()
-  call assert#true(s:Bar.is_descendant_of(s:Foo))
+  call assert#_(s:Bar.is_descendant_of(s:Foo))
 endfunction
 
 function! tc.Bar_should_not_be_descendant_of_Bar()
-  call assert#false(s:Bar.is_descendant_of(s:Bar))
+  call assert#not(s:Bar.is_descendant_of(s:Bar))
 endfunction
 
 function! tc.Bar_should_not_be_descendant_of_Baz()
-  call assert#false(s:Bar.is_descendant_of(s:Baz))
+  call assert#not(s:Bar.is_descendant_of(s:Baz))
 endfunction
 
 function! tc.Class_is_descendant_of_should_raise_if_not_class_value_given()
@@ -154,7 +154,7 @@ endfunction
 
 " Class#is_instance_of()
 function! tc.Foo_should_be_instance_of_Class()
-  call assert#true(s:Foo.is_instance_of(s:Class))
+  call assert#_(s:Foo.is_instance_of(s:Class))
 endfunction
 
 function! tc.Class_is_instance_of_should_raise_if_not_class_value_given()
@@ -165,7 +165,7 @@ endfunction
 
 " Class#is_kind_of()
 function! tc.Foo_should_be_kind_of_Class()
-  call assert#true(s:Foo.is_kind_of(s:Class))
+  call assert#_(s:Foo.is_kind_of(s:Class))
 endfunction
 
 function! tc.Class_is_kind_of_should_raise_if_not_class_value_given()
