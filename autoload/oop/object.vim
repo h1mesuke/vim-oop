@@ -4,7 +4,7 @@
 "
 " File    : oop/object.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-02-01
+" Updated : 2011-03-12
 " Version : 0.1.6
 " License : MIT license {{{
 "
@@ -42,11 +42,8 @@ function! oop#object#_initialize()
   call s:Object.bind(SID, 'initialize')
   call s:Object.bind(SID, 'attributes')
   call s:Object.bind(SID, 'inspect')
-  call s:Object.bind(SID, 'is_instance_of')
   call s:Object.bind(SID, 'is_kind_of')
   call s:Object.alias('is_a', 'is_kind_of')
-  call s:Object.bind(SID, 'methods')
-  call s:Object.bind(SID, 'mixin')
   call s:Object.bind(SID, 'to_s')
 
   return s:Object
@@ -87,10 +84,6 @@ function! s:Object_inspect() dict
   return string(_self)
 endfunction
 
-function! s:Object_is_instance_of(class) dict
-  return (self.class is oop#class#get(a:class))
-endfunction
-
 function! s:Object_is_kind_of(class) dict
   let kind_class = oop#class#get(a:class)
   for class in self.class.ancestors(1)
@@ -99,16 +92,6 @@ function! s:Object_is_kind_of(class) dict
     endif
   endfor
   return 0
-endfunction
-
-function! s:Object_methods() dict
-  return filter(copy(self), 'type(v:val) == type(function("tr"))')
-endfunction
-
-function! s:Object_mixin(module, ...) dict
-  let module = oop#module#get(a:module)
-  let mode = (a:0 ? a:1 : 'force')
-  call extend(self, module.methods(), mode)
 endfunction
 
 function! s:Object_to_s() dict

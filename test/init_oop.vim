@@ -97,28 +97,4 @@ function! s:Baz_hello_no_super() dict
 endfunction
 call s:Baz.bind(s:SID, 'hello_no_super')
 
-"-----------------------------------------------------------------------------
-" Modules
-
-"---------------------------------------
-" Fizz
-
-let s:Fizz = oop#module#new('Fizz')
-
-function! s:Fizz_hello() dict
-  return "Fizz"
-endfunction
-call s:Fizz.bind(s:SID, 'hello')
-call s:Fizz.alias('hello_alias', 'hello')
-
-"---------------------------------------
-" Buzz
-
-let s:Buzz = oop#module#new('Buzz')
-
-function! s:Buzz_hello() dict
-  return "Buzz"
-endfunction
-call s:Buzz.bind(s:SID, 'hello')
-
 " vim: filetype=vim

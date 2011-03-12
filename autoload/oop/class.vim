@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-02-14
+" Updated : 2011-03-12
 " Version : 0.1.6
 " License : MIT license {{{
 "
@@ -37,7 +37,7 @@ function! oop#class#_initialize()
   let SID = s:get_SID()
 
   let s:Class = { 'object_id': 1001 }
-  let s:Class.class = s:Class | let s:Class.superclass = {}
+  let s:Class.class = s:Class
   let s:Class.name = 'Class'
 
   let s:class_table = { 'Class': s:Class, '__nil__': {} }
@@ -53,7 +53,6 @@ function! oop#class#_initialize()
   let s:Class.prototype.class_alias  = function(SID . 'Class_class_alias')
   let s:Class.prototype.class_bind   = function(SID . 'Class_class_bind')
   let s:Class.prototype.class_unbind = function(SID . 'Class_class_unbind')
-" let s:Class.prototype.class_mixin  = s:Object.prototype.mixin
   let s:Class.prototype.class_super  = function(SID . 'Class_class_super')
 
   let s:Class.prototype.alias        = function(SID . 'Class_alias')
@@ -61,11 +60,8 @@ function! oop#class#_initialize()
   let s:Class.prototype.bind         = function(SID . 'Class_bind')
   let s:Class.prototype.unbind       = function(SID . 'Class_unbind')
   let s:Class.prototype.export       = function(SID . 'Class_export')
-  let s:Class.prototype.is_ancestor_of
-        \                            = function(SID . 'Class_is_ancestor_of')
   let s:Class.prototype.is_descendant_of
         \                            = function(SID . 'Class_is_descendant_of')
-  let s:Class.prototype.mixin        = function(SID . 'Class_mixin')
   let s:Class.prototype.new          = function(SID . 'Class_new')
   let s:Class.prototype.super        = function(SID . 'Class_super')
   let s:Class.prototype.to_s         = function(SID . 'Class_to_s')
@@ -194,20 +190,9 @@ function! s:Class_export(method_name) dict
   endif
 endfunction
 
-function! s:Class_is_ancestor_of(class) dict
-  let test_class = s:Class.get(a:class)
-  return test_class.is_descendant_of(self)
-endfunction
-
 function! s:Class_is_descendant_of(class) dict
   let test_class = s:Class.get(a:class)
   return (index(self.ancestors(), test_class) >= 0)
-endfunction
-
-function! s:Class_mixin(module, ...) dict
-  let module = oop#module#get(a:module)
-  let mode = (a:0 ? a:1 : 'force')
-  call extend(self.prototype, module.methods(), mode)
 endfunction
 
 function! s:Class_new(...) dict

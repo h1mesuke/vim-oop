@@ -5,10 +5,8 @@ let tc = unittest#testcase#new('test_funcs')
 
 let s:Object = oop#class#get('Object')
 let s:Class  = oop#class#get('Class')
-let s:Module = oop#class#get('Module')
 
 let s:Foo    = oop#class#get('Foo')
-let s:Fizz   = oop#module#get('Fizz')
 
 "-----------------------------------------------------------------------------
 
@@ -19,10 +17,8 @@ endfunction
 " oop#is_object()
 function! tc.test_oop_is_object()
   call assert#_(oop#is_object(s:Object))
-  call assert#_(oop#is_object(s:Module))
   call assert#_(oop#is_object(s:Class))
   call assert#_(oop#is_object(s:Foo))
-  call assert#_(oop#is_object(s:Fizz))
   call assert#_(oop#is_object(self.foo))
 
   for s:value in s:not_object_values()
@@ -31,28 +27,11 @@ function! tc.test_oop_is_object()
   endfor
 endfunction
 
-" oop#is_module()
-function! tc.test_oop_is_module()
-  call assert#not(oop#is_module(s:Object))
-  call assert#not(oop#is_module(s:Class))
-  call assert#not(oop#is_module(s:Module))
-  call assert#not(oop#is_module(s:Foo))
-  call assert#_(oop#is_module(s:Fizz))
-  call assert#not(oop#is_module(self.foo))
-
-  for s:value in s:not_object_values()
-    call assert#not(oop#is_module(s:value))
-    unlet s:value
-  endfor
-endfunction
-
 " oop#is_class()
 function! tc.test_oop_is_class()
   call assert#_(oop#is_class(s:Object))
   call assert#_(oop#is_class(s:Class))
-  call assert#_(oop#is_class(s:Module))
   call assert#_(oop#is_class(s:Foo))
-  call assert#not(oop#is_class(s:Fizz))
   call assert#not(oop#is_class(self.foo))
 
   for s:value in s:not_object_values()
@@ -65,10 +44,8 @@ endfunction
 function! tc.test_oop_is_instance()
   call assert#not(oop#is_instance(s:Object))
   call assert#not(oop#is_instance(s:Class))
-  call assert#not(oop#is_instance(s:Module))
   call assert#not(oop#is_instance(s:Object))
   call assert#not(oop#is_instance(s:Foo))
-  call assert#not(oop#is_instance(s:Fizz))
   call assert#_(oop#is_instance(self.foo))
 
   for s:value in s:not_object_values()

@@ -74,28 +74,6 @@ function! tc.Object_is_a_should_be_alias_of_Object_is_kind_of()
   call assert#equal(self.foo.is_kind_of, self.foo.is_a)
 endfunction
 
-" Object#is_instance_of()
-function! tc.foo_should_not_be_instance_of_Object()
-  call assert#not(self.foo.is_instance_of(s:Object))
-  call assert#not(self.foo.is_instance_of('Object'))
-endfunction
-
-function! tc.foo_should_be_instance_of_Foo()
-  call assert#_(self.foo.is_instance_of(s:Foo))
-  call assert#_(self.foo.is_instance_of('Foo'))
-endfunction
-
-function! tc.foo_should_not_be_instance_of_Bar()
-  call assert#not(self.foo.is_instance_of(s:Bar))
-  call assert#not(self.foo.is_instance_of('Bar'))
-endfunction
-
-function! tc.Object_is_instance_of_should_raise_if_not_class_value_given()
-  for value_str in s:not_class_value_strings()
-    call assert#raise('^oop: ', 'call unittest#testcase().foo.is_instance_of(' . value_str . ')')
-  endfor
-endfunction
-
 " Object#is_kind_of()
 function! tc.foo_should_be_kind_of_Object()
   call assert#_(self.foo.is_kind_of(s:Object))
@@ -116,20 +94,6 @@ function! tc.Object_is_kind_of_should_raise_if_not_class_value_given()
   for value_str in s:not_class_value_strings()
     call assert#raise('^oop: ', 'call unittest#testcase().foo.is_kind_of(' . value_str . ')')
   endfor
-endfunction
-
-" Object#methods()
-function! tc.Object_methods_should_return_Dict_of_methods()
-  let methods = self.foo.methods()
-
-  call assert#is_Dictionary(methods)
-  call assert#_(len(methods) > 0)
-  call assert#equal(
-        \ len(methods),
-        \ len(filter(copy(methods), 'type(v:val) == type(function("tr"))')))
-
-  call self.puts()
-  call self.puts(oop#string(self.foo.methods()))
 endfunction
 
 " Object#object_id

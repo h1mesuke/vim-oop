@@ -114,25 +114,6 @@ function! tc.Class_is_a_should_be_alias_of_Class_is_kind_of()
   call assert#equal(s:Foo.is_kind_of, s:Foo.is_a)
 endfunction
 
-" Class#is_ancestor_of()
-function! tc.Bar_should_not_be_ancestor_of_Foo()
-  call assert#not(s:Bar.is_ancestor_of(s:Foo))
-endfunction
-
-function! tc.Bar_should_not_be_ancestor_of_Bar()
-  call assert#not(s:Bar.is_ancestor_of(s:Bar))
-endfunction
-
-function! tc.Bar_should_be_ancestor_of_Baz()
-  call assert#_(s:Bar.is_ancestor_of(s:Baz))
-endfunction
-
-function! tc.Class_is_ancestor_of_should_raise_if_not_class_value_given()
-  for value_str in s:not_class_value_strings()
-    call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_ancestor_of(' . value_str . ')')
-  endfor
-endfunction
-
 " Class#is_descendant_of()
 function! tc.Bar_should_be_descendant_of_Foo()
   call assert#_(s:Bar.is_descendant_of(s:Foo))
@@ -149,17 +130,6 @@ endfunction
 function! tc.Class_is_descendant_of_should_raise_if_not_class_value_given()
   for value_str in s:not_class_value_strings()
     call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_descendant_of(' . value_str . ')')
-  endfor
-endfunction
-
-" Class#is_instance_of()
-function! tc.Foo_should_be_instance_of_Class()
-  call assert#_(s:Foo.is_instance_of(s:Class))
-endfunction
-
-function! tc.Class_is_instance_of_should_raise_if_not_class_value_given()
-  for value_str in s:not_class_value_strings()
-    call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_instance_of(' . value_str . ')')
   endfor
 endfunction
 

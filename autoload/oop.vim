@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-02-01
+" Updated : 2011-03-12
 " Version : 0.1.6
 " License : MIT license {{{
 "
@@ -40,13 +40,9 @@ function! oop#_initialize()
   let s:initialized = 1
 
   let Class = oop#class#_initialize()
-
   let Object = oop#object#_initialize()
-  let Module = oop#module#_initialize()
 
-  " Module < Class < Object
   let Class.superclass = Object
-  let Module.superclass = Class
 
   let Object_instance_methods = copy(Object.prototype)
   unlet Object_instance_methods.initialize
@@ -55,10 +51,6 @@ function! oop#_initialize()
 
   call extend(Class, Object_instance_methods, 'keep')
   call extend(Class.prototype, Object_instance_methods, 'keep')
-  let Class.prototype.class_mixin = Object_instance_methods.mixin
-
-  call extend(Module, Object_instance_methods, 'keep')
-  call extend(Module.prototype, Object_instance_methods, 'keep')
 endfunction
 
 function! oop#is_object(obj)
@@ -71,14 +63,8 @@ function! oop#is_class(obj)
   return (oop#is_object(a:obj) && a:obj.class is oop#class#get('Class'))
 endfunction
 
-function! oop#is_module(obj)
-  return (oop#is_object(a:obj) && a:obj.class is oop#class#get('Module'))
-endfunction
-
 function! oop#is_instance(obj)
-  return (oop#is_object(a:obj) && 
-        \ a:obj.class isnot oop#class#get('Module') &&
-        \ a:obj.class isnot oop#class#get('Class'))
+  return (oop#is_object(a:obj) && a:obj.class isnot oop#class#get('Class'))
 endfunction
 
 function! oop#inspect(value)
