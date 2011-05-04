@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-05-04
+" Updated : 2011-05-05
 " Version : 0.2.0
 " License : MIT license {{{
 "
@@ -176,26 +176,26 @@ let s:Class.alias = s:Class.__alias__
 function! s:Class_super(method_name, _self, ...) dict
   let is_class = {s:oop}#is_class(a:_self)
   if is_class
-    let s_table = self
+    let slf_table = self
   else
-    let s_table = self.__prototype__
+    let slf_table = self.__prototype__
   endif
-  let has_impl = (has_key(s_table, a:method_name) &&
-        \ type(s_table[a:method_name]) == type(function('tr')))
+  let has_impl = (has_key(slf_table, a:method_name) &&
+        \ type(slf_table[a:method_name]) == type(function('tr')))
   for klass in self.__ancestors__()
     if is_class
-      let k_table = klass
+      let kls_table = klass
     else
-      let k_table = klass.__prototype__
+      let kls_table = klass.__prototype__
     endif
-    if has_key(k_table, a:method_name)
-      if type(k_table[a:method_name]) != type(function('tr'))
+    if has_key(kls_table, a:method_name)
+      if type(kls_table[a:method_name]) != type(function('tr'))
         let sep = (is_class ? '.' : '#')
         throw "oop: " . klass.__name__ . sep .
               \ a:method_name . " is not a method."
       elseif !has_impl ||
-            \ (has_impl && s_table[a:method_name] != k_table[a:method_name])
-        return call(k_table[a:method_name], a:000, a:_self)
+            \ (has_impl && slf_table[a:method_name] != kls_table[a:method_name])
+        return call(kls_table[a:method_name], a:000, a:_self)
       endif
     endif
   endfor
