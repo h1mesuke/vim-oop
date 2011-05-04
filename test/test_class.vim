@@ -190,6 +190,13 @@ function! tc.foo_should_be_Instance()
   call assert#_(oop#is_instance(self.foo))
 endfunction
 
+" oop#string()
+function! tc.test_oop_string()
+  call self.puts()
+  call self.puts(oop#string(s:Foo))
+  call self.puts(oop#string(self.foo))
+endfunction
+
 unlet tc
 
 " vim: filetype=vim

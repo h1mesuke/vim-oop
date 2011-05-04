@@ -48,6 +48,12 @@ function! tc.Fizz_should_be_Module()
   call assert#_(oop#is_module(s:Fizz))
 endfunction
 
+" oop#string()
+function! tc.test_oop_string()
+  call self.puts()
+  call self.puts(oop#string(s:Fizz))
+endfunction
+
 unlet tc
 
 " vim: filetype=vim

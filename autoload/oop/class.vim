@@ -219,10 +219,6 @@ endfunction
 let s:Class.__new__ = function(s:SID . 'Class_new')
 let s:Class.new = s:Class.__new__
 
-function! s:Class_to_s() dict
-  return self.__name__
-endfunction
-
 "-----------------------------------------------------------------------------
 " Instance
 
