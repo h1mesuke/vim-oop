@@ -1,6 +1,6 @@
 "=============================================================================
 " vim-oop
-" Module-based OOP Layer for Vim script
+" Simple OOP Layer for Vim script
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
