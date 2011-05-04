@@ -1,16 +1,78 @@
 " vim-oop's test suite
 
-execute 'source' expand('<sfile>:p:h') . '/init_oop.vim'
-let tc = unittest#testcase#new('test_class')
-
-let s:Object = oop#class#get('Object')
-let s:Class  = oop#class#get('Class')
-
-let s:Foo    = oop#class#get('Foo') | let tc.Foo = s:Foo
-let s:Bar    = oop#class#get('Bar') | let tc.Bar = s:Bar
-let s:Baz    = oop#class#get('Baz') | let tc.Baz = s:Baz
+function! s:get_SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+let s:SID = s:get_SID()
+delfunction s:get_SID
 
 "-----------------------------------------------------------------------------
+" Classes
+
+"---------------------------------------
+" Foo
+
+let s:Foo = oop#class#new('Foo', s:SID)
+
+function! s:Foo_initialize() dict
+  let self.initialized = 1
+endfunction
+call s:Foo.method('initialize')
+
+function! s:Foo_hello() dict
+  return "Foo"
+endfunction
+call s:Foo.class_method('hello')
+call s:Foo.method('hello')
+
+call s:Foo.class_alias('hi', 'hello')
+call s:Foo.alias('hi', 'hello')
+
+function! s:Foo_ciao() dict
+  return "Foo"
+endfunction
+call s:Foo.class_method('ciao')
+call s:Foo.method('ciao')
+
+"---------------------------------------
+" Bar < Foo
+
+let s:Bar = oop#class#new('Bar', s:SID, s:Foo)
+
+function! s:Bar_hello() dict
+  return "Bar < " . s:Bar.super('hello', self)
+endfunction
+call s:Bar.class_method('hello')
+call s:Bar.method('hello')
+
+"---------------------------------------
+" Baz < Bar
+
+let s:Baz = oop#class#new('Baz', s:SID, s:Bar)
+
+function! s:Baz_hello() dict
+  return "Baz < " . s:Baz.super('hello', self)
+endfunction
+call s:Baz.class_method('hello')
+call s:Baz.method('hello')
+
+function! s:Baz_bonjour() dict
+  return "Baz < " . s:Baz.super('bonjour', self)
+endfunction
+call s:Baz.class_method('bonjour')
+call s:Baz.method('bonjour')
+
+"-----------------------------------------------------------------------------
+" Tests
+
+" h1mesuke/vim-unittest - GitHub
+" https://github.com/h1mesuke/vim-unittest
+
+let tc = unittest#testcase#new('test_class')
+
+let tc.Foo = s:Foo
+let tc.Bar = s:Bar
+let tc.Baz = s:Baz
 
 function! tc.setup()
   let self.foo = s:Foo.new()
@@ -18,180 +80,114 @@ function! tc.setup()
   let self.baz = s:Baz.new()
 endfunction
 
-" Class.is_defined()
-function! tc.Foo_should_be_defined()
-  call assert#_(oop#class#is_defined('Foo'))
-endfunction
-
-function! tc.Fizz_should_not_be_defined()
-  call assert#not(oop#class#is_defined('Fizz'))
-endfunction
-
-" Class.new()
+" oop#class#new()
 function! tc.class_methods_should_be_inherited()
-  call assert#equal(s:Object.to_s, s:Foo.to_s)
-  call assert#equal("Foo", s:Bar.goodbye())
-  call assert#equal("Foo", s:Baz.goodbye())
+  call assert#equal("Foo", s:Bar.ciao())
+  call assert#equal("Foo", s:Baz.ciao())
 endfunction
 
 function! tc.instance_methods_should_be_inherited()
-  call assert#equal(s:Object.prototype.to_s, self.foo.to_s)
-  call assert#equal("foo", self.bar.goodbye())
-  call assert#equal("foo", self.baz.goodbye())
+  call assert#equal("Foo", self.bar.ciao())
+  call assert#equal("Foo", self.baz.ciao())
+endfunction
+
+" Class#ancestors()
+function! tc.Class_ancestors_should_return_List_of_ancestors()
+  call assert#equal(s:Foo.ancestors(),  [])
+  call assert#equal(s:Foo.ancestors(1), [s:Foo])
+
+  call assert#equal(s:Baz.ancestors(),  [s:Bar, s:Foo])
+  call assert#equal(s:Baz.ancestors(1), [s:Baz, s:Bar, s:Foo])
+endfunction
+
+" Class#class_method()
+function! tc.Class_class_method_should_bind_Funcref_as_class_method()
+  call assert#is_Funcref(s:Foo.hello)
+  call assert#equal("Foo", s:Foo.hello())
+endfunction
+
+" Class#method()
+function! tc.Class_method_should_bind_Funcref_as_instance_method()
+  call assert#is_Funcref(self.foo.hello)
+  call assert#equal("Foo", self.foo.hello())
 endfunction
 
 " Class#class_alias()
 function! tc.Class_class_alias_should_define_alias_of_class_method()
-  call assert#equal(s:Foo.hello, s:Foo.hello_alias)
-endfunction
-
-" Class#class_bind()
-function! tc.Class_class_bind_should_bind_Funcref_as_class_method()
-  call assert#equal("Foo", s:Foo.hello())
-  call assert#equal("Bar", s:Bar.hello())
-endfunction
-
-" Class#class_super()
-function! tc.Class_class_super_should_call_super_impl()
-  call assert#equal('Bar < Foo',       s:Bar.hello_super())
-  call assert#equal('Baz < Bar < Foo', s:Baz.hello_super())
-endfunction
-
-function! tc.Class_class_super_should_raise_if_not_method()
-  call assert#raise('^oop: ', 'call unittest#testcase().Baz.class_super("object_id", [], {})')
-endfunction
-
-function! tc.Class_class_super_should_raise_if_no_super_impl()
-  call assert#raise('^oop: ', 'call unittest#testcase().Baz.hello_no_super()')
+  call assert#equal(s:Foo.hello, s:Foo.hi)
 endfunction
 
 " Class#alias()
 function! tc.Class_alias_should_define_alias_of_instance_method()
-  call assert#equal(self.foo.hello, self.foo.hello_alias)
-endfunction
-
-" Class#ancestors()
-function! tc.Class_ancestors_should_return_superclass_list()
-  call assert#equal(s:Baz.ancestors(),  [s:Bar, s:Foo, s:Object])
-  call assert#equal(s:Baz.ancestors(1), [s:Baz, s:Bar, s:Foo, s:Object])
-endfunction
-
-" Class#bind()
-function! tc.Class_bind_should_bind_Funcref_as_instance_method()
-  call assert#equal("foo", self.foo.hello())
-  call assert#equal("bar", self.bar.hello())
-endfunction
-
-function! tc.Class_bind_should_has_underscored_alias()
-  call assert#equal(s:Class.__bind__, s:Class.bind)
-endfunction
-
-" Class#unbind()
-function! tc.Class_unbind_should_has_underscored_alias()
-  call assert#equal(s:Class.__unbind__, s:Class.unbind)
-endfunction
-
-" Class#export()
-function! tc.Class_export_should_export_instance_method_as_class_method()
-  call assert#equal(s:Foo.hello_export, self.foo.hello_export)
-endfunction
-
-function! tc.Class_export_should_has_underscored_alias()
-  call assert#equal(s:Class.__export__, s:Class.export)
-endfunction
-
-" Class#inspect()
-function! tc.Class_inspect_should_return_string_rep()
-  call assert#nothing_raised('call unittest#testcase().Foo.inspect()')
-  call assert#nothing_raised('call unittest#testcase().Bar.inspect()')
-
-  call self.puts()
-  call self.puts(self.Foo.inspect())
-endfunction
-
-" Class#is_a()
-function! tc.Class_is_a_should_be_alias_of_Class_is_kind_of()
-  call assert#equal(s:Foo.is_kind_of, s:Foo.is_a)
-endfunction
-
-" Class#is_descendant_of()
-function! tc.Bar_should_be_descendant_of_Foo()
-  call assert#_(s:Bar.is_descendant_of(s:Foo))
-endfunction
-
-function! tc.Bar_should_not_be_descendant_of_Bar()
-  call assert#not(s:Bar.is_descendant_of(s:Bar))
-endfunction
-
-function! tc.Bar_should_not_be_descendant_of_Baz()
-  call assert#not(s:Bar.is_descendant_of(s:Baz))
-endfunction
-
-function! tc.Class_is_descendant_of_should_raise_if_not_class_value_given()
-  for value_str in s:not_class_value_strings()
-    call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_descendant_of(' . value_str . ')')
-  endfor
-endfunction
-
-" Class#is_kind_of()
-function! tc.Foo_should_be_kind_of_Class()
-  call assert#_(s:Foo.is_kind_of(s:Class))
-endfunction
-
-function! tc.Class_is_kind_of_should_raise_if_not_class_value_given()
-  for value_str in s:not_class_value_strings()
-    call assert#raise('^oop: ', 'call unittest#testcase().Foo.is_kind_of(' . value_str . ')')
-  endfor
-endfunction
-
-" Class#name
-function! tc.Class_name_should_be_class_name()
-  call assert#equal('Foo', s:Foo.name)
-  call assert#equal('Bar', s:Bar.name)
-endfunction
-
-" Class#object_id
-function! tc.Class_object_id_should_be_unique_Number()
-  call assert#is_Number(s:Foo.object_id)
-  call assert#is_Number(s:Bar.object_id)
-  call assert#not_equal(s:Bar.object_id, s:Foo.object_id)
+  call assert#equal(self.foo.hello, self.foo.hi)
 endfunction
 
 " Class#super()
 function! tc.Class_super_should_call_super_impl()
-  call assert#equal('bar < foo',       self.bar.hello_super())
-  call assert#equal('baz < bar < foo', self.baz.hello_super())
+  call assert#equal('Bar < Foo',       s:Bar.hello())
+  call assert#equal('Baz < Bar < Foo', s:Baz.hello())
+
+  call assert#equal('Bar < Foo',       self.bar.hello())
+  call assert#equal('Baz < Bar < Foo', self.baz.hello())
 endfunction
 
 function! tc.Class_super_should_raise_if_not_method()
-  call assert#raise('^oop: ', 'call unittest#testcase().Baz.super("object_id", [], {})')
+  call assert#raise('^oop: ', '
+        \ call unittest#testcase().Baz.super("__superclass__", unittest#testcase().Baz)
+        \ ')
+  call assert#raise('^oop: ', '
+        \ call unittest#testcase().Baz.super("__class__", unittest#testcase().baz)
+        \ ')
 endfunction
 
 function! tc.Class_super_should_raise_if_no_super_impl()
-  call assert#raise('^oop: ', 'call unittest#testcase().baz.hello_no_super()')
+  call assert#raise('^oop: ', '
+        \ call unittest#testcase().Baz.super("bonjour", unittest#testcase().Baz)
+        \ ')
+  call assert#raise('^oop: ', '
+        \ call unittest#testcase().Baz.super("bonjour", unittest#testcase().baz)
+        \ ')
 endfunction
 
-" Class#superclass
-function! tc.superclass_of_Foo_should_be_Object()
-  call assert#is(s:Object, s:Foo.superclass)
+" Object#initialize()
+function! tc.instance_should_be_initialized()
+  call assert#_(has_key(self.foo, 'initialized'))
 endfunction
 
-function! tc.superclass_of_Bar_should_be_Foo()
-  call assert#is(s:Foo, s:Bar.superclass)
+" Object#is_a()
+function! tc.foo_should_be_Foo()
+  call assert#_(self.foo.is_a(s:Foo))
 endfunction
 
-" Class#to_s()
-function! tc.Class_to_s_should_return_string_rep()
-  call assert#equal('Foo', s:Foo.to_s())
-  call assert#equal('Bar', s:Bar.to_s())
-
-  call self.puts()
-  call self.puts(s:Foo.to_s())
-  call self.puts(s:Bar.to_s())
+function! tc.foo_should_not_be_Bar()
+  call assert#not(self.foo.is_a(s:Bar))
 endfunction
 
-function! s:not_class_value_strings()
-  return ['unittest#testcase().foo', '0', '""', 'function("tr")', '[]', '{}', '0.0']
+" oop#is_object()
+function! tc.Foo_should_be_Object()
+  call assert#_(oop#is_object(s:Foo))
+endfunction
+
+function! tc.foo_should_be_Object()
+  call assert#_(oop#is_object(self.foo))
+endfunction
+
+" oop#is_class()
+function! tc.Foo_should_be_Class()
+  call assert#_(oop#is_class(s:Foo))
+endfunction
+
+function! tc.foo_should_not_be_Class()
+  call assert#not(oop#is_class(self.foo))
+endfunction
+
+" oop#is_instance()
+function! tc.Foo_should_not_be_Instance()
+  call assert#not(oop#is_instance(s:Foo))
+endfunction
+
+function! tc.foo_should_be_Instance()
+  call assert#_(oop#is_instance(self.foo))
 endfunction
 
 unlet tc

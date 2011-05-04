@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-03-12
+" Updated : 2011-05-04
 " Version : 0.1.7
 " License : MIT license {{{
 "
@@ -29,54 +29,33 @@
 " }}}
 "=============================================================================
 
-let s:initialized = 0
+" Inspired by Yukihiro Nakadaira's nsexample.vim
+" https://gist.github.com/867896
+"
+let s:oop = expand('<sfile>:p:r:gs?[\\/]?#?:s?^.*#autoload#??')
+" => path#to#oop
 
-function! oop#_is_initialized()
-  return s:initialized
+function! {s:oop}#is_object(obj)
+  return has_key(a:obj, '__type_Object__')
 endfunction
 
-function! oop#_initialize()
-  if s:initialized | return | endif
-  let s:initialized = 1
-
-  let Class = oop#class#_initialize()
-  let Object = oop#object#_initialize()
-
-  let Class.superclass = Object
-
-  let Object_instance_methods = copy(Object.prototype)
-  unlet Object_instance_methods.initialize
-
-  call extend(Object, Object_instance_methods, 'keep')
-
-  call extend(Class, Object_instance_methods, 'keep')
-  call extend(Class.prototype, Object_instance_methods, 'keep')
+function! {s:oop}#is_class(obj)
+  return has_key(a:obj, '__type_Class__')
 endfunction
 
-function! oop#is_object(obj)
-  return (type(a:obj) == type({}) && has_key(a:obj, 'class') &&
-        \ type(a:obj.class) == type({}) && has_key(a:obj.class, 'class') &&
-        \ a:obj.class.class is oop#class#get('Class'))
+function! {s:oop}#is_instance(obj)
+  return has_key(a:obj, '__type_Instance__')
 endfunction
 
-function! oop#is_class(obj)
-  return (oop#is_object(a:obj) && a:obj.class is oop#class#get('Class'))
+function! {s:oop}#is_module(obj)
+  return has_key(a:obj, '__type_Module__')
 endfunction
 
-function! oop#is_instance(obj)
-  return (oop#is_object(a:obj) && a:obj.class isnot oop#class#get('Class'))
-endfunction
-
-function! oop#inspect(value)
-  if oop#is_object(a:value)
-    return a:value.inspect()
-  else
-    return s:safe_dump(a:value)
-  endif
-endfunction
-
-function! oop#string(value)
-  if oop#is_object(a:value)
+function! {s:oop}#string(value)
+  if has_key(a:value, '__name__')
+    return a:value.__name__
+  elseif {s:oop}#is_object(a:value)
+    " TODO
     return a:value.to_s()
   else
     return s:safe_dump(a:value)
@@ -89,14 +68,10 @@ endfunction
 function! s:_safe_dump(value)
   let value_type = type(a:value)
   if value_type == type({}) || value_type == type([])
-    return map(copy(a:value), 'oop#is_object(v:val) ? v:val.to_s() : s:_safe_dump(v:val)')
+    return map(copy(a:value), '{s:oop}#is_object(v:val) ? v:val.to_s() : s:_safe_dump(v:val)')
   else
     return a:value
   endif
 endfunction
-
-if !s:initialized
-  call oop#_initialize()
-endif
 
 " vim: filetype=vim
