@@ -41,7 +41,7 @@ let s:oop = expand('<sfile>:p:h:gs?[\\/]?#?:s?^.*#autoload#??')
 " path#to#oop#module#new( {name}, {sid})
 "
 " Creates a new module. The second argument must be the SID prefix of the
-" script where the class is defined.
+" script where the module is defined.
 "
 "   function! s:get_SID()
 "     return matchstr(expand('<sfile>'), '<SNR>\d\+_')
