@@ -100,6 +100,15 @@ function! tc.Class_ancestors_should_return_List_of_ancestors()
   call assert#equal(s:Baz.ancestors(1), [s:Baz, s:Bar, s:Foo])
 endfunction
 
+" Class#is_descendant_of()
+function! tc.Bar_should_be_descendant_of_Foo()
+  call assert#_(s:Bar.is_descendant_of(s:Foo))
+endfunction
+
+function! tc.Bar_should_not_be_descendant_of_Bar()
+  call assert#not(s:Bar.is_descendant_of(s:Baz))
+endfunction
+
 " Class#class_method()
 function! tc.Class_class_method_should_bind_Funcref_as_class_method()
   call assert#is_Funcref(s:Foo.hello)

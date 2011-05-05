@@ -94,6 +94,21 @@ function! s:Class_ancestors(...) dict
 endfunction
 let s:Class.ancestors = function(s:SID . 'Class_ancestors')
 
+" Returns True if the class is a descendant of {class}.
+"
+"   if s:Bar.is_descendant_of(s:Foo)
+"   endif
+"
+function! s:Class_is_descendant_of(class) dict
+  for klass in self.ancestors()
+    if klass is a:class
+      return 1
+    endif
+  endfor
+  return 0
+endfunction
+let s:Class.is_descendant_of = function(s:SID . 'Class_is_descendant_of')
+
 " Binds a function to a class Dictionary as a class method of the class. The
 " name of the function to be bound must be prefixed by the class name followed
 " by one underscore. This convention helps you to distinguish method functions
@@ -244,7 +259,7 @@ let s:Instance.initialize = function(s:SID . 'Instance_initialize')
 "   if foo.is_a(s:Foo)
 "   endif
 "
-function! s:Instance_is_a(class) dict
+function! s:Instance_is_kind_of(class) dict
   for klass in self.__class__.ancestors(1)
     if klass is a:class
       return 1
@@ -252,6 +267,7 @@ function! s:Instance_is_a(class) dict
   endfor
   return 0
 endfunction
-let s:Instance.is_a = function(s:SID . 'Instance_is_a')
+let s:Instance.is_kind_of = function(s:SID . 'Instance_is_kind_of')
+let s:Instance.is_a = function(s:SID . 'Instance_is_kind_of')
 
 " vim: filetype=vim
