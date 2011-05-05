@@ -63,7 +63,7 @@ function! {s:oop}#class#new(name, sid, ...)
   let class.__prototype__ = copy(s:Instance)
   let class.__superclass__ = (a:0 ? a:1 : {})
   " inherit methods from superclasses
-  for klass in class.__ancestors__()
+  for klass in class.ancestors()
     call extend(class, klass, 'keep')
     call extend(class.__prototype__, klass.__prototype__, 'keep')
   endfor
@@ -84,19 +84,18 @@ let s:Class = {
 " Returns a List of ancestor classes.
 function! s:Class_ancestors(...) dict
   let inclusive = (a:0 ? a:1 : 0)
-  let __ancestors__ = []
+  let ancestors = []
   let klass = (inclusive ? self : self.__superclass__)
   while !empty(klass)
-    call add(__ancestors__, klass)
+    call add(ancestors, klass)
     let klass = klass.__superclass__
   endwhile
-  return __ancestors__
+  return ancestors
 endfunction
-let s:Class.__ancestors__ = function(s:SID . 'Class_ancestors')
-let s:Class.ancestors = s:Class.__ancestors__
+let s:Class.ancestors = function(s:SID . 'Class_ancestors')
 
 " Binds a function to a class Dictionary as a class method of the class. The
-" name of a function to be bound must be prefixed by the class name followed
+" name of the function to be bound must be prefixed by the class name followed
 " by one underscore. This convention helps you to distinguish method functions
 " from other functions.
 "
@@ -115,9 +114,9 @@ let s:Class.__class_bind__ = function(s:SID . 'Class_class_bind')
 let s:Class.class_method = s:Class.__class_bind__ | " syntax sugar
 
 " Binds a function to a class prototype Dictionary as an instance method of
-" the class. The name of a function to be bound must be prefixed by the class
-" name followed by one underscore. This convention helps you to distinguish
-" method functions from other functions.
+" the class. The name of the function to be bound must be prefixed by the
+" class name followed by one underscore. This convention helps you to
+" distinguish method functions from other functions.
 "
 "   function! s:Foo_hello()
 "   endfunction
@@ -145,8 +144,7 @@ function! s:Class_class_alias(alias, method_name) dict
     throw "oop: " . self.__name__ . "." . a:method_name . "() is not defined."
   endif
 endfunction
-let s:Class.__class_alias__ = function(s:SID . 'Class_class_alias')
-let s:Class.class_alias = s:Class.__class_alias__
+let s:Class.class_alias = function(s:SID . 'Class_class_alias')
 
 " Defines an alias of an instance method.
 "
@@ -160,8 +158,7 @@ function! s:Class_alias(alias, method_name) dict
     throw "oop: " . self.__name__ . "#" . a:method_name . "() is not defined."
   endif
 endfunction
-let s:Class.__alias__ = function(s:SID . 'Class_alias')
-let s:Class.alias = s:Class.__alias__
+let s:Class.alias = function(s:SID . 'Class_alias')
 
 " Class#super( {method_name}, {self}  [, args...])
 "
@@ -182,7 +179,7 @@ function! s:Class_super(method_name, _self, ...) dict
   endif
   let has_impl = (has_key(slf_table, a:method_name) &&
         \ type(slf_table[a:method_name]) == type(function('tr')))
-  for klass in self.__ancestors__()
+  for klass in self.ancestors()
     if is_class
       let kls_table = klass
     else
@@ -203,8 +200,7 @@ function! s:Class_super(method_name, _self, ...) dict
   throw "oop: " . self.__name__ . sep .
         \ a:method_name . "()'s super implementation was not found."
 endfunction
-let s:Class.__super__ = function(s:SID . 'Class_super')
-let s:Class.super = s:Class.__super__
+let s:Class.super = function(s:SID . 'Class_super')
 
 " Instantiates an object.
 "
@@ -216,8 +212,7 @@ function! s:Class_new(...) dict
   call call(obj.initialize, a:000, obj)
   return obj
 endfunction
-let s:Class.__new__ = function(s:SID . 'Class_new')
-let s:Class.new = s:Class.__new__
+let s:Class.new = function(s:SID . 'Class_new')
 
 "-----------------------------------------------------------------------------
 " Instance
@@ -228,7 +223,7 @@ let s:Instance = {
       \ }
 
 " Initializes an object. This method will be called for each newly created
-" object as a part of the instanciation process. User-defined classes should
+" object as a part of its instanciation process. User-defined classes should
 " override this method for their specific initialization.
 "
 "   let s:Foo = path#to#oop#class#new('Foo')
@@ -243,14 +238,14 @@ function! s:Instance_initialize(...) dict
 endfunction
 let s:Instance.initialize = function(s:SID . 'Instance_initialize')
 
-" Returns True if the object is an instance of {class} or one of its ancestor
-" classes.
+" Returns True if the object is an instance of {class} or one of its
+" ancestors.
 "
 "   if foo.is_a(s:Foo)
 "   endif
 "
 function! s:Instance_is_a(class) dict
-  for klass in self.__class__.__ancestors__(1)
+  for klass in self.__class__.ancestors(1)
     if klass is a:class
       return 1
     endif

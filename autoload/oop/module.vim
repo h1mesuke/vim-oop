@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-05-04
+" Updated : 2011-05-05
 " Version : 0.2.0
 " License : MIT license {{{
 "
@@ -73,7 +73,7 @@ let s:Module = {
       \ }
 
 " Binds a function to a module Dictionary as a module function. The name of
-" a function to be bound must be prefixed by the module name followed by one
+" the function to be bound must be prefixed by the module name followed by one
 " underscore. This convention helps you to distinguish module functions from
 " other functions.
 "
@@ -104,7 +104,6 @@ function! s:Module_alias(alias, method_name) dict
     throw "oop: " . self.__name__ . "." . a:method_name . "() is not defined."
   endif
 endfunction
-let s:Module.__alias__ = function(s:SID . 'Module_alias')
-let s:Module.alias = s:Module.__alias__
+let s:Module.alias = function(s:SID . 'Module_alias')
 
 " vim: filetype=vim
