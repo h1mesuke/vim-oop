@@ -20,6 +20,11 @@ endfunction
 call s:Fizz.function('hello')
 call s:Fizz.alias('hi', 'hello')
 
+function! s:Fizz_hello_cn() dict
+  return "Fizz's nihao"
+endfunction
+call s:Fizz.function('hello_cn', 'nihao')
+
 "-----------------------------------------------------------------------------
 " Tests
 
@@ -31,6 +36,13 @@ let tc = unittest#testcase#new('test_module')
 " Module#function()
 function! tc.Module_function_should_bind_Funcref_as_module_function()
   call assert#equal("Fizz", s:Fizz.hello())
+endfunction
+
+function! tc.Module_function_should_bind_Funcref_as_module_function_with_given_name()
+  call assert#is_Funcref(s:Fizz.nihao)
+  call assert#equal("Fizz's nihao", s:Fizz.nihao())
+
+  call assert#not(has_key(s:Fizz, 'hello_cn'))
 endfunction
 
 " Module#alias()
