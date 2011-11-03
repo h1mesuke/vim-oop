@@ -200,45 +200,37 @@ function! s:Class_alias(alias, meth_name) dict
 endfunction
 let s:Class.alias = function(s:SID . 'Class_alias')
 
-" Class#super( {method_name}, {self}  [, args...])
+" Class#super( {meth_name}, {args}, {self})
 "
 " Calls the superclass's implementation of a method.
 "
 "   function! s:Bar_hello() dict
-"     return 'Bar < ' . s:Bar.super('hello', self)
+"     return 'Bar < ' . s:Bar.super('hello', [], self)
 "   endfunction
 "   call s:Bar.class_method('hello')
 "   call s:Bar.method('hello')
 "
-function! s:Class_super(method_name, _self, ...) dict
+function! s:Class_super(meth_name, args, _self) dict
   let is_class = {s:oop}#is_class(a:_self)
-  if is_class
-    let self_m_table = self
-  else
-    let self_m_table = self.__prototype__
-  endif
-  let has_impl = (has_key(self_m_table, a:method_name) &&
-        \ type(self_m_table[a:method_name]) == type(function('tr')))
+  let meth_table = (is_class ? self : self.__prototype__)
+
+  let has_impl = (has_key(meth_table, a:meth_name) &&
+        \ type(meth_table[a:meth_name]) == s:TYPE_FUNC)
+
   for klass in self.ancestors()
-    if is_class
-      let klass_m_table = klass
-    else
-      let klass_m_table = klass.__prototype__
-    endif
-    if has_key(klass_m_table, a:method_name)
-      if type(klass_m_table[a:method_name]) != type(function('tr'))
+      let kls_meth_table = (is_class ? klass : klass.__prototype__)
+    if has_key(kls_meth_table, a:meth_name)
+      if type(kls_meth_table[a:meth_name]) != s:TYPE_FUNC
         let sep = (is_class ? '.' : '#')
-        throw "vim-oop: " . klass.__name__ . sep .
-              \ a:method_name . " is not a method."
-      elseif !has_impl ||
-            \ (has_impl && self_m_table[a:method_name] != klass_m_table[a:method_name])
-        return call(klass_m_table[a:method_name], a:000, a:_self)
+        throw "vim-oop: " . klass.__name__ . sep . a:meth_name . " is not a method."
+      elseif !has_impl || (has_impl && meth_table[a:meth_name] != kls_meth_table[a:meth_name])
+        return call(kls_meth_table[a:meth_name], a:args, a:_self)
       endif
     endif
   endfor
   let sep = (is_class ? '.' : '#')
   throw "vim-oop: " . self.__name__ . sep .
-        \ a:method_name . "()'s super implementation was not found."
+        \ a:meth_name . "()'s super implementation was not found."
 endfunction
 let s:Class.super = function(s:SID . 'Class_super')
 

@@ -46,7 +46,7 @@ call s:Foo.method('hello_cn', 'nihao')
 let s:Bar = oop#class#new('Bar', s:SID, s:Foo)
 
 function! s:Bar_hello() dict
-  return "Bar's hello < " . s:Bar.super('hello', self)
+  return "Bar's hello < " . s:Bar.super('hello', [], self)
 endfunction
 call s:Bar.class_method('hello')
 call s:Bar.method('hello')
@@ -57,13 +57,13 @@ call s:Bar.method('hello')
 let s:Baz = oop#class#new('Baz', s:SID, s:Bar)
 
 function! s:Baz_hello() dict
-  return "Baz's hello < " . s:Baz.super('hello', self)
+  return "Baz's hello < " . s:Baz.super('hello', [], self)
 endfunction
 call s:Baz.class_method('hello')
 call s:Baz.method('hello')
 
 function! s:Baz_bonjour() dict
-  return "Baz's bonjour < " . s:Baz.super('bonjour', self)
+  return "Baz's bonjour < " . s:Baz.super('bonjour', [], self)
 endfunction
 call s:Baz.class_method('bonjour')
 call s:Baz.method('bonjour')
@@ -197,19 +197,19 @@ endfunction
 
 function! tc.Class_super_should_raise_if_not_method()
   call assert#raise('^vim-oop: ', '
-        \ call unittest#testcase().Baz.super("__superclass__", unittest#testcase().Baz)
+        \ call unittest#testcase().Baz.super("__superclass__", [], unittest#testcase().Baz)
         \ ')
   call assert#raise('^vim-oop: ', '
-        \ call unittest#testcase().Baz.super("__class__", unittest#testcase().baz)
+        \ call unittest#testcase().Baz.super("__class__", [], unittest#testcase().baz)
         \ ')
 endfunction
 
 function! tc.Class_super_should_raise_if_no_super_impl()
   call assert#raise('^vim-oop: ', '
-        \ call unittest#testcase().Baz.super("bonjour", unittest#testcase().Baz)
+        \ call unittest#testcase().Baz.super("bonjour", [], unittest#testcase().Baz)
         \ ')
   call assert#raise('^vim-oop: ', '
-        \ call unittest#testcase().Baz.super("bonjour", unittest#testcase().baz)
+        \ call unittest#testcase().Baz.super("bonjour", [], unittest#testcase().baz)
         \ ')
 endfunction
 
