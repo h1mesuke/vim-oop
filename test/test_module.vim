@@ -15,7 +15,7 @@ delfunction s:get_SID
 let s:Fizz = oop#module#new('Fizz', s:SID)
 
 function! s:Fizz_hello() dict
-  return "Fizz"
+  return "Fizz's hello"
 endfunction
 call s:Fizz.function('hello')
 call s:Fizz.alias('hi', 'hello')
@@ -35,7 +35,8 @@ let tc = unittest#testcase#new('test_module')
 
 " Module#function()
 function! tc.Module_function_should_bind_Funcref_as_module_function()
-  call assert#equal("Fizz", s:Fizz.hello())
+  call assert#is_Funcref(s:Fizz.hello)
+  call assert#equal("Fizz's hello", s:Fizz.hello())
 endfunction
 
 function! tc.Module_function_should_bind_Funcref_as_module_function_with_given_name()
@@ -62,8 +63,7 @@ endfunction
 
 " oop#string()
 function! tc.test_oop_string()
-  call self.puts()
-  call self.puts(oop#string(s:Fizz))
+  call assert#equal('<Module: Fizz>', oop#string(s:Fizz))
 endfunction
 
 unlet tc

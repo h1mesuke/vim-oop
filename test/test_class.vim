@@ -20,7 +20,7 @@ endfunction
 call s:Foo.method('initialize')
 
 function! s:Foo_hello() dict
-  return "Foo"
+  return "Foo's hello"
 endfunction
 call s:Foo.class_method('hello')
 call s:Foo.method('hello')
@@ -29,7 +29,7 @@ call s:Foo.class_alias('hi', 'hello')
 call s:Foo.alias('hi', 'hello')
 
 function! s:Foo_ciao() dict
-  return "Foo"
+  return "Foo's ciao"
 endfunction
 call s:Foo.class_method('ciao')
 call s:Foo.method('ciao')
@@ -46,7 +46,7 @@ call s:Foo.method('hello_cn', 'nihao')
 let s:Bar = oop#class#new('Bar', s:SID, s:Foo)
 
 function! s:Bar_hello() dict
-  return "Bar < " . s:Bar.super('hello', self)
+  return "Bar's hello < " . s:Bar.super('hello', self)
 endfunction
 call s:Bar.class_method('hello')
 call s:Bar.method('hello')
@@ -57,13 +57,13 @@ call s:Bar.method('hello')
 let s:Baz = oop#class#new('Baz', s:SID, s:Bar)
 
 function! s:Baz_hello() dict
-  return "Baz < " . s:Baz.super('hello', self)
+  return "Baz's hello < " . s:Baz.super('hello', self)
 endfunction
 call s:Baz.class_method('hello')
 call s:Baz.method('hello')
 
 function! s:Baz_bonjour() dict
-  return "Baz < " . s:Baz.super('bonjour', self)
+  return "Baz's bonjour < " . s:Baz.super('bonjour', self)
 endfunction
 call s:Baz.class_method('bonjour')
 call s:Baz.method('bonjour')
@@ -77,6 +77,7 @@ call s:Baz.method('bonjour')
 let s:Fizz = oop#module#new('Fizz', s:SID)
 
 function! s:Fizz_is_extended() dict
+  return 1
 endfunction
 call s:Fizz.function('is_extended')
 
@@ -100,26 +101,27 @@ endfunction
 
 " oop#class#new()
 function! tc.class_methods_should_be_inherited()
-  call assert#equal("Foo", s:Bar.ciao())
-  call assert#equal("Foo", s:Baz.ciao())
+  call assert#equal("Foo's ciao", s:Bar.ciao())
+  call assert#equal("Foo's ciao", s:Baz.ciao())
 endfunction
 
 function! tc.instance_methods_should_be_inherited()
-  call assert#equal("Foo", self.bar.ciao())
-  call assert#equal("Foo", self.baz.ciao())
+  call assert#equal("Foo's ciao", self.bar.ciao())
+  call assert#equal("Foo's ciao", self.baz.ciao())
 endfunction
 
 " Class#extend()
-function! tc.Class_extend_should_add_module_funcs_as_class_methods()
+function! tc.Class_extend_should_add_module_functions_as_class_methods()
   call assert#not(has_key(s:Foo, 'is_extended'))
 
   call s:Foo.extend(s:Fizz)
 
   call assert#_(has_key(s:Foo, 'is_extended'))
+  call assert#is_Funcref(s:Foo.is_extended)
 endfunction
 
 " Class#include()
-function! tc.Class_include_should_add_module_funcs_as_instance_methods()
+function! tc.Class_include_should_add_module_functions_as_instance_methods()
   let foo = s:Foo.new()
   call assert#not(has_key(foo, 'is_extended'))
 
@@ -127,6 +129,7 @@ function! tc.Class_include_should_add_module_funcs_as_instance_methods()
 
   let foo = s:Foo.new()
   call assert#_(has_key(foo, 'is_extended'))
+  call assert#is_Funcref(foo.is_extended)
 endfunction
 
 " Class#ancestors()
@@ -150,7 +153,7 @@ endfunction
 " Class#class_method()
 function! tc.Class_class_method_should_bind_Funcref_as_class_method()
   call assert#is_Funcref(s:Foo.hello)
-  call assert#equal("Foo", s:Foo.hello())
+  call assert#equal("Foo's hello", s:Foo.hello())
 endfunction
 
 function! tc.Class_class_method_should_bind_Funcref_as_class_method_with_given_name()
@@ -163,7 +166,7 @@ endfunction
 " Class#method()
 function! tc.Class_method_should_bind_Funcref_as_instance_method()
   call assert#is_Funcref(self.foo.hello)
-  call assert#equal("Foo", self.foo.hello())
+  call assert#equal("Foo's hello", self.foo.hello())
 endfunction
 
 function! tc.Class_method_should_bind_Funcref_as_instance_method_with_given_name()
@@ -185,11 +188,11 @@ endfunction
 
 " Class#super()
 function! tc.Class_super_should_call_super_impl()
-  call assert#equal('Bar < Foo',       s:Bar.hello())
-  call assert#equal('Baz < Bar < Foo', s:Baz.hello())
+  call assert#equal("Bar's hello < Foo's hello", s:Bar.hello())
+  call assert#equal("Baz's hello < Bar's hello < Foo's hello", s:Baz.hello())
 
-  call assert#equal('Bar < Foo',       self.bar.hello())
-  call assert#equal('Baz < Bar < Foo', self.baz.hello())
+  call assert#equal("Bar's hello < Foo's hello", self.bar.hello())
+  call assert#equal("Baz's hello < Bar's hello < Foo's hello", self.baz.hello())
 endfunction
 
 function! tc.Class_super_should_raise_if_not_method()
@@ -253,9 +256,13 @@ endfunction
 
 " oop#string()
 function! tc.test_oop_string()
-  call self.puts()
-  call self.puts(oop#string(s:Foo))
-  call self.puts(oop#string(self.foo))
+  call assert#equal('<Class: Foo>', oop#string(s:Foo))
+  call assert#equal("{'initialized': 1, '__class__': '<Class: Foo>'}", oop#string(self.foo))
+
+  call assert#equal(string(10), oop#string(10))
+  call assert#equal(string("String"), oop#string("String"))
+  call assert#equal(string([1, 2, 3]), oop#string([1, 2, 3]))
+  call assert#equal(string({'a': 1, 'b': 2}), oop#string({'a': 1, 'b': 2}))
 endfunction
 
 unlet tc
