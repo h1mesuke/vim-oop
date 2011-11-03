@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-11-03
+" Updated : 2011-11-04
 " Version : 0.2.0
 " License : MIT license {{{
 "
@@ -97,12 +97,12 @@ let s:Module.function = s:Module.__bind__ | " syntax sugar
 "
 "   call s:Fizz.alias('hi', 'hello')
 "
-function! s:Module_alias(alias, method_name) dict
-  if has_key(self, a:method_name) &&
-        \ type(self[a:method_name]) == type(function('tr'))
-    let self[a:alias] = self[a:method_name]
+function! s:Module_alias(alias, meth_name) dict
+  if has_key(self, a:meth_name) &&
+        \ type(self[a:meth_name]) == type(function('tr'))
+    let self[a:alias] = self[a:meth_name]
   else
-    throw "vim-oop: " . self.__name__ . "." . a:method_name . "() is not defined."
+    throw "vim-oop: " . self.__name__ . "." . a:meth_name . "() is not defined."
   endif
 endfunction
 let s:Module.alias = function(s:SID . 'Module_alias')

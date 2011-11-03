@@ -35,6 +35,8 @@
 let s:oop = expand('<sfile>:p:h:gs?[\\/]?#?:s?^.*#autoload#??')
 " => path#to#oop
 
+let s:TYPE_FUNC = type(function('tr'))
+
 "-----------------------------------------------------------------------------
 " Class
 
@@ -86,8 +88,7 @@ let s:Class = {
 "   s:Foo.extend(s:Fizz)
 "
 function! s:Class_extend(module) dict
-  let type_func = type(function('tr'))
-  let funcs = filter(copy(a:module), 'type(v:val) == type_func')
+  let funcs = filter(copy(a:module), 'type(v:val) == s:TYPE_FUNC')
   call extend(self, funcs, 'keep')
 endfunction
 let s:Class.extend = function(s:SID . 'Class_extend')
@@ -97,8 +98,7 @@ let s:Class.extend = function(s:SID . 'Class_extend')
 "   s:Foo.include(s:Fizz)
 "
 function! s:Class_include(module) dict
-  let type_func = type(function('tr'))
-  let funcs = filter(copy(a:module), 'type(v:val) == type_func')
+  let funcs = filter(copy(a:module), 'type(v:val) == s:TYPE_FUNC')
   call extend(self.__prototype__, funcs, 'keep')
 endfunction
 let s:Class.include = function(s:SID . 'Class_include')
@@ -176,12 +176,12 @@ let s:Class.method = s:Class.__bind__ | " syntax sugar
 "
 "   call s:Foo.class_alias('hi', 'hello')
 "
-function! s:Class_class_alias(alias, method_name) dict
-  if has_key(self, a:method_name) &&
-        \ type(self[a:method_name]) == type(function('tr'))
-    let self[a:alias] = self[a:method_name]
+function! s:Class_class_alias(alias, meth_name) dict
+  if has_key(self, a:meth_name) &&
+        \ type(self[a:meth_name]) == s:TYPE_FUNC
+    let self[a:alias] = self[a:meth_name]
   else
-    throw "vim-oop: " . self.__name__ . "." . a:method_name . "() is not defined."
+    throw "vim-oop: " . self.__name__ . "." . a:meth_name . "() is not defined."
   endif
 endfunction
 let s:Class.class_alias = function(s:SID . 'Class_class_alias')
@@ -190,12 +190,12 @@ let s:Class.class_alias = function(s:SID . 'Class_class_alias')
 "
 "   call s:Foo.alias('hi', 'hello')
 "
-function! s:Class_alias(alias, method_name) dict
-  if has_key(self.__prototype__, a:method_name) &&
-        \ type(self.__prototype__[a:method_name]) == type(function('tr'))
-    let self.__prototype__[a:alias] = self.__prototype__[a:method_name]
+function! s:Class_alias(alias, meth_name) dict
+  if has_key(self.__prototype__, a:meth_name) &&
+        \ type(self.__prototype__[a:meth_name]) == s:TYPE_FUNC
+    let self.__prototype__[a:alias] = self.__prototype__[a:meth_name]
   else
-    throw "vim-oop: " . self.__name__ . "#" . a:method_name . "() is not defined."
+    throw "vim-oop: " . self.__name__ . "#" . a:meth_name . "() is not defined."
   endif
 endfunction
 let s:Class.alias = function(s:SID . 'Class_alias')
