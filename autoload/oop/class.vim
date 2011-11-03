@@ -62,7 +62,7 @@ function! {s:oop}#class#new(name, sid, ...)
   " => <SNR>10_Foo_
   let class.__prototype__ = copy(s:Instance)
   let class.__superclass__ = (a:0 ? a:1 : {})
-  " inherit methods from superclasses
+  " Inherit methods from superclasses.
   for klass in class.ancestors()
     call extend(class, klass, 'keep')
     call extend(class.__prototype__, klass.__prototype__, 'keep')
@@ -196,7 +196,7 @@ let s:Class.alias = function(s:SID . 'Class_alias')
 
 " Class#super( {method_name}, {self}  [, args...])
 "
-" Calls the super implementation of a method.
+" Calls the superclass's implementation of a method.
 "
 "   function! s:Bar_hello() dict
 "     return 'Bar < ' . s:Bar.super('hello', self)
