@@ -86,8 +86,9 @@ let s:Module = {
 "
 "   call s:Fizz.hello()
 "
-function! s:Module_bind(func_name) dict
-  let self[a:func_name] = function(self.__prefix__  . a:func_name)
+function! s:Module_bind(func_name, ...) dict
+  let mfunc_name = (a:0 ? a:1 : a:func_name)
+  let self[mfunc_name] = function(self.__prefix__  . a:func_name)
 endfunction
 let s:Module.__bind__ = function(s:SID . 'Module_bind')
 let s:Module.function = s:Module.__bind__ | " syntax sugar
