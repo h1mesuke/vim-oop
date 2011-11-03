@@ -141,8 +141,9 @@ let s:Class.is_descendant_of = function(s:SID . 'Class_is_descendant_of')
 "
 "   call Foo.hello()
 "
-function! s:Class_class_bind(func_name) dict
-  let self[a:func_name] = function(self.__prefix__  . a:func_name)
+function! s:Class_class_bind(func_name, ...) dict
+  let meth_name = (a:0 ? a:1 : a:func_name)
+  let self[meth_name] = function(self.__prefix__  . a:func_name)
 endfunction
 let s:Class.__class_bind__ = function(s:SID . 'Class_class_bind')
 let s:Class.class_method = s:Class.__class_bind__ | " syntax sugar
@@ -160,8 +161,9 @@ let s:Class.class_method = s:Class.__class_bind__ | " syntax sugar
 "
 "   call foo.hello()
 "
-function! s:Class_bind(func_name) dict
-  let self.__prototype__[a:func_name] = function(self.__prefix__  . a:func_name)
+function! s:Class_bind(func_name, ...) dict
+  let meth_name = (a:0 ? a:1 : a:func_name)
+  let self.__prototype__[meth_name] = function(self.__prefix__  . a:func_name)
 endfunction
 let s:Class.__bind__ = function(s:SID . 'Class_bind')
 let s:Class.method = s:Class.__bind__ | " syntax sugar
