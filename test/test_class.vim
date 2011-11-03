@@ -63,6 +63,18 @@ call s:Baz.class_method('bonjour')
 call s:Baz.method('bonjour')
 
 "-----------------------------------------------------------------------------
+" Module
+
+"---------------------------------------
+" Fizz
+
+let s:Fizz = oop#module#new('Fizz', s:SID)
+
+function! s:Fizz_is_extended() dict
+endfunction
+call s:Fizz.function('is_extended')
+
+"-----------------------------------------------------------------------------
 " Tests
 
 " h1mesuke/vim-unittest - GitHub
@@ -89,6 +101,26 @@ endfunction
 function! tc.instance_methods_should_be_inherited()
   call assert#equal("Foo", self.bar.ciao())
   call assert#equal("Foo", self.baz.ciao())
+endfunction
+
+" Class#extend()
+function! tc.Class_extend_should_add_module_funcs_as_class_methods()
+  call assert#not(has_key(s:Foo, 'is_extended'))
+
+  call s:Foo.extend(s:Fizz)
+
+  call assert#_(has_key(s:Foo, 'is_extended'))
+endfunction
+
+" Class#include()
+function! tc.Class_include_should_add_module_funcs_as_instance_methods()
+  let foo = s:Foo.new()
+  call assert#not(has_key(foo, 'is_extended'))
+
+  call s:Foo.include(s:Fizz)
+
+  let foo = s:Foo.new()
+  call assert#_(has_key(foo, 'is_extended'))
 endfunction
 
 " Class#ancestors()
