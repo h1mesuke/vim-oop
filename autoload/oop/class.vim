@@ -81,6 +81,24 @@ let s:Class = {
       \ '__type_Class__' : 1,
       \ }
 
+" Adds {module}'s functions to the class as class methods.
+"
+"   s:Foo.extend(s:Fizz)
+"
+function! s:Class_extend(module) dict
+  call extend(self, a:module, 'keep')
+endfunction
+let s:Class.extend = function(s:SID . 'Class_extend')
+
+" Adds {module}'s functions to the class as instance methods.
+"
+"   s:Foo.include(s:Fizz)
+"
+function! s:Class_include(module) dict
+  call extend(self.__prototype__, a:module, 'keep')
+endfunction
+let s:Class.include = function(s:SID . 'Class_include')
+
 " Returns a List of ancestor classes.
 "
 function! s:Class_ancestors(...) dict
