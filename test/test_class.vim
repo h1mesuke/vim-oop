@@ -34,6 +34,12 @@ endfunction
 call s:Foo.class_method('ciao')
 call s:Foo.method('ciao')
 
+function! s:Foo_hello_cn() dict
+  return "Foo's nihao"
+endfunction
+call s:Foo.class_method('hello_cn', 'nihao')
+call s:Foo.method('hello_cn', 'nihao')
+
 "---------------------------------------
 " Bar < Foo
 
@@ -147,10 +153,24 @@ function! tc.Class_class_method_should_bind_Funcref_as_class_method()
   call assert#equal("Foo", s:Foo.hello())
 endfunction
 
+function! tc.Class_class_method_should_bind_Funcref_as_class_method_with_given_name()
+  call assert#is_Funcref(s:Foo.nihao)
+  call assert#equal("Foo's nihao", s:Foo.nihao())
+
+  call assert#not(has_key(s:Foo, 'hello_cn'))
+endfunction
+
 " Class#method()
 function! tc.Class_method_should_bind_Funcref_as_instance_method()
   call assert#is_Funcref(self.foo.hello)
   call assert#equal("Foo", self.foo.hello())
+endfunction
+
+function! tc.Class_method_should_bind_Funcref_as_instance_method_with_given_name()
+  call assert#is_Funcref(self.foo.nihao)
+  call assert#equal("Foo's nihao", self.foo.nihao())
+
+  call assert#not(has_key(self.foo, 'hello_cn'))
 endfunction
 
 " Class#class_alias()
