@@ -141,19 +141,19 @@ function! tc.Class_super_should_call_super_impl()
 endfunction
 
 function! tc.Class_super_should_raise_if_not_method()
-  call assert#raise('^oop: ', '
+  call assert#raise('^vim-oop: ', '
         \ call unittest#testcase().Baz.super("__superclass__", unittest#testcase().Baz)
         \ ')
-  call assert#raise('^oop: ', '
+  call assert#raise('^vim-oop: ', '
         \ call unittest#testcase().Baz.super("__class__", unittest#testcase().baz)
         \ ')
 endfunction
 
 function! tc.Class_super_should_raise_if_no_super_impl()
-  call assert#raise('^oop: ', '
+  call assert#raise('^vim-oop: ', '
         \ call unittest#testcase().Baz.super("bonjour", unittest#testcase().Baz)
         \ ')
-  call assert#raise('^oop: ', '
+  call assert#raise('^vim-oop: ', '
         \ call unittest#testcase().Baz.super("bonjour", unittest#testcase().baz)
         \ ')
 endfunction

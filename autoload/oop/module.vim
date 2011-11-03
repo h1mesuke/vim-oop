@@ -101,7 +101,7 @@ function! s:Module_alias(alias, method_name) dict
         \ type(self[a:method_name]) == type(function('tr'))
     let self[a:alias] = self[a:method_name]
   else
-    throw "oop: " . self.__name__ . "." . a:method_name . "() is not defined."
+    throw "vim-oop: " . self.__name__ . "." . a:method_name . "() is not defined."
   endif
 endfunction
 let s:Module.alias = function(s:SID . 'Module_alias')

@@ -157,7 +157,7 @@ function! s:Class_class_alias(alias, method_name) dict
         \ type(self[a:method_name]) == type(function('tr'))
     let self[a:alias] = self[a:method_name]
   else
-    throw "oop: " . self.__name__ . "." . a:method_name . "() is not defined."
+    throw "vim-oop: " . self.__name__ . "." . a:method_name . "() is not defined."
   endif
 endfunction
 let s:Class.class_alias = function(s:SID . 'Class_class_alias')
@@ -171,7 +171,7 @@ function! s:Class_alias(alias, method_name) dict
         \ type(self.__prototype__[a:method_name]) == type(function('tr'))
     let self.__prototype__[a:alias] = self.__prototype__[a:method_name]
   else
-    throw "oop: " . self.__name__ . "#" . a:method_name . "() is not defined."
+    throw "vim-oop: " . self.__name__ . "#" . a:method_name . "() is not defined."
   endif
 endfunction
 let s:Class.alias = function(s:SID . 'Class_alias')
@@ -204,7 +204,7 @@ function! s:Class_super(method_name, _self, ...) dict
     if has_key(klass_m_table, a:method_name)
       if type(klass_m_table[a:method_name]) != type(function('tr'))
         let sep = (is_class ? '.' : '#')
-        throw "oop: " . klass.__name__ . sep .
+        throw "vim-oop: " . klass.__name__ . sep .
               \ a:method_name . " is not a method."
       elseif !has_impl ||
             \ (has_impl && self_m_table[a:method_name] != klass_m_table[a:method_name])
@@ -213,7 +213,7 @@ function! s:Class_super(method_name, _self, ...) dict
     endif
   endfor
   let sep = (is_class ? '.' : '#')
-  throw "oop: " . self.__name__ . sep .
+  throw "vim-oop: " . self.__name__ . sep .
         \ a:method_name . "()'s super implementation was not found."
 endfunction
 let s:Class.super = function(s:SID . 'Class_super')
