@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-05-04
+" Updated : 2011-11-04
 " Version : 0.2.0
 " License : MIT license {{{
 "
@@ -35,25 +35,26 @@
 let s:oop = expand('<sfile>:p:r:gs?[\\/]?#?:s?^.*#autoload#??')
 " => path#to#oop
 
-function! {s:oop}#is_object(value)
-  return type(a:value) == type({}) && has_key(a:value, '__type_Object__')
-endfunction
-
-function! {s:oop}#is_class(value)
-  return type(a:value) == type({}) && has_key(a:value, '__type_Class__')
-endfunction
-
-function! {s:oop}#is_instance(value)
-  return type(a:value) == type({}) && has_key(a:value, '__type_Instance__')
-endfunction
-
-function! {s:oop}#is_module(value)
-  return type(a:value) == type({}) && has_key(a:value, '__type_Module__')
-endfunction
-
+let s:TYPE_STR  = type("")
 let s:TYPE_DICT = type({})
 let s:TYPE_LIST = type([])
 let s:TYPE_FUNC = type(function('tr'))
+
+function! {s:oop}#is_object(value)
+  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__type_Object__')
+endfunction
+
+function! {s:oop}#is_class(value)
+  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__type_Class__')
+endfunction
+
+function! {s:oop}#is_instance(value)
+  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__type_Instance__')
+endfunction
+
+function! {s:oop}#is_module(value)
+  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__type_Module__')
+endfunction
 
 function! {s:oop}#string(value)
   return string(s:dump_copy(a:value))
