@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-11-03
+" Updated : 2011-11-04
 " Version : 0.2.0
 " License : MIT license {{{
 "
@@ -86,7 +86,9 @@ let s:Class = {
 "   s:Foo.extend(s:Fizz)
 "
 function! s:Class_extend(module) dict
-  call extend(self, a:module, 'keep')
+  let type_func = type(function('tr'))
+  let funcs = filter(copy(a:module), 'type(v:val) == type_func')
+  call extend(self, funcs, 'keep')
 endfunction
 let s:Class.extend = function(s:SID . 'Class_extend')
 
@@ -95,7 +97,9 @@ let s:Class.extend = function(s:SID . 'Class_extend')
 "   s:Foo.include(s:Fizz)
 "
 function! s:Class_include(module) dict
-  call extend(self.__prototype__, a:module, 'keep')
+  let type_func = type(function('tr'))
+  let funcs = filter(copy(a:module), 'type(v:val) == type_func')
+  call extend(self.__prototype__, funcs, 'keep')
 endfunction
 let s:Class.include = function(s:SID . 'Class_include')
 
