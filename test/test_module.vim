@@ -31,15 +31,15 @@ call s:Fizz.function('hello_cn', 'nihao')
 " h1mesuke/vim-unittest - GitHub
 " https://github.com/h1mesuke/vim-unittest
 
-let tc = unittest#testcase#new('test_module')
+let s:tc = unittest#testcase#new('test_module')
 
 " Module#function()
-function! tc.Module_function_should_bind_Funcref_as_module_function()
+function! s:tc.Module_function_should_bind_Funcref_as_module_function()
   call self.assert_is_Funcref(s:Fizz.hello)
   call self.assert_equal("Fizz's hello", s:Fizz.hello())
 endfunction
 
-function! tc.Module_function_should_bind_Funcref_as_module_function_with_given_name()
+function! s:tc.Module_function_should_bind_Funcref_as_module_function_with_given_name()
   call self.assert_is_Funcref(s:Fizz.nihao)
   call self.assert_equal("Fizz's nihao", s:Fizz.nihao())
 
@@ -47,25 +47,25 @@ function! tc.Module_function_should_bind_Funcref_as_module_function_with_given_n
 endfunction
 
 " Module#alias()
-function! tc.Module_alias_should_define_alias_of_module_function()
+function! s:tc.Module_alias_should_define_alias_of_module_function()
   call self.assert_equal(s:Fizz.hello, s:Fizz.hi)
 endfunction
 
 " oop#is_object()
-function! tc.Fizz_should_be_Object()
+function! s:tc.Fizz_should_be_Object()
   call self.assert(oop#is_object(s:Fizz))
 endfunction
 
 " oop#is_module()
-function! tc.Fizz_should_be_Module()
+function! s:tc.Fizz_should_be_Module()
   call self.assert(oop#is_module(s:Fizz))
 endfunction
 
 " oop#string()
-function! tc.test_oop_string()
+function! s:tc.test_oop_string()
   call self.assert_equal('<Module: Fizz>', oop#string(s:Fizz))
 endfunction
 
-unlet tc
+unlet s:tc
 
 " vim: filetype=vim

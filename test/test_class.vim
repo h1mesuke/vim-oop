@@ -87,31 +87,31 @@ call s:Fizz.function('is_extended')
 " h1mesuke/vim-unittest - GitHub
 " https://github.com/h1mesuke/vim-unittest
 
-let tc = unittest#testcase#new('test_class')
+let s:tc = unittest#testcase#new('test_class')
 
-let tc.Foo = s:Foo
-let tc.Bar = s:Bar
-let tc.Baz = s:Baz
+let s:tc.Foo = s:Foo
+let s:tc.Bar = s:Bar
+let s:tc.Baz = s:Baz
 
-function! tc.setup()
+function! s:tc.setup()
   let self.foo = s:Foo.new()
   let self.bar = s:Bar.new()
   let self.baz = s:Baz.new()
 endfunction
 
 " oop#class#new()
-function! tc.class_methods_should_be_inherited()
+function! s:tc.class_methods_should_be_inherited()
   call self.assert_equal("Foo's ciao", s:Bar.ciao())
   call self.assert_equal("Foo's ciao", s:Baz.ciao())
 endfunction
 
-function! tc.instance_methods_should_be_inherited()
+function! s:tc.instance_methods_should_be_inherited()
   call self.assert_equal("Foo's ciao", self.bar.ciao())
   call self.assert_equal("Foo's ciao", self.baz.ciao())
 endfunction
 
 " Class#extend()
-function! tc.Class_extend_should_add_module_functions_as_class_methods()
+function! s:tc.Class_extend_should_add_module_functions_as_class_methods()
   call self.assert_not(has_key(s:Foo, 'is_extended'))
 
   call s:Foo.extend(s:Fizz)
@@ -121,7 +121,7 @@ function! tc.Class_extend_should_add_module_functions_as_class_methods()
 endfunction
 
 " Class#include()
-function! tc.Class_include_should_add_module_functions_as_instance_methods()
+function! s:tc.Class_include_should_add_module_functions_as_instance_methods()
   let foo = s:Foo.new()
   call self.assert_not(has_key(foo, 'is_extended'))
 
@@ -133,7 +133,7 @@ function! tc.Class_include_should_add_module_functions_as_instance_methods()
 endfunction
 
 " Class#ancestors()
-function! tc.Class_ancestors_should_return_List_of_ancestors()
+function! s:tc.Class_ancestors_should_return_List_of_ancestors()
   call self.assert_equal(s:Foo.ancestors(),  [])
   call self.assert_equal(s:Foo.ancestors(1), [s:Foo])
 
@@ -142,21 +142,21 @@ function! tc.Class_ancestors_should_return_List_of_ancestors()
 endfunction
 
 " Class#is_descendant_of()
-function! tc.Bar_should_be_descendant_of_Foo()
+function! s:tc.Bar_should_be_descendant_of_Foo()
   call self.assert(s:Bar.is_descendant_of(s:Foo))
 endfunction
 
-function! tc.Bar_should_not_be_descendant_of_Bar()
+function! s:tc.Bar_should_not_be_descendant_of_Bar()
   call self.assert_not(s:Bar.is_descendant_of(s:Baz))
 endfunction
 
 " Class#class_method()
-function! tc.Class_class_method_should_bind_Funcref_as_class_method()
+function! s:tc.Class_class_method_should_bind_Funcref_as_class_method()
   call self.assert_is_Funcref(s:Foo.hello)
   call self.assert_equal("Foo's hello", s:Foo.hello())
 endfunction
 
-function! tc.Class_class_method_should_bind_Funcref_as_class_method_with_given_name()
+function! s:tc.Class_class_method_should_bind_Funcref_as_class_method_with_given_name()
   call self.assert_is_Funcref(s:Foo.nihao)
   call self.assert_equal("Foo's nihao", s:Foo.nihao())
 
@@ -164,12 +164,12 @@ function! tc.Class_class_method_should_bind_Funcref_as_class_method_with_given_n
 endfunction
 
 " Class#method()
-function! tc.Class_method_should_bind_Funcref_as_instance_method()
+function! s:tc.Class_method_should_bind_Funcref_as_instance_method()
   call self.assert_is_Funcref(self.foo.hello)
   call self.assert_equal("Foo's hello", self.foo.hello())
 endfunction
 
-function! tc.Class_method_should_bind_Funcref_as_instance_method_with_given_name()
+function! s:tc.Class_method_should_bind_Funcref_as_instance_method_with_given_name()
   call self.assert_is_Funcref(self.foo.nihao)
   call self.assert_equal("Foo's nihao", self.foo.nihao())
 
@@ -177,17 +177,17 @@ function! tc.Class_method_should_bind_Funcref_as_instance_method_with_given_name
 endfunction
 
 " Class#class_alias()
-function! tc.Class_class_alias_should_define_alias_of_class_method()
+function! s:tc.Class_class_alias_should_define_alias_of_class_method()
   call self.assert_equal(s:Foo.hello, s:Foo.hi)
 endfunction
 
 " Class#alias()
-function! tc.Class_alias_should_define_alias_of_instance_method()
+function! s:tc.Class_alias_should_define_alias_of_instance_method()
   call self.assert_equal(self.foo.hello, self.foo.hi)
 endfunction
 
 " Class#super()
-function! tc.Class_super_should_call_super_impl()
+function! s:tc.Class_super_should_call_super_impl()
   call self.assert_equal("Bar's hello < Foo's hello", s:Bar.hello())
   call self.assert_equal("Baz's hello < Bar's hello < Foo's hello", s:Baz.hello())
 
@@ -195,7 +195,7 @@ function! tc.Class_super_should_call_super_impl()
   call self.assert_equal("Baz's hello < Bar's hello < Foo's hello", self.baz.hello())
 endfunction
 
-function! tc.Class_super_should_throw_if_not_method()
+function! s:tc.Class_super_should_throw_if_not_method()
   call self.assert_throw('^vim-oop: ', '
         \ call unittest#self().Baz.super("__superclass__", [], unittest#self().Baz)
         \ ')
@@ -204,7 +204,7 @@ function! tc.Class_super_should_throw_if_not_method()
         \ ')
 endfunction
 
-function! tc.Class_super_should_throw_if_no_super_impl()
+function! s:tc.Class_super_should_throw_if_no_super_impl()
   call self.assert_throw('^vim-oop: ', '
         \ call unittest#self().Baz.super("bonjour", [], unittest#self().Baz)
         \ ')
@@ -214,48 +214,48 @@ function! tc.Class_super_should_throw_if_no_super_impl()
 endfunction
 
 " Object#initialize()
-function! tc.instance_should_be_initialized()
+function! s:tc.instance_should_be_initialized()
   call self.assert(has_key(self.foo, 'initialized'))
 endfunction
 
 " Object#is_a()
-function! tc.foo_should_be_Foo()
+function! s:tc.foo_should_be_Foo()
   call self.assert(self.foo.is_a(s:Foo))
 endfunction
 
-function! tc.foo_should_not_be_Bar()
+function! s:tc.foo_should_not_be_Bar()
   call self.assert_not(self.foo.is_a(s:Bar))
 endfunction
 
 " oop#is_object()
-function! tc.Foo_should_be_Object()
+function! s:tc.Foo_should_be_Object()
   call self.assert(oop#is_object(s:Foo))
 endfunction
 
-function! tc.foo_should_be_Object()
+function! s:tc.foo_should_be_Object()
   call self.assert(oop#is_object(self.foo))
 endfunction
 
 " oop#is_class()
-function! tc.Foo_should_be_Class()
+function! s:tc.Foo_should_be_Class()
   call self.assert(oop#is_class(s:Foo))
 endfunction
 
-function! tc.foo_should_not_be_Class()
+function! s:tc.foo_should_not_be_Class()
   call self.assert_not(oop#is_class(self.foo))
 endfunction
 
 " oop#is_instance()
-function! tc.Foo_should_not_be_Instance()
+function! s:tc.Foo_should_not_be_Instance()
   call self.assert_not(oop#is_instance(s:Foo))
 endfunction
 
-function! tc.foo_should_be_Instance()
+function! s:tc.foo_should_be_Instance()
   call self.assert(oop#is_instance(self.foo))
 endfunction
 
 " oop#string()
-function! tc.test_oop_string()
+function! s:tc.test_oop_string()
   call self.assert_equal('<Class: Foo>', oop#string(s:Foo))
   call self.assert_equal("{'initialized': 1, '__class__': '<Class: Foo>'}", oop#string(self.foo))
 
@@ -265,6 +265,6 @@ function! tc.test_oop_string()
   call self.assert_equal(string({'a': 1, 'b': 2}), oop#string({'a': 1, 'b': 2}))
 endfunction
 
-unlet tc
+unlet s:tc
 
 " vim: filetype=vim
