@@ -67,5 +67,3 @@ function! s:tc.test_oop_string()
 endfunction
 
 unlet s:tc
-
-" vim: filetype=vim

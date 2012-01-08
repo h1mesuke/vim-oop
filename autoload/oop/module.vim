@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-12-28
+" Updated : 2012-01-08
 " Version : 0.2.1
 " License : MIT license {{{
 "
@@ -106,5 +106,3 @@ function! s:Module_alias(alias, meth_name) dict
   endif
 endfunction
 let s:Module.alias = function(s:SID . 'Module_alias')
-
-" vim: filetype=vim
