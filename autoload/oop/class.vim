@@ -37,10 +37,10 @@ let s:TYPE_FUNC = type(function('tr'))
 "-----------------------------------------------------------------------------
 " Class
 
-" path#to#oop#class#new( {name}, {sid} [, {superclass}])
+" oop#class#new( {name}, {sid} [, {superclass}])
 "
-" Creates a new class. The second argument must be the SID prefix of the
-" script where the class is defined.
+" Creates a new class. The second argument must be the SID number or prefix of
+" the script where the class is defined.
 "
 "   function! s:get_SID()
 "     return matchstr(expand('<sfile>'), '<SNR>\d\+_')
@@ -48,17 +48,17 @@ let s:TYPE_FUNC = type(function('tr'))
 "   let s:SID = s:get_SID()
 "   delfunction s:get_SID
 "
-"   s:Foo = path#to#oop#class#new('Foo', s:SID)
+"   s:Foo = oop#class#new('Foo', s:SID)
 "
 " To create a derived class, give the base class as the third argument.
 "
-"   s:Bar = path#to#oop#class#new('Bar', s:SID, s:Foo)
+"   s:Bar = oop#class#new('Bar', s:SID, s:Foo)
 "
 function! oop#class#new(name, sid, ...)
   let class = copy(s:Class)
   let class.__name__ = a:name
   let class.__prefix__ = oop#_sid_prefix(a:sid) . a:name . '_'
-  " => <SNR>10_Foo_
+  "=> <SNR>10_Foo_
   let class.__prototype__ = copy(s:Instance)
   let class.__superclass__ = (a:0 ? a:1 : {})
   " Inherit methods from superclasses.
@@ -255,7 +255,7 @@ let s:Instance = {
 " object as a part of its instanciation process. User-defined classes should
 " override this method for their specific initialization.
 "
-"   let s:Foo = path#to#oop#class#new('Foo')
+"   let s:Foo = oop#class#new('Foo')
 "
 "   function! s:Foo_initialize(x, y) dict
 "     let self.x = a:x

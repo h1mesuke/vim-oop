@@ -35,10 +35,10 @@ set cpo&vim
 "-----------------------------------------------------------------------------
 " Module
 
-" path#to#oop#module#new( {name}, {sid})
+" oop#module#new( {name}, {sid})
 "
-" Creates a new module. The second argument must be the SID prefix of the
-" script where the module is defined.
+" Creates a new module. The second argument must be the SID number or prefix
+" of the script where the module is defined.
 "
 "   function! s:get_SID()
 "     return matchstr(expand('<sfile>'), '<SNR>\d\+_')
@@ -46,13 +46,13 @@ set cpo&vim
 "   let s:SID = s:get_SID()
 "   delfunction s:get_SID
 "
-"   s:Fizz = path#to#oop#module#new('Fizz', s:SID)
+"   s:Fizz = oop#module#new('Fizz', s:SID)
 "
 function! oop#module#new(name, sid)
   let module = copy(s:Module)
   let module.__name__ = a:name
   let module.__prefix__ = oop#_sid_prefix(a:sid) . a:name . '_'
-  " => <SNR>10_Fizz_
+  "=> <SNR>10_Fizz_
   return module
 endfunction
 
