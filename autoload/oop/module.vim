@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-08
+" Updated : 2012-01-12
 " Version : 0.2.2
 " License : MIT license {{{
 "
@@ -32,12 +32,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Inspired by Yukihiro Nakadaira's nsexample.vim
-" https://gist.github.com/867896
-"
-let s:oop = expand('<sfile>:p:h:gs?[\\/]?#?:s?^.*#autoload#??')
-" => path#to#oop
-
 "-----------------------------------------------------------------------------
 " Module
 
@@ -54,10 +48,10 @@ let s:oop = expand('<sfile>:p:h:gs?[\\/]?#?:s?^.*#autoload#??')
 "
 "   s:Fizz = path#to#oop#module#new('Fizz', s:SID)
 "
-function! {s:oop}#module#new(name, sid)
+function! oop#module#new(name, sid)
   let module = copy(s:Module)
   let module.__name__ = a:name
-  let module.__prefix__ = {s:oop}#_sid_prefix(a:sid) . a:name . '_'
+  let module.__prefix__ = oop#_sid_prefix(a:sid) . a:name . '_'
   " => <SNR>10_Fizz_
   return module
 endfunction

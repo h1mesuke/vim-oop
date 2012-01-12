@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-08
+" Updated : 2012-01-12
 " Version : 0.2.2
 " License : MIT license {{{
 "
@@ -32,12 +32,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Inspired by Yukihiro Nakadaira's nsexample.vim
-" https://gist.github.com/867896
-"
-let s:oop = expand('<sfile>:p:h:gs?[\\/]?#?:s?^.*#autoload#??')
-" => path#to#oop
-
 let s:TYPE_FUNC = type(function('tr'))
 
 "-----------------------------------------------------------------------------
@@ -60,10 +54,10 @@ let s:TYPE_FUNC = type(function('tr'))
 "
 "   s:Bar = path#to#oop#class#new('Bar', s:SID, s:Foo)
 "
-function! {s:oop}#class#new(name, sid, ...)
+function! oop#class#new(name, sid, ...)
   let class = copy(s:Class)
   let class.__name__ = a:name
-  let class.__prefix__ = {s:oop}#_sid_prefix(a:sid) . a:name . '_'
+  let class.__prefix__ = oop#_sid_prefix(a:sid) . a:name . '_'
   " => <SNR>10_Foo_
   let class.__prototype__ = copy(s:Instance)
   let class.__superclass__ = (a:0 ? a:1 : {})
@@ -214,7 +208,7 @@ let s:Class.alias = function(s:SID . 'Class_alias')
 "   call s:Bar.method('hello')
 "
 function! s:Class_super(meth_name, args, _self) dict
-  let is_class = {s:oop}#is_class(a:_self)
+  let is_class = oop#is_class(a:_self)
   let meth_table = (is_class ? self : self.__prototype__)
 
   let has_impl = (has_key(meth_table, a:meth_name) &&
