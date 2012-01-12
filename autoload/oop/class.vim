@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-12
+" Updated : 2012-01-13
 " Version : 0.2.2
 " License : MIT license {{{
 "
@@ -242,6 +242,18 @@ function! s:Class_new(...) dict
   return obj
 endfunction
 let s:Class.new = function(s:SID . 'Class_new')
+
+" Promotes an attributes Dictionary to an object.
+"
+"   let foo = s:Foo.promote(attrs)
+"
+function! s:Class_promote(attrs) dict
+  let obj = extend(a:attrs, self.__prototype__, 'keep')
+  let obj.__class__ = self
+  call call(obj.initialize, [], obj)
+  return obj
+endfunction
+let s:Class.promote = function(s:SID . 'Class_promote')
 
 "-----------------------------------------------------------------------------
 " Instance

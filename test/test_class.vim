@@ -216,6 +216,17 @@ function! s:tc.Class_super_should_throw_if_no_super_impl()
         \ ')
 endfunction
 
+" Class#promote()
+function! s:tc.Class_promote_should_promote_dict_to_object()
+  let attrs = { 'a': 10, 'b': 20, 'c': 30 }
+  let foo = s:Foo.promote(attrs)
+  call self.assert(oop#is_instance(foo))
+  call self.assert(foo.is_a(s:Foo))
+  call self.assert(has_key(foo, 'initialized'))
+  call self.assert_equal("Foo's hello", foo.hello())
+  call self.assert_equal(10, foo.a)
+endfunction
+
 " Object#initialize()
 function! s:tc.instance_should_be_initialized()
   call self.assert(has_key(self.foo, 'initialized'))
