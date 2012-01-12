@@ -5,7 +5,7 @@
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
 " Updated : 2012-01-13
-" Version : 0.2.2
+" Version : 0.2.3
 " License : MIT license {{{
 "
 "   Permission is hereby granted, free of charge, to any person obtaining
