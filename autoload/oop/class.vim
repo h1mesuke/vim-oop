@@ -129,10 +129,12 @@ function! s:Class_is_descendant_of(class) dict
 endfunction
 let s:Class.is_descendant_of = function(s:SID . 'Class_is_descendant_of')
 
-" Binds a function to a class Dictionary as a class method of the class. The
-" name of the function to be bound must be prefixed by the class name followed
-" by one underscore. This convention helps you to distinguish method functions
-" from other functions.
+" Binds function {func_name} to a class Dictionary as a class method of the
+" class.
+"
+" The name of the function to be bound must be prefixed by the class name
+" followed by one underscore. This convention helps you to distinguish method
+" functions from other functions.
 "
 "   function! s:Foo_hello() dict
 "   endfunction
@@ -149,10 +151,12 @@ endfunction
 let s:Class.__class_bind__ = function(s:SID . 'Class_class_bind')
 let s:Class.class_method = s:Class.__class_bind__ | " syntax sugar
 
-" Binds a function to a class prototype Dictionary as an instance method of
-" the class. The name of the function to be bound must be prefixed by the
-" class name followed by one underscore. This convention helps you to
-" distinguish method functions from other functions.
+" Binds function {func_name} to a class prototype Dictionary as an instance
+" method of the class.
+"
+" The name of the function to be bound must be prefixed by the class name
+" followed by one underscore. This convention helps you to distinguish method
+" functions from other functions.
 "
 "   function! s:Foo_hello() dict
 "   endfunction
@@ -169,7 +173,7 @@ endfunction
 let s:Class.__bind__ = function(s:SID . 'Class_bind')
 let s:Class.method = s:Class.__bind__ | " syntax sugar
 
-" Defines an alias of a class method.
+" Defines an alias of class method {meth_name}.
 "
 "   call s:Foo.class_alias('hi', 'hello')
 "
@@ -183,7 +187,7 @@ function! s:Class_class_alias(alias, meth_name) dict
 endfunction
 let s:Class.class_alias = function(s:SID . 'Class_class_alias')
 
-" Defines an alias of an instance method.
+" Defines an alias of instance method {meth_name}.
 "
 "   call s:Foo.alias('hi', 'hello')
 "
@@ -197,9 +201,10 @@ function! s:Class_alias(alias, meth_name) dict
 endfunction
 let s:Class.alias = function(s:SID . 'Class_alias')
 
-" Class#super( {meth_name}, {args}, {self})
+" {Class}.super( {meth_name}, {args}, {self})
 "
-" Calls the superclass's implementation of a method.
+" Calls the superclass's implementation of method {meth_name} in the manner of
+" built-in call().
 "
 "   function! s:Bar_hello() dict
 "     return 'Bar < ' . s:Bar.super('hello', [], self)
@@ -247,10 +252,10 @@ let s:Class.new = function(s:SID . 'Class_new')
 "
 "   let foo = s:Foo.promote(attrs)
 "
-function! s:Class_promote(attrs) dict
+function! s:Class_promote(attrs, ...) dict
   let obj = extend(a:attrs, self.__prototype__, 'keep')
   let obj.__class__ = self
-  call call(obj.initialize, [], obj)
+  call call(obj.initialize, a:000, obj)
   return obj
 endfunction
 let s:Class.promote = function(s:SID . 'Class_promote')
@@ -263,7 +268,7 @@ let s:Instance = {
       \ '__type_Instance__': 1,
       \ }
 
-" Initializes an object. This method will be called for each newly created
+" Initializes the object. This method will be called for each newly created
 " object as a part of its instanciation process. User-defined classes should
 " override this method for their specific initialization.
 "

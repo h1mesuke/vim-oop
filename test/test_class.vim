@@ -113,7 +113,7 @@ function! s:tc.instance_methods_should_be_inherited()
   call self.assert_equal("Foo's ciao", self.baz.ciao())
 endfunction
 
-" Class#extend()
+" {Class}.extend()
 function! s:tc.Class_extend_should_add_module_functions_as_class_methods()
   call self.assert_not(has_key(s:Foo, 'is_extended'))
 
@@ -123,7 +123,7 @@ function! s:tc.Class_extend_should_add_module_functions_as_class_methods()
   call self.assert_is_Funcref(s:Foo.is_extended)
 endfunction
 
-" Class#include()
+" {Class}.include()
 function! s:tc.Class_include_should_add_module_functions_as_instance_methods()
   let foo = s:Foo.new()
   call self.assert_not(has_key(foo, 'is_extended'))
@@ -135,7 +135,7 @@ function! s:tc.Class_include_should_add_module_functions_as_instance_methods()
   call self.assert_is_Funcref(foo.is_extended)
 endfunction
 
-" Class#ancestors()
+" {Class}.ancestors()
 function! s:tc.Class_ancestors_should_return_List_of_ancestors()
   call self.assert_equal(s:Foo.ancestors(),  [])
   call self.assert_equal(s:Foo.ancestors(1), [s:Foo])
@@ -144,7 +144,7 @@ function! s:tc.Class_ancestors_should_return_List_of_ancestors()
   call self.assert_equal(s:Baz.ancestors(1), [s:Baz, s:Bar, s:Foo])
 endfunction
 
-" Class#is_descendant_of()
+" {Class}.is_descendant_of()
 function! s:tc.Bar_should_be_descendant_of_Foo()
   call self.assert(s:Bar.is_descendant_of(s:Foo))
 endfunction
@@ -153,7 +153,7 @@ function! s:tc.Bar_should_not_be_descendant_of_Bar()
   call self.assert_not(s:Bar.is_descendant_of(s:Baz))
 endfunction
 
-" Class#class_method()
+" {Class}.class_method()
 function! s:tc.Class_class_method_should_bind_Funcref_as_class_method()
   call self.assert_is_Funcref(s:Foo.hello)
   call self.assert_equal("Foo's hello", s:Foo.hello())
@@ -166,7 +166,7 @@ function! s:tc.Class_class_method_should_bind_Funcref_as_class_method_with_given
   call self.assert_not(has_key(s:Foo, 'hello_cn'))
 endfunction
 
-" Class#method()
+" {Class}.method()
 function! s:tc.Class_method_should_bind_Funcref_as_instance_method()
   call self.assert_is_Funcref(self.foo.hello)
   call self.assert_equal("Foo's hello", self.foo.hello())
@@ -179,17 +179,17 @@ function! s:tc.Class_method_should_bind_Funcref_as_instance_method_with_given_na
   call self.assert_not(has_key(self.foo, 'hello_cn'))
 endfunction
 
-" Class#class_alias()
+" {Class}.class_alias()
 function! s:tc.Class_class_alias_should_define_alias_of_class_method()
   call self.assert_equal(s:Foo.hello, s:Foo.hi)
 endfunction
 
-" Class#alias()
+" {Class}.alias()
 function! s:tc.Class_alias_should_define_alias_of_instance_method()
   call self.assert_equal(self.foo.hello, self.foo.hi)
 endfunction
 
-" Class#super()
+" {Class}.super()
 function! s:tc.Class_super_should_call_super_impl()
   call self.assert_equal("Bar's hello < Foo's hello", s:Bar.hello())
   call self.assert_equal("Baz's hello < Bar's hello < Foo's hello", s:Baz.hello())
@@ -216,7 +216,7 @@ function! s:tc.Class_super_should_throw_if_no_super_impl()
         \ ')
 endfunction
 
-" Class#promote()
+" {Class}.promote()
 function! s:tc.Class_promote_should_promote_dict_to_object()
   let attrs = { 'a': 10, 'b': 20, 'c': 30 }
   let foo = s:Foo.promote(attrs)
@@ -227,12 +227,12 @@ function! s:tc.Class_promote_should_promote_dict_to_object()
   call self.assert_equal(10, foo.a)
 endfunction
 
-" Object#initialize()
+" {Object}.initialize()
 function! s:tc.instance_should_be_initialized()
   call self.assert(has_key(self.foo, 'initialized'))
 endfunction
 
-" Object#is_a()
+" {Object}.is_a()
 function! s:tc.foo_should_be_Foo()
   call self.assert(self.foo.is_a(s:Foo))
 endfunction

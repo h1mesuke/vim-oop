@@ -36,7 +36,7 @@ call s:Fizz.function('hello_cn', 'nihao')
 
 let s:tc = unittest#testcase#new('test_module')
 
-" Module#function()
+" {Module}.function()
 function! s:tc.Module_function_should_bind_Funcref_as_module_function()
   call self.assert_is_Funcref(s:Fizz.hello)
   call self.assert_equal("Fizz's hello", s:Fizz.hello())
@@ -49,7 +49,7 @@ function! s:tc.Module_function_should_bind_Funcref_as_module_function_with_given
   call self.assert_not(has_key(s:Fizz, 'hello_cn'))
 endfunction
 
-" Module#alias()
+" {Module}.alias()
 function! s:tc.Module_alias_should_define_alias_of_module_function()
   call self.assert_equal(s:Fizz.hello, s:Fizz.hi)
 endfunction

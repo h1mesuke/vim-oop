@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-12
+" Updated : 2012-01-13
 " Version : 0.2.2
 " License : MIT license {{{
 "
@@ -69,10 +69,11 @@ let s:Module = {
       \ '__type_Module__': 1,
       \ }
 
-" Binds a function to a module Dictionary as a module function. The name of
-" the function to be bound must be prefixed by the module name followed by one
-" underscore. This convention helps you to distinguish module functions from
-" other functions.
+" Binds function {func_name} to a module Dictionary as a module function.
+"
+" The name of the function to be bound must be prefixed by the module name
+" followed by one underscore. This convention helps you to distinguish module
+" functions from other functions.
 "
 "   function! s:Fizz_hello() dict
 "   endfunction
@@ -84,22 +85,22 @@ let s:Module = {
 "   call s:Fizz.hello()
 "
 function! s:Module_bind(func_name, ...) dict
-  let meth_name = (a:0 ? a:1 : a:func_name)
-  let self[meth_name] = function(self.__prefix__  . a:func_name)
+  let func_name = (a:0 ? a:1 : a:func_name)
+  let self[func_name] = function(self.__prefix__  . a:func_name)
 endfunction
 let s:Module.__bind__ = function(s:SID . 'Module_bind')
 let s:Module.function = s:Module.__bind__ | " syntax sugar
 
-" Defines an alias of a module function.
+" Defines an alias of module function {func_name}.
 "
 "   call s:Fizz.alias('hi', 'hello')
 "
-function! s:Module_alias(alias, meth_name) dict
-  if has_key(self, a:meth_name) &&
-        \ type(self[a:meth_name]) == type(function('tr'))
-    let self[a:alias] = self[a:meth_name]
+function! s:Module_alias(alias, func_name) dict
+  if has_key(self, a:func_name) &&
+        \ type(self[a:func_name]) == type(function('tr'))
+    let self[a:alias] = self[a:func_name]
   else
-    throw "vim-oop: " . self.__name__ . "." . a:meth_name . "() is not defined."
+    throw "vim-oop: " . self.__name__ . "." . a:func_name . "() is not defined."
   endif
 endfunction
 let s:Module.alias = function(s:SID . 'Module_alias')
