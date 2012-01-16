@@ -37,14 +37,6 @@ let s:TYPE_DICT = type({})
 let s:TYPE_LIST = type([])
 let s:TYPE_FUNC = type(function('tr'))
 
-function! oop#_sid_prefix(sid)
-  if type(a:sid) == s:TYPE_NUM
-    return '<SNR>' . a:sid . '_'
-  else
-    return '<SNR>' . matchstr(a:sid, '\d\+') . '_'
-  endif
-endfunction
-
 function! oop#is_object(value)
   return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__')
 endfunction

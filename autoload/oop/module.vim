@@ -32,6 +32,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:TYPE_NUM  = type(0)
 let s:TYPE_FUNC = type(function('tr'))
 
 "-----------------------------------------------------------------------------
@@ -53,7 +54,8 @@ let s:TYPE_FUNC = type(function('tr'))
 function! oop#module#new(name, sid)
   let module = copy(s:Module)
   let module.__name__ = a:name
-  let module.__prefix__ = oop#_sid_prefix(a:sid) . a:name . '_'
+  let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
+  let module.__sid_prefix__ = printf('<SNR>%d_%s_', sid, a:name)
   "=> <SNR>10_Fizz_
   return module
 endfunction
@@ -85,7 +87,7 @@ let s:Module = { '__vim_oop__': 1 }
 "
 function! s:Module_bind(func_name, ...) dict
   let func_name = (a:0 ? a:1 : a:func_name)
-  let self[func_name] = function(self.__prefix__  . a:func_name)
+  let self[func_name] = function(self.__sid_prefix__  . a:func_name)
 endfunction
 let s:Module.__bind__ = function(s:SID . 'Module_bind')
 let s:Module.function = s:Module.__bind__ | " syntax sugar

@@ -32,6 +32,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:TYPE_NUM  = type(0)
 let s:TYPE_FUNC = type(function('tr'))
 
 "-----------------------------------------------------------------------------
@@ -57,7 +58,8 @@ let s:TYPE_FUNC = type(function('tr'))
 function! oop#class#new(name, sid, ...)
   let class = copy(s:Class)
   let class.__name__ = a:name
-  let class.__prefix__ = oop#_sid_prefix(a:sid) . a:name . '_'
+  let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
+  let class.__sid_prefix__ = printf('<SNR>%d_%s_', sid, a:name)
   "=> <SNR>10_Foo_
   let class.__prototype__ = copy(s:Instance)
   let class.__superclass__ = (a:0 ? a:1 : {})
@@ -143,7 +145,7 @@ let s:Class.is_descendant_of = function(s:SID . 'Class_is_descendant_of')
 "
 function! s:Class_class_bind(func_name, ...) dict
   let meth_name = (a:0 ? a:1 : a:func_name)
-  let self[meth_name] = function(self.__prefix__  . a:func_name)
+  let self[meth_name] = function(self.__sid_prefix__  . a:func_name)
 endfunction
 let s:Class.__class_bind__ = function(s:SID . 'Class_class_bind')
 let s:Class.class_method = s:Class.__class_bind__ | " syntax sugar
@@ -165,7 +167,7 @@ let s:Class.class_method = s:Class.__class_bind__ | " syntax sugar
 "
 function! s:Class_bind(func_name, ...) dict
   let meth_name = (a:0 ? a:1 : a:func_name)
-  let self.__prototype__[meth_name] = function(self.__prefix__  . a:func_name)
+  let self.__prototype__[meth_name] = function(self.__sid_prefix__  . a:func_name)
 endfunction
 let s:Class.__bind__ = function(s:SID . 'Class_bind')
 let s:Class.method = s:Class.__bind__ | " syntax sugar
