@@ -200,10 +200,10 @@ endfunction
 
 function! s:tc.Class_super_should_throw_if_not_method()
   call self.assert_throw('^vim-oop: ', '
-        \ call unittest#self().Baz.super("__superclass__", [], unittest#self().Baz)
+        \ call unittest#self().Baz.super("superclass", [], unittest#self().Baz)
         \ ')
   call self.assert_throw('^vim-oop: ', '
-        \ call unittest#self().Baz.super("__class__", [], unittest#self().baz)
+        \ call unittest#self().Baz.super("class", [], unittest#self().baz)
         \ ')
 endfunction
 
@@ -271,7 +271,7 @@ endfunction
 " oop#string()
 function! s:tc.test_oop_string()
   call self.assert_equal('<Class: Foo>', oop#string(s:Foo))
-  call self.assert_equal("{'initialized': 1, '__class__': '<Class: Foo>'}", oop#string(self.foo))
+  call self.assert_equal("{'initialized': 1, 'class': '<Class: Foo>'}", oop#string(self.foo))
 
   call self.assert_equal(string(10), oop#string(10))
   call self.assert_equal(string("String"), oop#string("String"))

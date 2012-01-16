@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-16
+" Updated : 2012-01-17
 " Version : 0.2.3
 " License : MIT license {{{
 "
@@ -57,12 +57,12 @@ let s:TYPE_FUNC = type(function('tr'))
 "
 function! oop#class#new(name, sid, ...)
   let class = copy(s:Class)
-  let class.__name__ = a:name
+  let class.name = a:name
   let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
   let class.__sid_prefix__ = printf('<SNR>%d_%s_', sid, a:name)
   "=> <SNR>10_Foo_
   let class.__prototype__ = copy(s:Instance)
-  let class.__superclass__ = (a:0 ? a:1 : {})
+  let class.superclass = (a:0 ? a:1 : {})
   " Inherit methods from superclasses.
   for klass in class.ancestors()
     call extend(class, klass, 'keep')
@@ -104,10 +104,10 @@ let s:Class.include = function(s:SID . 'Class_include')
 function! s:Class_ancestors(...) dict
   let inclusive = (a:0 ? a:1 : 0)
   let ancestors = []
-  let klass = (inclusive ? self : self.__superclass__)
+  let klass = (inclusive ? self : self.superclass)
   while !empty(klass)
     call add(ancestors, klass)
-    let klass = klass.__superclass__
+    let klass = klass.superclass
   endwhile
   return ancestors
 endfunction
@@ -180,7 +180,7 @@ function! s:Class_class_alias(alias, meth_name) dict
   if has_key(self, a:meth_name) && type(self[a:meth_name]) == s:TYPE_FUNC
     let self[a:alias] = self[a:meth_name]
   else
-    throw "vim-oop: " . self.__name__ . "." . a:meth_name . "() is not defined."
+    throw "vim-oop: " . self.name . "." . a:meth_name . "() is not defined."
   endif
 endfunction
 let s:Class.class_alias = function(s:SID . 'Class_class_alias')
@@ -194,7 +194,7 @@ function! s:Class_alias(alias, meth_name) dict
         \ type(self.__prototype__[a:meth_name]) == s:TYPE_FUNC
     let self.__prototype__[a:alias] = self.__prototype__[a:meth_name]
   else
-    throw "vim-oop: " . self.__name__ . "#" . a:meth_name . "() is not defined."
+    throw "vim-oop: " . self.name . "#" . a:meth_name . "() is not defined."
   endif
 endfunction
 let s:Class.alias = function(s:SID . 'Class_alias')
@@ -222,14 +222,14 @@ function! s:Class_super(meth_name, args, _self) dict
     if has_key(kls_meth_table, a:meth_name)
       if type(kls_meth_table[a:meth_name]) != s:TYPE_FUNC
         let sep = (is_class ? '.' : '#')
-        throw "vim-oop: " . klass.__name__ . sep . a:meth_name . " is not a method."
+        throw "vim-oop: " . klass.name . sep . a:meth_name . " is not a method."
       elseif !has_impl || (has_impl && meth_table[a:meth_name] != kls_meth_table[a:meth_name])
         return call(kls_meth_table[a:meth_name], a:args, a:_self)
       endif
     endif
   endfor
   let sep = (is_class ? '.' : '#')
-  throw "vim-oop: " . self.__name__ . sep .
+  throw "vim-oop: " . self.name . sep .
         \ a:meth_name . "()'s super implementation was not found."
 endfunction
 let s:Class.super = function(s:SID . 'Class_super')
@@ -240,7 +240,7 @@ let s:Class.super = function(s:SID . 'Class_super')
 "
 function! s:Class_new(...) dict
   let obj = copy(self.__prototype__)
-  let obj.__class__ = self
+  let obj.class = self
   call call(obj.initialize, a:000, obj)
   return obj
 endfunction
@@ -252,7 +252,7 @@ let s:Class.new = function(s:SID . 'Class_new')
 "
 function! s:Class_promote(attrs, ...) dict
   let obj = extend(a:attrs, self.__prototype__, 'keep')
-  let obj.__class__ = self
+  let obj.class = self
   call call(obj.initialize, a:000, obj)
   return obj
 endfunction
@@ -286,7 +286,7 @@ let s:Instance.initialize = function(s:SID . 'Instance_initialize')
 "   endif
 "
 function! s:Instance_is_kind_of(class) dict
-  for klass in self.__class__.ancestors(1)
+  for klass in self.class.ancestors(1)
     if klass is a:class
       return 1
     endif

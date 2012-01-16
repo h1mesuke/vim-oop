@@ -53,7 +53,7 @@ let s:TYPE_FUNC = type(function('tr'))
 "
 function! oop#module#new(name, sid)
   let module = copy(s:Module)
-  let module.__name__ = a:name
+  let module.name = a:name
   let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
   let module.__sid_prefix__ = printf('<SNR>%d_%s_', sid, a:name)
   "=> <SNR>10_Fizz_
@@ -100,7 +100,7 @@ function! s:Module_alias(alias, func_name) dict
   if has_key(self, a:func_name) && type(self[a:func_name]) == s:TYPE_FUNC
     let self[a:alias] = self[a:func_name]
   else
-    throw "vim-oop: " . self.__name__ . "." . a:func_name . "() is not defined."
+    throw "vim-oop: " . self.name . "." . a:func_name . "() is not defined."
   endif
 endfunction
 let s:Module.alias = function(s:SID . 'Module_alias')

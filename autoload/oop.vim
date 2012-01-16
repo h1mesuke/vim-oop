@@ -48,12 +48,12 @@ endfunction
 
 function! oop#is_instance(value)
   return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__') &&
-        \ has_key(a:value, '__class__')
+        \ has_key(a:value, 'class')
 endfunction
 
 function! oop#is_module(value)
   return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__') &&
-        \ !has_key(a:value, '__prototype__') && !has_key(a:value, '__class__')
+        \ !has_key(a:value, '__prototype__') && !has_key(a:value, 'class')
 endfunction
 
 function! oop#string(value)
@@ -70,9 +70,9 @@ function! s:dump_copy(value)
   let value_type = type(a:value)
   if value_type == s:TYPE_DICT
     if has_key(a:value, '__type_Class__')
-      return '<Class: ' . a:value.__name__ . '>'
+      return '<Class: ' . a:value.name . '>'
     elseif has_key(a:value, '__type_Module__')
-      return '<Module: ' . a:value.__name__ . '>'
+      return '<Module: ' . a:value.name . '>'
     elseif has_key(a:value, '__type_Instance__')
       let value = filter(copy(a:value), '
             \ !(type(v:val) == s:TYPE_FUNC || v:key =~ "^__type_")')
