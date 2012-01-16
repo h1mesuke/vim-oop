@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-12
+" Updated : 2012-01-16
 " Version : 0.2.3
 " License : MIT license {{{
 "
@@ -33,7 +33,6 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:TYPE_NUM  = type(0)
-let s:TYPE_STR  = type("")
 let s:TYPE_DICT = type({})
 let s:TYPE_LIST = type([])
 let s:TYPE_FUNC = type(function('tr'))
@@ -47,19 +46,22 @@ function! oop#_sid_prefix(sid)
 endfunction
 
 function! oop#is_object(value)
-  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__type_Object__')
+  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__')
 endfunction
 
 function! oop#is_class(value)
-  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__type_Class__')
+  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__') &&
+        \ has_key(a:value, '__prototype__')
 endfunction
 
 function! oop#is_instance(value)
-  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__type_Instance__')
+  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__') &&
+        \ has_key(a:value, '__class__')
 endfunction
 
 function! oop#is_module(value)
-  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__type_Module__')
+  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__') &&
+        \ !has_key(a:value, '__prototype__') && !has_key(a:value, '__class__')
 endfunction
 
 function! oop#string(value)

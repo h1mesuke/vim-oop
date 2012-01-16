@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-13
+" Updated : 2012-01-16
 " Version : 0.2.3
 " License : MIT license {{{
 "
@@ -31,6 +31,8 @@
 
 let s:save_cpo = &cpo
 set cpo&vim
+
+let s:TYPE_FUNC = type(function('tr'))
 
 "-----------------------------------------------------------------------------
 " Module
@@ -64,10 +66,7 @@ endfunction
 let s:SID = s:get_SID()
 delfunction s:get_SID
 
-let s:Module = {
-      \ '__type_Object__': 1,
-      \ '__type_Module__': 1,
-      \ }
+let s:Module = { '__vim_oop__': 1 }
 
 " Binds function {func_name} to a module Dictionary as a module function.
 "
@@ -96,8 +95,7 @@ let s:Module.function = s:Module.__bind__ | " syntax sugar
 "   call s:Fizz.alias('hi', 'hello')
 "
 function! s:Module_alias(alias, func_name) dict
-  if has_key(self, a:func_name) &&
-        \ type(self[a:func_name]) == type(function('tr'))
+  if has_key(self, a:func_name) && type(self[a:func_name]) == s:TYPE_FUNC
     let self[a:alias] = self[a:func_name]
   else
     throw "vim-oop: " . self.__name__ . "." . a:func_name . "() is not defined."

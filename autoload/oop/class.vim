@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-13
+" Updated : 2012-01-16
 " Version : 0.2.3
 " License : MIT license {{{
 "
@@ -75,10 +75,7 @@ endfunction
 let s:SID = s:get_SID()
 delfunction s:get_SID
 
-let s:Class = {
-      \ '__type_Object__': 1,
-      \ '__type_Class__' : 1,
-      \ }
+let s:Class = { '__vim_oop__': 1 }
 
 " Adds {module}'s functions to the class as class methods.
 "
@@ -178,8 +175,7 @@ let s:Class.method = s:Class.__bind__ | " syntax sugar
 "   call s:Foo.class_alias('hi', 'hello')
 "
 function! s:Class_class_alias(alias, meth_name) dict
-  if has_key(self, a:meth_name) &&
-        \ type(self[a:meth_name]) == s:TYPE_FUNC
+  if has_key(self, a:meth_name) && type(self[a:meth_name]) == s:TYPE_FUNC
     let self[a:alias] = self[a:meth_name]
   else
     throw "vim-oop: " . self.__name__ . "." . a:meth_name . "() is not defined."
@@ -263,10 +259,7 @@ let s:Class.promote = function(s:SID . 'Class_promote')
 "-----------------------------------------------------------------------------
 " Instance
 
-let s:Instance = {
-      \ '__type_Object__'  : 1,
-      \ '__type_Instance__': 1,
-      \ }
+let s:Instance = { '__vim_oop__': 1 }
 
 " Initializes the object. This method will be called for each newly created
 " object as a part of its instanciation process. User-defined classes should
