@@ -319,6 +319,17 @@ function! s:tc.oop_string___it_should_stringify_object()
   call self.assert_equal({ 'class': 'Foo', 'initialized': 1 }, eval(str))
 endfunction
 
+" oop#deserialize()
+function! s:tc.oop_deserialize___it_should_deserialize_Object_from_String()
+  let self.foo.value = 1
+  let self.bar.value = 2
+  let self.baz.value = 3
+  let self.foo.children = [self.bar, self.baz]
+
+  let str = self.foo.serialize()
+  call self.assert_equal(self.foo, oop#deserialize(str))
+endfunction
+
 unlet s:tc
 
 let &cpo = s:save_cpo

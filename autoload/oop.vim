@@ -85,5 +85,24 @@ function! s:demote_objects(value)
   return a:value
 endfunction
 
+function! oop#deserialize(str)
+  sandbox let dict = eval(a:str)
+  return s:promote_objects(dict)
+endfunction
+
+function! s:promote_objects(value)
+  let type = type(a:value)
+  if type == s:TYPE_LIST
+    call map(a:value, 's:promote_objects(v:val)')
+  elseif type == s:TYPE_DICT
+    if has_key(a:value, 'class')
+      let class = oop#class#get(a:value.class)
+      call class.promote(a:value)
+    endif
+    call map(values(a:value), 's:promote_objects(v:val)')
+  endif
+  return a:value
+endfunction
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
