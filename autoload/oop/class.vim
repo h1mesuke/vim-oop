@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-17
+" Updated : 2012-01-18
 " Version : 0.2.3
 " License : MIT license {{{
 "
@@ -92,19 +92,20 @@ delfunction s:get_SID
 
 let s:Class = { '__vim_oop__': 1 }
 
-" Adds {module}'s functions to the class as class methods.
-"
-"   s:Foo.extend(s:Fizz)
-"
-function! s:Class_extend(module, ...) dict
+function! s:Object_extend(module, ...) dict
   let mode = (a:0 ? a:1 : 'force')
   call s:extend(self, a:module, mode)
 endfunction
-let s:Class.extend = function(s:SID . 'Class_extend')
+
+" Adds {module}'s functions to the class as class methods.
+"
+"   s:Foo.extend(s:Buzz)
+"
+let s:Class.extend = function(s:SID . 'Object_extend')
 
 " Adds {module}'s functions to the class as instance methods.
 "
-"   s:Foo.include(s:Fizz)
+"   s:Foo.include(s:Buzz)
 "
 function! s:Class_include(module, ...) dict
   let mode = (a:0 ? a:1 : 'force')
@@ -293,6 +294,12 @@ let s:Instance = { '__vim_oop__': 1 }
 function! s:Instance_initialize(...) dict
 endfunction
 let s:Instance.initialize = function(s:SID . 'Instance_initialize')
+
+" Adds {module}'s functions to the object as its methods.
+"
+"   foo.extend(s:Buzz)
+"
+let s:Instance.extend = function(s:SID . 'Object_extend')
 
 " Returns True if the object is an instance of {class} or one of its
 " ancestors.
