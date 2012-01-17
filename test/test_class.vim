@@ -109,17 +109,19 @@ function! s:tc.instance_methods_should_be_inherited()
 endfunction
 
 " {Class}.extend()
-function! s:tc.Class_extend_should_add_module_functions_as_class_methods()
+function! s:tc.Class_extend_should_include_module_functions_as_class_methods()
   call self.assert_not(has_key(s:Foo, 'is_extended'))
 
+  let Bind_func = s:Foo.__bind__
   call s:Foo.extend(s:Buzz)
 
   call self.assert(has_key(s:Foo, 'is_extended'))
   call self.assert_is_Funcref(s:Foo.is_extended)
+  call self.assert_is(Bind_func, s:Foo.__bind__)
 endfunction
 
 " {Class}.include()
-function! s:tc.Class_include_should_add_module_functions_as_instance_methods()
+function! s:tc.Class_include_should_include_module_functions_as_instance_methods()
   let foo = s:Foo.new()
   call self.assert_not(has_key(foo, 'is_extended'))
 
@@ -128,6 +130,7 @@ function! s:tc.Class_include_should_add_module_functions_as_instance_methods()
   let foo = s:Foo.new()
   call self.assert(has_key(foo, 'is_extended'))
   call self.assert_is_Funcref(foo.is_extended)
+  call self.assert_not(has_key(foo, '__bind__'))
 endfunction
 
 " {Class}.ancestors()

@@ -82,6 +82,8 @@ function! oop#class#new(name, sid, ...)
   return class
 endfunction
 
+"-----------------------------------------------------------------------------
+
 function! s:get_SID()
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
@@ -94,9 +96,9 @@ let s:Class = { '__vim_oop__': 1 }
 "
 "   s:Foo.extend(s:Fizz)
 "
-function! s:Class_extend(module) dict
-  let funcs = filter(copy(a:module), 'type(v:val) == s:TYPE_FUNC')
-  call extend(self, funcs, 'keep')
+function! s:Class_extend(module, ...) dict
+  let mode = (a:0 ? a:1 : 'force')
+  call s:extend(self, a:module, mode)
 endfunction
 let s:Class.extend = function(s:SID . 'Class_extend')
 
@@ -104,11 +106,19 @@ let s:Class.extend = function(s:SID . 'Class_extend')
 "
 "   s:Foo.include(s:Fizz)
 "
-function! s:Class_include(module) dict
-  let funcs = filter(copy(a:module), 'type(v:val) == s:TYPE_FUNC')
-  call extend(self.__prototype__, funcs, 'keep')
+function! s:Class_include(module, ...) dict
+  let mode = (a:0 ? a:1 : 'force')
+  call s:extend(self.__prototype__, a:module, mode)
 endfunction
 let s:Class.include = function(s:SID . 'Class_include')
+
+function! s:extend(dict, module, mode)
+  let funcs = {}
+  for func_name in a:module.__funcs__
+    let funcs[func_name] = a:module[func_name]
+  endfor
+  call extend(a:dict, funcs, a:mode)
+endfunction
 
 " Returns a List of ancestor classes.
 "
