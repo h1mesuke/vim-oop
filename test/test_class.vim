@@ -14,7 +14,7 @@ delfunction s:get_SID
 " h1mesuke/vim-unittest - GitHub
 " https://github.com/h1mesuke/vim-unittest
 "
-let s:tc = unittest#testcase#new('test_class')
+let s:tc = unittest#testcase#new("Class and Instances")
 
 function! s:tc.SETUP()
   " Clear the namespace.
