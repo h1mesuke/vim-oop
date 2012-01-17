@@ -315,5 +315,12 @@ function! s:Instance_demote() dict
 endfunction
 let s:Instance.demote = function(s:SID . 'Instance_demote')
 
+" Serializes the object.
+"
+function! s:Instance_serialize() dict
+  return oop#string(self)
+endfunction
+let s:Instance.serialize = function(s:SID . 'Instance_serialize')
+
 let &cpo = s:save_cpo
 unlet s:save_cpo

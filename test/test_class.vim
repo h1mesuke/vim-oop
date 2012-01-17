@@ -52,6 +52,11 @@ function! s:tc.SETUP()
   " class Bar < Foo
   let s:Bar = oop#class#new('Bar', s:SID, s:Foo)
 
+  function! s:Bar_initialize() dict
+    call s:Bar.super('initialize', [], self)
+  endfunction
+  call s:Bar.method('initialize')
+
   function! s:Bar_hello() dict
     return "Bar's hello < " . s:Bar.super('hello', [], self)
   endfunction
@@ -60,6 +65,11 @@ function! s:tc.SETUP()
 
   " class Baz < Bar
   let s:Baz = oop#class#new('Baz', s:SID, s:Bar)
+
+  function! s:Baz_initialize() dict
+    call s:Baz.super('initialize', [], self)
+  endfunction
+  call s:Baz.method('initialize')
 
   function! s:Baz_hello() dict
     return "Baz's hello < " . s:Baz.super('hello', [], self)
@@ -242,6 +252,28 @@ function! s:tc.Instance_demote___it_should_demote_Object_to_Dict()
   call self.foo.demote()
   call self.assert_not(oop#is_object(self.foo))
   call self.assert_is_String(self.foo.class)
+endfunction
+
+" {Instance}.serialize()
+function! s:tc.Instance_serialize___it_should_serialize_Object_to_String()
+  let self.foo.value = 1
+  let self.bar.value = 2
+  let self.baz.value = 3
+  let self.foo.children = [self.bar, self.baz]
+
+  call self.assert(oop#is_object(self.foo))
+  let str = self.foo.serialize()
+  call self.assert_not(oop#is_object(str))
+  call self.assert_is_String(str)
+
+  let expected = {
+        \ 'class': 'Foo', 'initialized': 1, 'value': 1,
+        \ 'children': [
+        \   { 'class': 'Bar', 'initialized': 1, 'value': 2 },
+        \   { 'class': 'Baz', 'initialized': 1, 'value': 3 },
+        \ ],
+        \}
+  call self.assert_equal(expected, eval(str))
 endfunction
 
 " oop#is_object()
