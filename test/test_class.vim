@@ -236,8 +236,6 @@ function! s:tc.Instance_is_a___foo_should_not_be_Bar()
   call self.assert_not(self.foo.is_a(s:Bar))
 endfunction
 
-<<<<<<< HEAD
-=======
 " {Instance}.demote()
 function! s:tc.Instance_demote___it_should_demote_Object_to_Dict()
   call self.assert(oop#is_object(self.foo))
@@ -246,7 +244,6 @@ function! s:tc.Instance_demote___it_should_demote_Object_to_Dict()
   call self.assert_is_String(self.foo.class)
 endfunction
 
->>>>>>> cd5658e... better-test-names
 " oop#is_object()
 function! s:tc.oop_is_object___Foo_should_be_Object()
   call self.assert(oop#is_object(s:Foo))

@@ -306,5 +306,14 @@ endfunction
 let s:Instance.is_kind_of = function(s:SID . 'Instance_is_kind_of')
 let s:Instance.is_a = function(s:SID . 'Instance_is_kind_of')
 
+" Demotes the object to an attributes Dictionary.
+"
+function! s:Instance_demote() dict
+  let self.class = self.class.name
+  call filter(self, 'type(v:val) != s:TYPE_FUNC')
+  call remove(self, '__vim_oop__')
+endfunction
+let s:Instance.demote = function(s:SID . 'Instance_demote')
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
