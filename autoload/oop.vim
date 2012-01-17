@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-16
+" Updated : 2012-01-17
 " Version : 0.2.3
 " License : MIT license {{{
 "
@@ -63,32 +63,26 @@ function! oop#is_module(value)
 endfunction
 
 function! oop#string(value)
-  let value_type = type(a:value)
-  if value_type == s:TYPE_LIST || value_type == s:TYPE_DICT
-    return s:dump_copy(a:value)
-  else
-    return string(a:value)
+  let value = a:value
+  let type = type(a:value)
+  if type == s:TYPE_LIST || type == s:TYPE_DICT
+    let value = deepcopy(a:value)
+    call s:demote_objects(value)
   endif
+  return string(value)
 endfunction
 
-function! s:dump_copy(value)
-  let value = a:value
-  let value_type = type(a:value)
-  if value_type == s:TYPE_DICT
-    if has_key(a:value, '__type_Class__')
-      return '<Class: ' . a:value.name . '>'
-    elseif has_key(a:value, '__type_Module__')
-      return '<Module: ' . a:value.name . '>'
-    elseif has_key(a:value, '__type_Instance__')
-      let value = filter(copy(a:value), '
-            \ !(type(v:val) == s:TYPE_FUNC || v:key =~ "^__type_")')
+function! s:demote_objects(value)
+  let type = type(a:value)
+  if type == s:TYPE_LIST
+    call map(a:value, 's:demote_objects(v:val)')
+  elseif type == s:TYPE_DICT
+    if has_key(a:value, '__vim_oop__') && has_key(a:value, 'class')
+      call a:value.demote()
     endif
+    call map(values(a:value), 's:demote_objects(v:val)')
   endif
-  if value_type == s:TYPE_LIST || value_type == s:TYPE_DICT
-    return string(map(copy(value), 's:dump_copy(v:val)'))
-  else
-    return value
-  endif
+  return a:value
 endfunction
 
 let &cpo = s:save_cpo

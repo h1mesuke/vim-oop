@@ -273,13 +273,18 @@ endfunction
 
 " oop#string()
 function! s:tc.oop_string___it_should_stringify_value()
-  call self.assert_equal('<Class: Foo>', oop#string(s:Foo))
-  call self.assert_equal("{'initialized': 1, 'class': '<Class: Foo>'}", oop#string(self.foo))
-
   call self.assert_equal(string(10), oop#string(10))
   call self.assert_equal(string("String"), oop#string("String"))
   call self.assert_equal(string([1, 2, 3]), oop#string([1, 2, 3]))
-  call self.assert_equal(string({'a': 1, 'b': 2}), oop#string({'a': 1, 'b': 2}))
+
+  let str = oop#string({'a': 1, 'b': 2})
+  call self.assert_equal({'a': 1, 'b': 2}, eval(str))
+endfunction
+
+function! s:tc.oop_string___it_should_stringify_object()
+  let str = oop#string(self.foo)
+  call self.assert_is_String(str)
+  call self.assert_equal({ 'class': 'Foo', 'initialized': 1 }, eval(str))
 endfunction
 
 unlet s:tc

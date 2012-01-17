@@ -69,11 +69,6 @@ function! s:tc.oop_is_module___Fizz_should_be_Module()
   call self.assert(oop#is_module(s:Fizz))
 endfunction
 
-" oop#string()
-function! s:tc.oop_string___it_should_stringify_value()
-  call self.assert_equal('<Module: Fizz>', oop#string(s:Fizz))
-endfunction
-
 unlet s:tc
 
 let &cpo = s:save_cpo
