@@ -112,10 +112,9 @@ let s:Class.include = function(s:SID . 'Class_include')
 
 " Returns a List of ancestor classes.
 "
-function! s:Class_ancestors(...) dict
-  let inclusive = (a:0 ? a:1 : 0)
+function! s:Class_ancestors() dict
   let ancestors = []
-  let klass = (inclusive ? self : self.superclass)
+  let klass = self.superclass
   while !empty(klass)
     call add(ancestors, klass)
     let klass = klass.superclass
@@ -292,12 +291,7 @@ let s:Instance.initialize = function(s:SID . 'Instance_initialize')
 "   endif
 "
 function! s:Instance_is_kind_of(class) dict
-  for klass in self.class.ancestors(1)
-    if klass is a:class
-      return 1
-    endif
-  endfor
-  return 0
+  return (self.class is a:class || index(self.class.ancestors(), a:class) >= 0)
 endfunction
 let s:Instance.is_kind_of = function(s:SID . 'Instance_is_kind_of')
 let s:Instance.is_a = function(s:SID . 'Instance_is_kind_of')

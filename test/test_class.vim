@@ -133,10 +133,7 @@ endfunction
 " {Class}.ancestors()
 function! s:tc.Class_ancestors_should_return_List_of_ancestors()
   call self.assert_equal(s:Foo.ancestors(),  [])
-  call self.assert_equal(s:Foo.ancestors(1), [s:Foo])
-
   call self.assert_equal(s:Baz.ancestors(),  [s:Bar, s:Foo])
-  call self.assert_equal(s:Baz.ancestors(1), [s:Baz, s:Bar, s:Foo])
 endfunction
 
 " {Class}.is_descendant_of()
