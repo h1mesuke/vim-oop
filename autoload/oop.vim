@@ -37,6 +37,12 @@ let s:TYPE_DICT = type({})
 let s:TYPE_LIST = type([])
 let s:TYPE_FUNC = type(function('tr'))
 
+let s:namespace = {}
+
+function! oop#__namespace__()
+  return s:namespace
+endfunction
+
 function! oop#is_object(value)
   return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__')
 endfunction

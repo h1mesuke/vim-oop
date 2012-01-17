@@ -9,32 +9,37 @@ endfunction
 let s:SID = s:get_SID()
 delfunction s:get_SID
 
-"-----------------------------------------------------------------------------
-" Module
-
-"---------------------------------------
-" Fizz
-
-let s:Fizz = oop#module#new('Fizz', s:SID)
-
-function! s:Fizz_hello() dict
-  return "Fizz's hello"
-endfunction
-call s:Fizz.function('hello')
-call s:Fizz.alias('hi', 'hello')
-
-function! s:Fizz_hello_cn() dict
-  return "Fizz's nihao"
-endfunction
-call s:Fizz.function('hello_cn', 'nihao')
 
 "-----------------------------------------------------------------------------
-" Tests
 
 " h1mesuke/vim-unittest - GitHub
 " https://github.com/h1mesuke/vim-unittest
-
+"
 let s:tc = unittest#testcase#new('test_module')
+
+function! s:tc.SETUP()
+  " Clear the namespace.
+  call filter(oop#__namespace__(), 0)
+
+  " module Fizz
+  let s:Fizz = oop#module#new('Fizz', s:SID)
+
+  function! s:Fizz_hello() dict
+    return "Fizz's hello"
+  endfunction
+  call s:Fizz.function('hello')
+  call s:Fizz.alias('hi', 'hello')
+
+  function! s:Fizz_hello_cn() dict
+    return "Fizz's nihao"
+  endfunction
+  call s:Fizz.function('hello_cn', 'nihao')
+endfunction
+
+" oop#module#get()
+function! s:tc.oop_module_get_should_return_module_with_name()
+  call self.assert_is(s:Fizz, oop#module#get('Fizz'))
+endfunction
 
 " {Module}.function()
 function! s:tc.Module_function_should_bind_Funcref_as_module_function()

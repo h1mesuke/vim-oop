@@ -10,96 +10,91 @@ let s:SID = s:get_SID()
 delfunction s:get_SID
 
 "-----------------------------------------------------------------------------
-" Classes
-
-"---------------------------------------
-" Foo
-
-let s:Foo = oop#class#new('Foo', s:SID)
-
-function! s:Foo_initialize() dict
-  let self.initialized = 1
-endfunction
-call s:Foo.method('initialize')
-
-function! s:Foo_hello() dict
-  return "Foo's hello"
-endfunction
-call s:Foo.class_method('hello')
-call s:Foo.method('hello')
-
-call s:Foo.class_alias('hi', 'hello')
-call s:Foo.alias('hi', 'hello')
-
-function! s:Foo_ciao() dict
-  return "Foo's ciao"
-endfunction
-call s:Foo.class_method('ciao')
-call s:Foo.method('ciao')
-
-function! s:Foo_hello_cn() dict
-  return "Foo's nihao"
-endfunction
-call s:Foo.class_method('hello_cn', 'nihao')
-call s:Foo.method('hello_cn', 'nihao')
-
-"---------------------------------------
-" Bar < Foo
-
-let s:Bar = oop#class#new('Bar', s:SID, s:Foo)
-
-function! s:Bar_hello() dict
-  return "Bar's hello < " . s:Bar.super('hello', [], self)
-endfunction
-call s:Bar.class_method('hello')
-call s:Bar.method('hello')
-
-"---------------------------------------
-" Baz < Bar
-
-let s:Baz = oop#class#new('Baz', s:SID, s:Bar)
-
-function! s:Baz_hello() dict
-  return "Baz's hello < " . s:Baz.super('hello', [], self)
-endfunction
-call s:Baz.class_method('hello')
-call s:Baz.method('hello')
-
-function! s:Baz_bonjour() dict
-  return "Baz's bonjour < " . s:Baz.super('bonjour', [], self)
-endfunction
-call s:Baz.class_method('bonjour')
-call s:Baz.method('bonjour')
-
-"-----------------------------------------------------------------------------
-" Module
-
-"---------------------------------------
-" Fizz
-
-let s:Fizz = oop#module#new('Fizz', s:SID)
-
-function! s:Fizz_is_extended() dict
-  return 1
-endfunction
-call s:Fizz.function('is_extended')
-
-"-----------------------------------------------------------------------------
-" Tests
 
 " h1mesuke/vim-unittest - GitHub
 " https://github.com/h1mesuke/vim-unittest
-
+"
 let s:tc = unittest#testcase#new('test_class')
 
-let s:tc.Foo = s:Foo
-let s:tc.Bar = s:Bar
-let s:tc.Baz = s:Baz
+function! s:tc.SETUP()
+  " Clear the namespace.
+  call filter(oop#__namespace__(), 0)
+
+  " class Foo
+  let s:Foo = oop#class#new('Foo', s:SID)
+
+  function! s:Foo_initialize() dict
+    let self.initialized = 1
+  endfunction
+  call s:Foo.method('initialize')
+
+  function! s:Foo_hello() dict
+    return "Foo's hello"
+  endfunction
+  call s:Foo.class_method('hello')
+  call s:Foo.method('hello')
+
+  call s:Foo.class_alias('hi', 'hello')
+  call s:Foo.alias('hi', 'hello')
+
+  function! s:Foo_ciao() dict
+    return "Foo's ciao"
+  endfunction
+  call s:Foo.class_method('ciao')
+  call s:Foo.method('ciao')
+
+  function! s:Foo_hello_cn() dict
+    return "Foo's nihao"
+  endfunction
+  call s:Foo.class_method('hello_cn', 'nihao')
+  call s:Foo.method('hello_cn', 'nihao')
+
+  " class Bar < Foo
+  let s:Bar = oop#class#new('Bar', s:SID, s:Foo)
+
+  function! s:Bar_hello() dict
+    return "Bar's hello < " . s:Bar.super('hello', [], self)
+  endfunction
+  call s:Bar.class_method('hello')
+  call s:Bar.method('hello')
+
+  " class Baz < Bar
+  let s:Baz = oop#class#new('Baz', s:SID, s:Bar)
+
+  function! s:Baz_hello() dict
+    return "Baz's hello < " . s:Baz.super('hello', [], self)
+  endfunction
+  call s:Baz.class_method('hello')
+  call s:Baz.method('hello')
+
+  function! s:Baz_bonjour() dict
+    return "Baz's bonjour < " . s:Baz.super('bonjour', [], self)
+  endfunction
+  call s:Baz.class_method('bonjour')
+  call s:Baz.method('bonjour')
+
+  " module Buzz
+  let s:Buzz = oop#module#new('Buzz', s:SID)
+
+  function! s:Buzz_is_extended() dict
+    return 1
+  endfunction
+  call s:Buzz.function('is_extended')
+
+  let self.Foo = s:Foo
+  let self.Bar = s:Bar
+  let self.Baz = s:Baz
+endfunction
 
 function! s:tc.setup()
   let self.foo = s:Foo.new()
   let self.bar = s:Bar.new()
   let self.baz = s:Baz.new()
+endfunction
+
+" oop#class#get()
+function! s:tc.oop_class_get_should_return_class_with_name()
+  call self.assert_is(s:Foo, oop#class#get('Foo'))
 endfunction
 
 " oop#class#new()
@@ -117,7 +112,7 @@ endfunction
 function! s:tc.Class_extend_should_add_module_functions_as_class_methods()
   call self.assert_not(has_key(s:Foo, 'is_extended'))
 
-  call s:Foo.extend(s:Fizz)
+  call s:Foo.extend(s:Buzz)
 
   call self.assert(has_key(s:Foo, 'is_extended'))
   call self.assert_is_Funcref(s:Foo.is_extended)
@@ -128,7 +123,7 @@ function! s:tc.Class_include_should_add_module_functions_as_instance_methods()
   let foo = s:Foo.new()
   call self.assert_not(has_key(foo, 'is_extended'))
 
-  call s:Foo.include(s:Fizz)
+  call s:Foo.include(s:Buzz)
 
   let foo = s:Foo.new()
   call self.assert(has_key(foo, 'is_extended'))

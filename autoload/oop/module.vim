@@ -38,6 +38,12 @@ let s:TYPE_FUNC = type(function('tr'))
 "-----------------------------------------------------------------------------
 " Module
 
+" NOTE: Omit type checking for efficiency.
+function! oop#module#get(name)
+  let ns = oop#__namespace__()
+  return ns[a:name]
+endfunction
+
 " oop#module#new( {name}, {sid})
 "
 " Creates a new module. The second argument must be the SID number or prefix
@@ -52,11 +58,16 @@ let s:TYPE_FUNC = type(function('tr'))
 "   s:Fizz = oop#module#new('Fizz', s:SID)
 "
 function! oop#module#new(name, sid)
+  let ns = oop#__namespace__()
+  if has_key(ns, a:name)
+    throw "vim-oop: Name conflict: " . a:name
+  endif
   let module = copy(s:Module)
   let module.name = a:name
   let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
   let module.__sid_prefix__ = printf('<SNR>%d_%s_', sid, a:name)
   "=> <SNR>10_Fizz_
+  let ns[a:name] = module
   return module
 endfunction
 
