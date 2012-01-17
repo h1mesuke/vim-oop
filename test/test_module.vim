@@ -37,17 +37,17 @@ function! s:tc.SETUP()
 endfunction
 
 " oop#module#get()
-function! s:tc.oop_module_get_should_return_module_with_name()
+function! s:tc.oop_module_get___it_should_return_Module_with_name()
   call self.assert_is(s:Fizz, oop#module#get('Fizz'))
 endfunction
 
 " {Module}.function()
-function! s:tc.Module_function_should_bind_Funcref_as_module_function()
+function! s:tc.Module_function___it_should_bind_Funcref_as_module_function()
   call self.assert_is_Funcref(s:Fizz.hello)
   call self.assert_equal("Fizz's hello", s:Fizz.hello())
 endfunction
 
-function! s:tc.Module_function_should_bind_Funcref_as_module_function_with_given_name()
+function! s:tc.Module_function___it_should_bind_Funcref_as_module_function_with_given_name()
   call self.assert_is_Funcref(s:Fizz.nihao)
   call self.assert_equal("Fizz's nihao", s:Fizz.nihao())
 
@@ -55,22 +55,22 @@ function! s:tc.Module_function_should_bind_Funcref_as_module_function_with_given
 endfunction
 
 " {Module}.alias()
-function! s:tc.Module_alias_should_define_alias_of_module_function()
+function! s:tc.Module_alias___it_should_define_alias_of_module_function()
   call self.assert_equal(s:Fizz.hello, s:Fizz.hi)
 endfunction
 
 " oop#is_object()
-function! s:tc.Fizz_should_be_Object()
+function! s:tc.oop_is_object___Fizz_should_be_Object()
   call self.assert(oop#is_object(s:Fizz))
 endfunction
 
 " oop#is_module()
-function! s:tc.Fizz_should_be_Module()
+function! s:tc.oop_is_module___Fizz_should_be_Module()
   call self.assert(oop#is_module(s:Fizz))
 endfunction
 
 " oop#string()
-function! s:tc.test_oop_string()
+function! s:tc.oop_string___it_should_stringify_value()
   call self.assert_equal('<Module: Fizz>', oop#string(s:Fizz))
 endfunction
 
