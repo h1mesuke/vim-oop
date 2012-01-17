@@ -130,12 +130,7 @@ let s:Class.ancestors = function(s:SID . 'Class_ancestors')
 "   endif
 "
 function! s:Class_is_descendant_of(class) dict
-  for klass in self.ancestors()
-    if klass is a:class
-      return 1
-    endif
-  endfor
-  return 0
+  return index(self.ancestors(), a:class) >= 0
 endfunction
 let s:Class.is_descendant_of = function(s:SID . 'Class_is_descendant_of')
 
