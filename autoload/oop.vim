@@ -1,11 +1,11 @@
 "=============================================================================
 " vim-oop
-" Simple OOP Layer for Vim script
+" OOP Support for Vim script
 "
 " File    : oop.vim
-" Author  : h1mesuke <himesuke@gmail.com>
+" Author  : h1mesuke <himesuke+vim@gmail.com>
 " Updated : 2012-01-17
-" Version : 0.2.3
+" Version : 0.2.4
 " License : MIT license {{{
 "
 "   Permission is hereby granted, free of charge, to any person obtaining

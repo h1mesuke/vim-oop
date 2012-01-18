@@ -1,12 +1,12 @@
 #!/bin/bash
 #=============================================================================
 # vim-oop
-# Simple OOP Layer for Vim script
+# OOP Support for Vim script
 #
 # File    : bin/bundle.sh
-# Author  : h1mesuke
+# Author  : h1mesuke <himesuke+vim@gmail.com>
 # Updated : 2012-01-19
-# Version : 0.2.3
+# Version : 0.2.4
 # License : MIT license {{{
 #
 #   Permission is hereby granted, free of charge, to any person obtaining
