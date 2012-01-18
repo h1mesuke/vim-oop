@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 #=============================================================================
 # vim-oop
 # Simple OOP Layer for Vim script
 #
 # File    : bin/bundle.sh
 # Author  : h1mesuke
-# Updated : 2012-01-13
+# Updated : 2012-01-19
 # Version : 0.2.3
 # License : MIT license {{{
 #
@@ -30,9 +30,12 @@
 # }}}
 #=============================================================================
 
+set -o errexit
+set -o nounset
+
 NAME=bundle.sh
 USAGE="$NAME [options] PLUGIN_DIR"
-VERSION=0.0.1
+VERSION=0.0.2
 
 print_help() {
   cat 1>&2 << EOF
@@ -43,8 +46,9 @@ print_help() {
     $USAGE
 
   Options:
-    -c                Bundle Class  only.
-    -m                Bundle Module only.
+    -c                Bundle Class  only, or skip Module.
+    -m                Bundle Module only, or skip Class.
+    -a                Bundle Assertions.
 
     -h                Print this help.
     -v                Print the version of this program.
@@ -59,83 +63,69 @@ print_version() {
   echo "$NAME $VERSION" 1>&2
 }
 
-WHAT=BOTH   # BOTH | CLASS | MODULE
+GREP_FLAGS='--color=auto --line-number'
+BUNDLE_CLASS=TRUE
+BUNDLE_MODULE=TRUE
+BUNDLE_ASSERT=FALSE
 OPT=
 
 # Parse command-line options.
 if [ "$OPTIND" = 1 ]; then
-  while getopts cmhv OPT; do
+  while getopts cmahv OPT; do
     case $OPT in
-      c)
-        WHAT=CLASS
-        ;;
-      m)
-        WHAT=MODULE
-        ;;
-      h | \?)
-        print_help
-        status=0
-        if [ $OPT != "h" ]; then
-          status=1
-        fi
-        exit $status
-        ;;
-      v)
-        print_version
-        exit 0
-        ;;
+      c)  BUNDLE_MODULE=FALSE   ;;
+      m)  BUNDLE_CLASS=FALSE    ;;
+      a)  BUNDLE_ASSERT=TRUE    ;;
+      h)  print_help;    exit 0 ;;
+      v)  print_version; exit 0 ;;
+      \?) print_help;    exit 1 ;;
     esac
   done
-  shift `expr $OPTIND - 1`
+  shift $(($OPTIND - 1))
 else
   echo "$NAME: getopts is not available." 1>&2
   exit 1
 fi
 
-if [ $# -ne 1 -o ! -d "$1" ]; then
+if [ $# -ne 1 ] || [ ! -d "$1" ]; then
   print_usage
   exit 1
 fi
 
-src_dir=$(dirname $(cd $(dirname $0) && pwd))/autoload
-#=> path/to/bundle/oop/autoload
+SRC_DIR=$(dirname $(cd $(dirname $0) && pwd))/autoload
+#=> path/to/oop/autoload
 
-plugin=$(basename $1)
-dst_dir="$1/autoload/$plugin"
-#=> path/to/bundle/plugin/autoload/plugin
+PLUGIN=$(basename $1)
+DST_DIR="$1/autoload/$PLUGIN"
+#=> path/to/PLUGIN/autoload/PLUGIN
 
-mkdir -p "$dst_dir/oop"
+mkdir -p "$DST_DIR/oop"
 
 bundle_copy() {
-  src=$1
-  dst=$2
-
+  local src=$1 dst=$2
   echo
   echo "SRC: $src"
-
-  cat "$src" | awk -v plugin=$plugin '
-
-    /oop#/ {
-      gsub(/oop#/, plugin "#oop#", $0)
-    }
-
-    { print $0 }
-
-  ' > "$dst"
-
   echo "DST: $dst"
+  <"$src" awk -v plugin=$PLUGIN '
+    /oop#/ { gsub(/oop#/, plugin "#oop#", $0) }
+    { print }
+  ' | tee "$dst" | grep $GREP_FLAGS "$PLUGIN#oop#"
 }
 
 # autoload/oop.vim
-bundle_copy "$src_dir/oop.vim" "$dst_dir/oop.vim"
+bundle_copy "$SRC_DIR/oop.vim" "$DST_DIR/oop.vim"
 
 # autoload/oop/class.vim
-if [ WHAT != MODULE ]; then
-  bundle_copy "$src_dir/oop/class.vim" "$dst_dir/oop/class.vim"
+if [ $BUNDLE_CLASS = TRUE ]; then
+  bundle_copy "$SRC_DIR/oop/class.vim" "$DST_DIR/oop/class.vim"
 fi
 # autoload/oop/module.vim
-if [ WHAT != CLASS ]; then
-  bundle_copy "$src_dir/oop/module.vim" "$dst_dir/oop/module.vim"
+if [ $BUNDLE_MODULE = TRUE ]; then
+  bundle_copy "$SRC_DIR/oop/module.vim" "$DST_DIR/oop/module.vim"
+fi
+# autoload/oop/assertions.vim
+if [ $BUNDLE_ASSERT = TRUE ]; then
+  bundle_copy "$SRC_DIR/oop/assertions.vim" "$DST_DIR/oop/assertions.vim"
 fi
 
 echo
