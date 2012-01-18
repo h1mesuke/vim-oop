@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-18
+" Updated : 2012-01-19
 " Version : 0.2.3
 " License : MIT license {{{
 "
@@ -308,7 +308,7 @@ let s:Instance.extend = function(s:SID . 'Object_extend')
 "   endif
 "
 function! s:Instance_is_kind_of(class) dict
-  return (self.class is a:class || index(self.class.ancestors(), a:class) >= 0)
+  return (self.class is a:class || self.class.is_descendant_of(a:class))
 endfunction
 let s:Instance.is_kind_of = function(s:SID . 'Instance_is_kind_of')
 let s:Instance.is_a = function(s:SID . 'Instance_is_kind_of')
