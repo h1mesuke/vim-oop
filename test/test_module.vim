@@ -9,7 +9,6 @@ endfunction
 let s:SID = s:get_SID()
 delfunction s:get_SID
 
-
 "-----------------------------------------------------------------------------
 
 " h1mesuke/vim-unittest - GitHub

@@ -5,7 +5,7 @@
 "-----------------------------------------------------------------------------
 " Expected results:
 "
-"   {T} tests, {A} assertions, {A/2} failures, 1 errors
+"   {T} tests, {A} assertions, {A/2} failures, 0 errors
 "
 " NOTE: The tests in this file are written to test assertions themselves, so
 " not only successes but also failures are expected as the results.
