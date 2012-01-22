@@ -17,8 +17,8 @@ delfunction s:get_SID
 let s:tc = unittest#testcase#new("Module")
 
 function! s:tc.SETUP()
-  " Clear the namespace.
-  call filter(oop#__namespace__(), 0)
+  runtime autoload/oop.vim
+  runtime autoload/oop/module.vim
 
   " module Fizz
   let s:Fizz = oop#module#new('Fizz', s:SID)

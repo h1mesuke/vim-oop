@@ -22,11 +22,11 @@ delfunction s:get_SID
 " https://github.com/h1mesuke/vim-unittest
 "
 let s:tc = unittest#testcase#new("Assertions")
-call s:tc.extend(oop#assertions#module())
 
 function! s:tc.SETUP()
-  " Clear the namespace.
-  call filter(oop#__namespace__(), 0)
+  runtime autoload/oop.vim
+  runtime autoload/oop/assertions.vim
+  call self.extend(oop#assertions#module())
 
   " class Foo
   let s:Foo = oop#class#new('Foo', s:SID)

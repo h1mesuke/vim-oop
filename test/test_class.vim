@@ -17,8 +17,8 @@ delfunction s:get_SID
 let s:tc = unittest#testcase#new("Class and Instances")
 
 function! s:tc.SETUP()
-  " Clear the namespace.
-  call filter(oop#__namespace__(), 0)
+  runtime autoload/oop.vim
+  runtime autoload/oop/class.vim
 
   " class Foo
   let s:Foo = oop#class#new('Foo', s:SID)
