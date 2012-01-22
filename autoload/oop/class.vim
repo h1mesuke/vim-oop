@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-19
+" Updated : 2012-01-23
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -330,4 +330,3 @@ endfunction
 let s:Instance.serialize = function(s:SID . 'Instance_serialize')
 
 let &cpo = s:save_cpo
-unlet s:save_cpo

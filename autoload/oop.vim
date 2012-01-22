@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-17
+" Updated : 2012-01-23
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -105,4 +105,3 @@ function! s:promote_objects(value)
 endfunction
 
 let &cpo = s:save_cpo
-unlet s:save_cpo

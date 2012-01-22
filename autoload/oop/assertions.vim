@@ -4,7 +4,7 @@
 "
 " File    : autoload/oop/assertions.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-19
+" Updated : 2012-01-23
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -170,4 +170,3 @@ endfunction
 call s:Assertions.function('__string__')
 
 let &cpo = s:save_cpo
-unlet s:save_cpo
