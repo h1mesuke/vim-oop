@@ -24,7 +24,7 @@ function! s:tc.SETUP()
   let s:Foo = oop#class#new('Foo', s:SID)
 
   function! s:Foo_initialize() dict
-    let self.initialized = 1
+    let self.initialized = get(self, 'initialized', 0) + 1
   endfunction
   call s:Foo.method('initialize')
 
@@ -224,14 +224,24 @@ function! s:tc.Class_super___it_should_throw_if_no_super_implementation()
 endfunction
 
 " {Class}.promote()
-function! s:tc.Class_promote___it_should_promote_Dict_to_Object()
+function! s:tc.Class_promote___it_should_promote_Dict_to_Instance()
   let attrs = { 'a': 10, 'b': 20, 'c': 30 }
   let foo = s:Foo.promote(attrs)
+  call self.assert_is(attrs, foo)
   call self.assert(oop#is_instance(foo))
   call self.assert(foo.is_a(s:Foo))
-  call self.assert(has_key(foo, 'initialized'))
   call self.assert_equal("Foo's hello", foo.hello())
   call self.assert_equal(10, foo.a)
+endfunction
+
+function! s:tc.Class_promote___it_should_not_call_initialize()
+  let attrs = { 'a': 10, 'b': 20, 'c': 30 }
+  let foo = s:Foo.promote(attrs)
+  call self.assert_not(has_key(foo, 'initialized'))
+
+  let attrs = self.foo.demote()
+  let foo = s:Foo.promote(attrs)
+  call self.assert_equal(1, foo.initialized)
 endfunction
 
 " {Instance}.initialize()
