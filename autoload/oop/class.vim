@@ -319,6 +319,7 @@ function! s:Instance_demote() dict
   let self.class = self.class.name
   call filter(self, 'type(v:val) != s:TYPE_FUNC')
   call remove(self, '__vim_oop__')
+  return self
 endfunction
 let s:Instance.demote = function(s:SID . 'Instance_demote')
 
