@@ -166,6 +166,19 @@ endfunction
 let s:Class.__class_bind__ = function(s:SID . 'Class_class_bind')
 let s:Class.class_method = s:Class.__class_bind__ | " syntax sugar
 
+" Defines an alias of class method {meth_name}.
+"
+"   call s:Foo.class_alias('hi', 'hello')
+"
+function! s:Class_class_alias(alias, meth_name) dict
+  if has_key(self, a:meth_name) && type(self[a:meth_name]) == s:TYPE_FUNC
+    let self[a:alias] = self[a:meth_name]
+  else
+    throw "vim-oop: " . self.name . "." . a:meth_name . "() is not defined."
+  endif
+endfunction
+let s:Class.class_alias = function(s:SID . 'Class_class_alias')
+
 " Binds function {func_name} to a class prototype Dictionary as an instance
 " method of the class.
 "
@@ -187,19 +200,6 @@ function! s:Class_bind(func_name, ...) dict
 endfunction
 let s:Class.__bind__ = function(s:SID . 'Class_bind')
 let s:Class.method = s:Class.__bind__ | " syntax sugar
-
-" Defines an alias of class method {meth_name}.
-"
-"   call s:Foo.class_alias('hi', 'hello')
-"
-function! s:Class_class_alias(alias, meth_name) dict
-  if has_key(self, a:meth_name) && type(self[a:meth_name]) == s:TYPE_FUNC
-    let self[a:alias] = self[a:meth_name]
-  else
-    throw "vim-oop: " . self.name . "." . a:meth_name . "() is not defined."
-  endif
-endfunction
-let s:Class.class_alias = function(s:SID . 'Class_class_alias')
 
 " Defines an alias of instance method {meth_name}.
 "

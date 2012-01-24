@@ -108,12 +108,12 @@ function! s:tc.oop_class_get___it_should_return_Class_with_name()
 endfunction
 
 " oop#class#new()
-function! s:tc.oop_class_new___it_should_inherit_class_methods_from_superclass()
+function! s:tc.oop_class_new___it_should_inherit_class_methods_from_superclasses()
   call self.assert_equal("Foo's ciao", s:Bar.ciao())
   call self.assert_equal("Foo's ciao", s:Baz.ciao())
 endfunction
 
-function! s:tc.oop_class_new___it_should_inherit_instance_methods_from_superclass()
+function! s:tc.oop_class_new___it_should_inherit_instance_methods_from_superclasses()
   call self.assert_equal("Foo's ciao", self.bar.ciao())
   call self.assert_equal("Foo's ciao", self.baz.ciao())
 endfunction
@@ -173,6 +173,11 @@ function! s:tc.Class_class_method___it_should_bind_Funcref_as_class_method_with_
   call self.assert_not(has_key(s:Foo, 'hello_cn'))
 endfunction
 
+" {Class}.class_alias()
+function! s:tc.Class_class_alias___it_should_define_alias_of_class_method()
+  call self.assert_equal(s:Foo.hello, s:Foo.hi)
+endfunction
+
 " {Class}.method()
 function! s:tc.Class_method___it_should_bind_Funcref_as_instance_method()
   call self.assert_is_Funcref(self.foo.hello)
@@ -184,11 +189,6 @@ function! s:tc.Class_method___it_should_bind_Funcref_as_instance_method_with_giv
   call self.assert_equal("Foo's nihao", self.foo.nihao())
 
   call self.assert_not(has_key(self.foo, 'hello_cn'))
-endfunction
-
-" {Class}.class_alias()
-function! s:tc.Class_class_alias___it_should_define_alias_of_class_method()
-  call self.assert_equal(s:Foo.hello, s:Foo.hi)
 endfunction
 
 " {Class}.alias()
@@ -270,7 +270,7 @@ function! s:tc.Instance_is_a___foo_should_not_be_Bar()
 endfunction
 
 " {Instance}.demote()
-function! s:tc.Instance_demote___it_should_demote_Object_to_Dict()
+function! s:tc.Instance_demote___it_should_demote_Instance_to_Dict()
   call self.assert(oop#is_object(self.foo))
   call self.foo.demote()
   call self.assert_not(oop#is_object(self.foo))
@@ -278,7 +278,7 @@ function! s:tc.Instance_demote___it_should_demote_Object_to_Dict()
 endfunction
 
 " {Instance}.serialize()
-function! s:tc.Instance_serialize___it_should_serialize_Object_to_String()
+function! s:tc.Instance_serialize___it_should_serialize_Instance_to_String()
   let self.foo.value = 1
   let self.bar.value = 2
   let self.baz.value = 3
@@ -343,7 +343,7 @@ function! s:tc.oop_string___it_should_stringify_object()
 endfunction
 
 " oop#deserialize()
-function! s:tc.oop_deserialize___it_should_deserialize_Object_from_String()
+function! s:tc.oop_deserialize___it_should_deserialize_Instance_from_String()
   let self.foo.value = 1
   let self.bar.value = 2
   let self.baz.value = 3
