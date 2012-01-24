@@ -82,6 +82,29 @@ function! oop#class#new(name, sid, ...)
   return class
 endfunction
 
+" Same as oop#class#new() but it creates a new class that instanciates an
+" object by extend() not copy(). The class's new() requires a Dictionary as
+" the first argument and promote it to an its instance.
+"
+"   let s:XFoo = oop#class#xnew('XFoo')
+"
+"   function! s:XFoo_initialize(x, y) dict
+"     let self.x = a:x
+"     let self.y = a:y
+"   endfunction
+"   call s:XFoo.method('initialize')
+"
+"   let xfoo = s:XFoo.new(attrs, x, y)
+"
+" Note that in initialize() "self" IS the Dictionary that was the first
+" argument of s:XFoo.new().
+"
+function! oop#class#xnew(...)
+  let class = call('oop#class#new', a:000)
+  let class.__instanciator__ = 'extend'
+  return class
+endfunction
+
 "-----------------------------------------------------------------------------
 
 function! s:get_SID()
@@ -90,7 +113,7 @@ endfunction
 let s:SID = s:get_SID()
 delfunction s:get_SID
 
-let s:Class = { '__vim_oop__': 1 }
+let s:Class = { '__vim_oop__': 1, '__instanciator__': 'copy' }
 
 function! s:Object_extend(module, ...) dict
   let mode = (a:0 ? a:1 : 'force')
@@ -255,9 +278,15 @@ let s:Class.super = function(s:SID . 'Class_super')
 "   let foo = s:Foo.new()
 "
 function! s:Class_new(...) dict
-  let obj = copy(self.__prototype__)
+  if self.__instanciator__ ==# 'extend'
+    let obj = extend(a:000[0], self.__prototype__, 'keep')
+    let args = a:000[1:-1]
+  else
+    let obj = copy(self.__prototype__)
+    let args = a:000
+  endif
   let obj.class = self
-  call call(obj.initialize, a:000, obj)
+  call call(obj.initialize, args, obj)
   return obj
 endfunction
 let s:Class.new = function(s:SID . 'Class_new')

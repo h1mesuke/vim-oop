@@ -83,6 +83,19 @@ function! s:tc.SETUP()
   call s:Baz.class_method('bonjour')
   call s:Baz.method('bonjour')
 
+  " class XFoo
+  let s:XFoo = oop#class#xnew('XFoo', s:SID)
+
+  function! s:XFoo_initialize() dict
+    let self.initialized = get(self, 'initialized', 0) + 1
+  endfunction
+  call s:XFoo.method('initialize')
+
+  function! s:XFoo_hello() dict
+    return "XFoo's hello"
+  endfunction
+  call s:XFoo.method('hello')
+
   " module Buzz
   let s:Buzz = oop#module#new('Buzz', s:SID)
 
@@ -221,6 +234,17 @@ function! s:tc.Class_super___it_should_throw_if_no_super_implementation()
   call self.assert_throw('^vim-oop: ', '
         \ call unittest#self().Baz.super("bonjour", [], unittest#self().baz)
         \ ')
+endfunction
+
+" {Class}.new()
+function! s:tc.xnew_Class_new___it_should_use_extend_to_instanciate()
+  let attrs = { 'a': 10, 'b': 20, 'c': 30 }
+  let xfoo = s:XFoo.new(attrs)
+  call self.assert_is(attrs, xfoo)
+  call self.assert(oop#is_instance(xfoo))
+  call self.assert(xfoo.is_a(s:XFoo))
+  call self.assert_equal("XFoo's hello", xfoo.hello())
+  call self.assert_equal(10, xfoo.a)
 endfunction
 
 " {Class}.promote()
