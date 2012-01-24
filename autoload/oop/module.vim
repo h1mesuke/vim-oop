@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-23
+" Updated : 2012-01-24
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -44,19 +44,6 @@ function! oop#module#get(name)
   return ns[a:name]
 endfunction
 
-" oop#module#new( {name}, {sid})
-"
-" Creates a new module. The second argument must be the SID number or prefix
-" of the script where the module is defined.
-"
-"   function! s:get_SID()
-"     return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-"   endfunction
-"   let s:SID = s:get_SID()
-"   delfunction s:get_SID
-"
-"   s:Fizz = oop#module#new('Fizz', s:SID)
-"
 function! oop#module#new(name, sid)
   let ns = oop#__namespace__()
   if has_key(ns, a:name)
@@ -82,21 +69,6 @@ delfunction s:get_SID
 
 let s:Module = { '__vim_oop__': 1 }
 
-" Binds function {func_name} to a module Dictionary as a module function.
-"
-" The name of the function to be bound must be prefixed by the module name
-" followed by one underscore. This convention helps you to distinguish module
-" functions from other functions.
-"
-"   function! s:Fizz_hello() dict
-"   endfunction
-"   call s:Fizz.function('hello')
-"
-" Note that however the names of module functions themselves don't include the
-" prefix.
-"
-"   call s:Fizz.hello()
-"
 function! s:Module_bind(func_name, ...) dict
   let func_name = (a:0 ? a:1 : a:func_name)
   let self[func_name] = function(self.__sid_prefix__  . a:func_name)
@@ -105,10 +77,6 @@ endfunction
 let s:Module.__bind__ = function(s:SID . 'Module_bind')
 let s:Module.function = s:Module.__bind__ | " syntax sugar
 
-" Defines an alias of module function {func_name}.
-"
-"   call s:Fizz.alias('hi', 'hello')
-"
 function! s:Module_alias(alias, func_name) dict
   if has_key(self, a:func_name) && type(self[a:func_name]) == s:TYPE_FUNC
     let self[a:alias] = self[a:func_name]

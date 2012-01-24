@@ -1,0 +1,343 @@
+*vim-oop.txt*		OOP Support for Vim script
+
+Author  : h1mesuke <himesuke+vim@gmail.com>
+Updated : 2012-01-24
+Version : 0.2.4
+License : MIT license {{{
+
+	Permission is hereby granted, free of charge, to any person obtaining
+	a copy of this software and associated documentation files (the
+	"Software"), to deal in the Software without restriction, including
+	without limitation the rights to use, copy, modify, merge, publish,
+	distribute, sublicense, and/or sell copies of the Software, and to
+	permit persons to whom the Software is furnished to do so, subject to
+	the following conditions:
+	The above copyright notice and this permission notice shall be
+	included in all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+	IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+	CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+	TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}}}
+
+==============================================================================
+CONTENTS					*vim-oop-contents*
+
+
+==============================================================================
+INTRODUCTION					*vim-oop-introduction*
+
+	*vim-oop* is a library that provides OOP support to Vim script.
+
+==============================================================================
+HOW TO DEFINE A CLASS				*vim-oop-how-to-define-class*
+
+==============================================================================
+HOW TO DEFINE A MODULE				*vim-oop-how-to-define-module*
+
+==============================================================================
+HOW TO BUNDLE VIM-OOP TO YOUR PLUGIN		*vim-oop-how-to-bundle*
+
+==============================================================================
+INTERFACE					*vim-oop-interface*
+
+------------------------------------------------------------------------------
+FUNCTIONS					*vim-oop-functions*
+
+	oop#is_object( {value})			*oop#is_object()*
+
+		Returns True if {value} is a vim-oop's object.
+
+	oop#is_class( {value})			*oop#is_class()*
+
+		Returns True if {value} is a vim-oop's class.
+
+	oop#is_instance( {value})		*oop#is_instance()*
+
+		Returns True if {value} is a vim-oop's instance.
+
+	oop#is_module( {value})			*oop#is_module()*
+
+		Returns True if {value} is a vim-oop's module.
+
+	oop#string( {value})			*oop#string()*
+
+		Returns {value} converted to a String.
+
+	oop#deserialize( {str})			*oop#deserialize()*
+
+		Deserialize an object from {str}.
+
+		See also: |vim-oop-Instance.serialize()|
+
+CLASS						*vim-oop-class*
+
+						*oop#class#new()*
+	oop#class#new( {name}, {sid} [, {superclass}])
+
+		Creates a new class. The second argument must be the SID
+		number or prefix of the script where the class is defined.
+
+		Example: >
+		function! s:get_SID()
+		  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+		endfunction
+		let s:SID = s:get_SID()
+		delfunction s:get_SID
+
+		s:Foo = oop#class#new('Foo', s:SID)
+<
+		To create a derived class, give the base class as the third
+		argument.
+
+		Example: >
+		s:Bar = oop#class#new('Bar', s:SID, s:Foo)
+<
+						*oop#class#xnew()*
+	oop#class#xnew( {name}, {sid} [, {superclass}])
+
+		Same as |oop#class#new()| but it creates a new class that
+		instanciates an object by |extend()| not |copy()|. The class's
+		new() requires a Dictionary as the first argument and promote
+		it to an its instance.
+
+		Example: >
+		let s:XFoo = oop#class#xnew('XFoo')
+
+		function! s:XFoo_initialize(x, y) dict
+		  let self.x = a:x
+		  let self.y = a:y
+		endfunction
+		call s:XFoo.method('initialize')
+
+		let xfoo = s:XFoo.new(attrs, x, y)
+<
+		Note that in initialize() "self" IS the Dictionary that was
+		the first argument of new().
+
+	oop#class#get( {name})			*oop#class#get()*
+
+		Returns a class with {name}.
+
+	{Class}.extend( {module} [, {mode}])		*vim-oop-Class.extend()*
+
+		Adds {module}'s functions to the class as class methods.
+		When {mode} is given, it works in the same way as {expr3}
+		of|extend()|.
+
+		Example: >
+		s:Foo.extend(s:Buzz)
+<
+	{Class}.include( {module} [, {mode}])		*vim-oop-Class.include()*
+
+		Adds {module}'s functions to the class as instance methods.
+		When {mode} is given, it works in the same way as {expr3}
+		of|extend()|.
+
+		Example: >
+		s:Foo.include(s:Buzz)
+<
+	{Class}.ancestors()			*vim-oop-Class.ancestors()*
+
+		Returns a List of ancestor classes.
+
+	{Class}.is_descendant_of( {class})	*vim-oop-Class.is_descendant_of()*
+
+		Returns True if the class is a descendant of {class}.
+
+		Example: >
+		if s:Bar.is_descendant_of(s:Foo)
+		endif
+<
+						*vim-oop-Class.class_method()*
+	{Class}.class_method( {func-name} [, {as-name}])
+
+		Binds function {func-name} to the class as a class method.
+		When {as-name} is given, the function is bound as method
+		{as-name}.
+
+		The name of the function to be bound must be prefixed by the
+		class name followed by one underscore. This convention helps
+		you to distinguish method functions from other functions.
+
+		Example: >
+		function! s:Foo_hello() dict
+		endfunction
+		call s:Foo.class_method('hello')
+<
+		Note that both {func-name} and the method name don't include
+		the prefix.
+
+		Example: >
+		call Foo.hello()
+<
+						*vim-oop-Class.class_alias()*
+	{Class}.class_alias( {alias}, {meth-name})
+
+		Defines an alias of class method {meth-name}.
+
+		Example: >
+		call s:Foo.class_alias('hi', 'hello')
+<
+						*vim-oop-Class.method()*
+	{Class}.method( {func-name} [, {as-name}])
+
+		Binds function {func-name} to the class an instance method.
+		When {as-name} is given, the function is bound as method
+		{as-name}.
+
+		The name of the function to be bound must be prefixed by the
+		class name followed by one underscore. This convention helps
+		you to distinguish method functions from other functions.
+
+		Example: >
+		function! s:Foo_hello() dict
+		endfunction
+		call s:Foo.method('hello')
+<
+		Note that both {func-name} and the method name don't include
+		the prefix.
+
+		Example: >
+		call foo.hello()
+<
+	{Class}.alias( {alias}, {meth-name})	*vim-oop-Class.alias()*
+
+		Defines an alias of instance method {meth-name}.
+
+		Example: >
+		call s:Foo.alias('hi', 'hello')
+<
+						*vim-oop-Class.super()*
+	{Class}.super( {meth-name}, {args}, {self})
+
+		{Class}.super( {meth-name}, {args}, {self})
+
+		Calls the superclass's implementation of method {meth-name} in
+		the manner of built-in |call()|.
+
+		Example: >
+		function! s:Bar_hello() dict
+		  return 'Bar < ' . s:Bar.super('hello', [], self)
+		endfunction
+		call s:Bar.class_method('hello')
+		call s:Bar.method('hello')
+<
+	{Class}.new(...)			*vim-oop-Class.new()*
+
+		Instantiates an object.
+		Arguments are passed to initialize().
+
+		Example: >
+		let foo = s:Foo.new()
+<
+INSTANCE					*vim-oop-instance*
+
+	{instance}.initialize(...)		*vim-oop-Instance.initialize()*
+
+		Initializes the object. This method will be called for each
+		newly created instances as a part of its instanciation
+		process. User-defined classes should override this method for
+		their specific initialization.
+
+		Example: >
+		let s:Foo = oop#class#new('Foo')
+
+		function! s:Foo_initialize(x, y) dict
+		  let self.x = a:x
+		  let self.y = a:y
+		endfunction
+		call s:Foo.method('initialize')
+<
+	{instance}_extend( {module}, ...)	*vim-oop-Instance_extend()*
+
+		Adds {module}'s functions to the object as its methods.
+		When {mode} is given, it works in the same way as {expr3}
+		of|extend()|.
+
+		Example: >
+		foo.extend(s:Buzz)
+<
+	{instance}.is_kind_of( {class})		*vim-oop-Instance.is_kind_of()*
+
+		Returns True if the object is an instance of {class} or one of
+		its ancestors.
+
+		Example: >
+		if foo.is_a(s:Foo)
+		endif
+<
+	{instance}.serialize()			*vim-oop-Instance.serialize()*
+
+		Serializes the object to a String.
+
+		See also: |oop#deserialize()|
+
+MODULE						*vim-oop-module*
+
+	oop#module#new( {name}, {sid})		*oop#module#new()*
+
+		Creates a new module. The second argument must be the SID
+		number or prefix of the script where the module is defined.
+
+		Example: >
+		function! s:get_SID()
+		  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+		endfunction
+		let s:SID = s:get_SID()
+		delfunction s:get_SID
+
+		s:Fizz = oop#module#new('Fizz', s:SID)
+<
+
+	oop#module#get( {name})			*oop#module#get()*
+
+		Returns a module with {name}.
+
+						*vim-oop-Module.function()*
+	{Module}.function( {func-name} [, {as-name}])
+
+		Binds function {func-name} to the module as a module function.
+		When {as-name} is given, the function is bound as module
+		function {as-name}.
+
+		The name of the function to be bound must be prefixed by the
+		module name followed by one underscore. This convention helps
+		you to distinguish module functions from other functions.
+
+		Example: >
+		function! s:Fizz_hello() dict
+		endfunction
+		call s:Fizz.function('hello')
+<
+		Note that both {func-name} and the module function name don't
+		include the prefix.
+
+		Example: >
+		call s:Fizz.hello()
+<
+	{Module}.alias( {alias}, {func-name})	*vim-oop-Module.alias()*
+
+		Defines an alias of module function {func-name}.
+
+		Example: >
+		call s:Fizz.alias('hi', 'hello')
+<
+==============================================================================
+ISSUES						*vim-oop-issues*
+
+	* Issues - h1mesuke/vim-oop - GitHub
+	  https://github.com/h1mesuke/vim-oop/issues
+
+==============================================================================
+CHANGELOG					*vim-oop-changelog*
+
+0.0.1	2011-12-26
+
+	* Initial version
+
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:fdm=marker:

@@ -44,23 +44,6 @@ function! oop#class#get(name)
   return ns[a:name]
 endfunction
 
-" oop#class#new( {name}, {sid} [, {superclass}])
-"
-" Creates a new class. The second argument must be the SID number or prefix of
-" the script where the class is defined.
-"
-"   function! s:get_SID()
-"     return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-"   endfunction
-"   let s:SID = s:get_SID()
-"   delfunction s:get_SID
-"
-"   s:Foo = oop#class#new('Foo', s:SID)
-"
-" To create a derived class, give the base class as the third argument.
-"
-"   s:Bar = oop#class#new('Bar', s:SID, s:Foo)
-"
 function! oop#class#new(name, sid, ...)
   let ns = oop#__namespace__()
   if has_key(ns, a:name)
@@ -82,23 +65,6 @@ function! oop#class#new(name, sid, ...)
   return class
 endfunction
 
-" Same as oop#class#new() but it creates a new class that instanciates an
-" object by extend() not copy(). The class's new() requires a Dictionary as
-" the first argument and promote it to an its instance.
-"
-"   let s:XFoo = oop#class#xnew('XFoo')
-"
-"   function! s:XFoo_initialize(x, y) dict
-"     let self.x = a:x
-"     let self.y = a:y
-"   endfunction
-"   call s:XFoo.method('initialize')
-"
-"   let xfoo = s:XFoo.new(attrs, x, y)
-"
-" Note that in initialize() "self" IS the Dictionary that was the first
-" argument of s:XFoo.new().
-"
 function! oop#class#xnew(...)
   let class = call('oop#class#new', a:000)
   let class.__instanciator__ = 'extend'
@@ -120,16 +86,8 @@ function! s:Object_extend(module, ...) dict
   call s:extend(self, a:module, mode)
 endfunction
 
-" Adds {module}'s functions to the class as class methods.
-"
-"   s:Foo.extend(s:Buzz)
-"
 let s:Class.extend = function(s:SID . 'Object_extend')
 
-" Adds {module}'s functions to the class as instance methods.
-"
-"   s:Foo.include(s:Buzz)
-"
 function! s:Class_include(module, ...) dict
   let mode = (a:0 ? a:1 : 'force')
   call s:extend(self.__prototype__, a:module, mode)
@@ -144,8 +102,6 @@ function! s:extend(dict, module, mode)
   call extend(a:dict, funcs, a:mode)
 endfunction
 
-" Returns a List of ancestor classes.
-"
 function! s:Class_ancestors() dict
   let ancestors = []
   let klass = self.superclass
@@ -157,31 +113,11 @@ function! s:Class_ancestors() dict
 endfunction
 let s:Class.ancestors = function(s:SID . 'Class_ancestors')
 
-" Returns True if the class is a descendant of {class}.
-"
-"   if s:Bar.is_descendant_of(s:Foo)
-"   endif
-"
 function! s:Class_is_descendant_of(class) dict
   return index(self.ancestors(), a:class) >= 0
 endfunction
 let s:Class.is_descendant_of = function(s:SID . 'Class_is_descendant_of')
 
-" Binds function {func_name} to a class Dictionary as a class method of the
-" class.
-"
-" The name of the function to be bound must be prefixed by the class name
-" followed by one underscore. This convention helps you to distinguish method
-" functions from other functions.
-"
-"   function! s:Foo_hello() dict
-"   endfunction
-"   call s:Foo.class_method('hello')
-"
-" Note that however the names of methods themselves don't include the prefix.
-"
-"   call Foo.hello()
-"
 function! s:Class_class_bind(func_name, ...) dict
   let meth_name = (a:0 ? a:1 : a:func_name)
   let self[meth_name] = function(self.__sid_prefix__  . a:func_name)
@@ -189,10 +125,6 @@ endfunction
 let s:Class.__class_bind__ = function(s:SID . 'Class_class_bind')
 let s:Class.class_method = s:Class.__class_bind__ | " syntax sugar
 
-" Defines an alias of class method {meth_name}.
-"
-"   call s:Foo.class_alias('hi', 'hello')
-"
 function! s:Class_class_alias(alias, meth_name) dict
   if has_key(self, a:meth_name) && type(self[a:meth_name]) == s:TYPE_FUNC
     let self[a:alias] = self[a:meth_name]
@@ -202,21 +134,6 @@ function! s:Class_class_alias(alias, meth_name) dict
 endfunction
 let s:Class.class_alias = function(s:SID . 'Class_class_alias')
 
-" Binds function {func_name} to a class prototype Dictionary as an instance
-" method of the class.
-"
-" The name of the function to be bound must be prefixed by the class name
-" followed by one underscore. This convention helps you to distinguish method
-" functions from other functions.
-"
-"   function! s:Foo_hello() dict
-"   endfunction
-"   call s:Foo.method('hello')
-"
-" Note that however the names of methods themselves don't include the prefix.
-"
-"   call foo.hello()
-"
 function! s:Class_bind(func_name, ...) dict
   let meth_name = (a:0 ? a:1 : a:func_name)
   let self.__prototype__[meth_name] = function(self.__sid_prefix__  . a:func_name)
@@ -224,10 +141,6 @@ endfunction
 let s:Class.__bind__ = function(s:SID . 'Class_bind')
 let s:Class.method = s:Class.__bind__ | " syntax sugar
 
-" Defines an alias of instance method {meth_name}.
-"
-"   call s:Foo.alias('hi', 'hello')
-"
 function! s:Class_alias(alias, meth_name) dict
   if has_key(self.__prototype__, a:meth_name) &&
         \ type(self.__prototype__[a:meth_name]) == s:TYPE_FUNC
@@ -238,17 +151,6 @@ function! s:Class_alias(alias, meth_name) dict
 endfunction
 let s:Class.alias = function(s:SID . 'Class_alias')
 
-" {Class}.super( {meth_name}, {args}, {self})
-"
-" Calls the superclass's implementation of method {meth_name} in the manner of
-" built-in call().
-"
-"   function! s:Bar_hello() dict
-"     return 'Bar < ' . s:Bar.super('hello', [], self)
-"   endfunction
-"   call s:Bar.class_method('hello')
-"   call s:Bar.method('hello')
-"
 function! s:Class_super(meth_name, args, _self) dict
   let is_class = oop#is_class(a:_self)
   let meth_table = (is_class ? self : self.__prototype__)
@@ -273,10 +175,6 @@ function! s:Class_super(meth_name, args, _self) dict
 endfunction
 let s:Class.super = function(s:SID . 'Class_super')
 
-" Instantiates an object.
-"
-"   let foo = s:Foo.new()
-"
 function! s:Class_new(...) dict
   if self.__instanciator__ ==# 'extend'
     let obj = extend(a:000[0], self.__prototype__, 'keep')
@@ -291,10 +189,6 @@ function! s:Class_new(...) dict
 endfunction
 let s:Class.new = function(s:SID . 'Class_new')
 
-" Promotes an attributes Dictionary to an object.
-"
-"   let foo = s:Foo.promote(attrs)
-"
 function! s:Class_promote(attrs) dict
   let obj = extend(a:attrs, self.__prototype__, 'keep')
   let obj.class = self
@@ -307,42 +201,18 @@ let s:Class.promote = function(s:SID . 'Class_promote')
 
 let s:Instance = { '__vim_oop__': 1 }
 
-" Initializes the object. This method will be called for each newly created
-" object as a part of its instanciation process. User-defined classes should
-" override this method for their specific initialization.
-"
-"   let s:Foo = oop#class#new('Foo')
-"
-"   function! s:Foo_initialize(x, y) dict
-"     let self.x = a:x
-"     let self.y = a:y
-"   endfunction
-"   call s:Foo.method('initialize')
-"
 function! s:Instance_initialize(...) dict
 endfunction
 let s:Instance.initialize = function(s:SID . 'Instance_initialize')
 
-" Adds {module}'s functions to the object as its methods.
-"
-"   foo.extend(s:Buzz)
-"
 let s:Instance.extend = function(s:SID . 'Object_extend')
 
-" Returns True if the object is an instance of {class} or one of its
-" ancestors.
-"
-"   if foo.is_a(s:Foo)
-"   endif
-"
 function! s:Instance_is_kind_of(class) dict
   return (self.class is a:class || self.class.is_descendant_of(a:class))
 endfunction
 let s:Instance.is_kind_of = function(s:SID . 'Instance_is_kind_of')
 let s:Instance.is_a = function(s:SID . 'Instance_is_kind_of')
 
-" Demotes the object to an attributes Dictionary.
-"
 function! s:Instance_demote() dict
   let self.class = self.class.name
   call filter(self, 'type(v:val) != s:TYPE_FUNC')
@@ -351,8 +221,6 @@ function! s:Instance_demote() dict
 endfunction
 let s:Instance.demote = function(s:SID . 'Instance_demote')
 
-" Serializes the object.
-"
 function! s:Instance_serialize() dict
   return oop#string(self)
 endfunction
