@@ -32,7 +32,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! oop#assertions#module()
+function! oop#assertions#export()
   return s:Assertions
 endfunction
 

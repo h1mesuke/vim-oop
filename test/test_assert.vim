@@ -26,7 +26,7 @@ let s:tc = unittest#testcase#new("Assertions")
 function! s:tc.SETUP()
   runtime autoload/oop.vim
   runtime autoload/oop/assertions.vim
-  call self.extend(oop#assertions#module())
+  call self.extend(oop#assertions#export())
 
   " class Foo
   let s:Foo = oop#class#new('Foo', s:SID)
