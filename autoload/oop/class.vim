@@ -44,17 +44,7 @@ delfunction s:get_SID
 "-----------------------------------------------------------------------------
 " Class
 
-" NOTE: Omit type checking for efficiency.
-function! oop#class#get(name)
-  let ns = oop#__namespace__()
-  return ns[a:name]
-endfunction
-
 function! oop#class#new(name, sid, ...)
-  let ns = oop#__namespace__()
-  if has_key(ns, a:name)
-    throw "vim-oop: Name conflict: " . a:name
-  endif
   let class = copy(s:Class)
   let class.name = a:name
   let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
@@ -67,7 +57,6 @@ function! oop#class#new(name, sid, ...)
     call extend(class, klass, 'keep')
     call extend(class.__prototype__, klass.__prototype__, 'keep')
   endfor
-  let ns[a:name] = class
   return class
 endfunction
 
@@ -77,7 +66,7 @@ function! oop#class#xnew(...)
   return class
 endfunction
 
-let s:Class = copy(oop#get('Object'))
+let s:Class = copy(oop#__object__())
 let s:Class.__instanciator__ = 'copy'
 
 function! s:Class_ancestors() dict
@@ -175,7 +164,7 @@ let s:Class.__promote__ = function(s:SID . 'Class___promote__')
 "-----------------------------------------------------------------------------
 " Instance
 
-let s:Instance = copy(oop#get('Object'))
+let s:Instance = copy(oop#__object__())
 
 function! s:Instance_initialize(...) dict
 endfunction

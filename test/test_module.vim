@@ -35,11 +35,6 @@ function! s:tc.SETUP()
   call s:Fizz.function('hello_cn', 'nihao')
 endfunction
 
-" oop#module#get()
-function! s:tc.oop_module_get___it_should_return_Module_with_name()
-  call self.assert_is(s:Fizz, oop#module#get('Fizz'))
-endfunction
-
 " {Module}.function()
 function! s:tc.Module_function___it_should_bind_Funcref_as_module_function()
   call self.assert_is_Funcref(s:Fizz.hello)

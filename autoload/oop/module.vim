@@ -43,28 +43,17 @@ delfunction s:get_SID
 "-----------------------------------------------------------------------------
 " Module
 
-" NOTE: Omit type checking for efficiency.
-function! oop#module#get(name)
-  let ns = oop#__namespace__()
-  return ns[a:name]
-endfunction
-
 function! oop#module#new(name, sid)
-  let ns = oop#__namespace__()
-  if has_key(ns, a:name)
-    throw "vim-oop: Name conflict: " . a:name
-  endif
   let module = copy(s:Module)
   let module.name = a:name
   let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
   let module.__prefix__ = printf('<SNR>%d_%s_', sid, a:name)
   "=> <SNR>10_Fizz_
   let module.__export__ = []
-  let ns[a:name] = module
   return module
 endfunction
 
-let s:Module = copy(oop#get('Object'))
+let s:Module = copy(oop#__object__())
 
 function! s:Module_function(func_name, ...) dict
   let func_name = self.__prefix__ . a:func_name

@@ -42,16 +42,6 @@ endfunction
 let s:SID = s:get_SID()
 delfunction s:get_SID
 
-let s:namespace = {}
-
-function! oop#__namespace__()
-  return s:namespace
-endfunction
-
-function! oop#get(name)
-  return get(s:namespace, a:name, {})
-endfunction
-
 function! oop#is_object(value)
   return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__')
 endfunction
@@ -94,27 +84,38 @@ function! s:demote_objects(value)
   return a:value
 endfunction
 
-function! oop#deserialize(str)
+function! oop#deserialize(str, loader)
+  let cache = {}
   sandbox let dict = eval(a:str)
-  return s:promote_objects(dict)
+  return s:promote_objects(dict, a:loader, cache)
 endfunction
 
-function! s:promote_objects(value)
+function! s:promote_objects(value, loader, cache)
   let type = type(a:value)
   if type == s:TYPE_LIST
-    call map(a:value, 's:promote_objects(v:val)')
+    call map(a:value, 's:promote_objects(v:val, a:loader, a:cache)')
   elseif type == s:TYPE_DICT
     if has_key(a:value, 'class')
-      let class = oop#class#get(a:value.class)
+      let class_name = a:value.class
+      if has_key(a:cache, class_name)
+        let class = a:cache[class_name]
+      else
+        let class = call(a:loader, [class_name])
+        let a:cache[class_name] = class
+      endif
       call class.__promote__(a:value)
     endif
-    call map(values(a:value), 's:promote_objects(v:val)')
+    call map(values(a:value), 's:promote_objects(v:val, a:loader, a:cache)')
   endif
   return a:value
 endfunction
 
 "-----------------------------------------------------------------------------
 " Object
+
+function! oop#__object__()
+  return s:Object
+endfunction
 
 let s:Object = { '__vim_oop__': 1 }
 
@@ -158,8 +159,5 @@ function! s:Object_extend(module, ...) dict
   call extend(self, exported, mode)
 endfunction
 let s:Object.extend = function(s:SID . 'Object_extend')
-
-let s:namespace.Object = s:Object
-unlet s:Object
 
 let &cpo = s:save_cpo

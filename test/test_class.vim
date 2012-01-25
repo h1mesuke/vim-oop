@@ -114,11 +114,6 @@ function! s:tc.setup()
   let self.baz = s:Baz.new()
 endfunction
 
-" oop#class#get()
-function! s:tc.oop_class_get___it_should_return_Class_with_name()
-  call self.assert_is(s:Foo, oop#class#get('Foo'))
-endfunction
-
 " oop#class#new()
 function! s:tc.oop_class_new___it_should_inherit_class_methods_from_superclasses()
   call self.assert_equal("Foo's ciao", s:Bar.ciao())
@@ -351,10 +346,12 @@ function! s:tc.oop_deserialize___it_should_deserialize_Instance_from_String()
   let self.foo.children = [self.bar, self.baz]
 
   let str = self.foo.serialize()
-  call self.assert_equal(self.foo, oop#deserialize(str))
+  call self.assert_equal(self.foo, oop#deserialize(str, s:SID . 'name_to_class'))
 endfunction
 
-unlet s:tc
+function! s:name_to_class(name)
+  return s:tc[a:name]
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
