@@ -32,15 +32,24 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:TYPE_NUM  = type(0)
-let s:TYPE_DICT = type({})
 let s:TYPE_LIST = type([])
+let s:TYPE_DICT = type({})
 let s:TYPE_FUNC = type(function('tr'))
+
+function! s:get_SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+let s:SID = s:get_SID()
+delfunction s:get_SID
 
 let s:namespace = {}
 
 function! oop#__namespace__()
   return s:namespace
+endfunction
+
+function! oop#get(name)
+  return get(s:namespace, a:name, {})
 endfunction
 
 function! oop#is_object(value)
@@ -103,5 +112,54 @@ function! s:promote_objects(value)
   endif
   return a:value
 endfunction
+
+"-----------------------------------------------------------------------------
+" Object
+
+let s:Object = { '__vim_oop__': 1 }
+
+function! s:Object_bind(func, ...) dict
+  if type(a:func) == s:TYPE_FUNC
+    let Func = a:func
+    let meth_name = a:1
+  else
+    let Func = function(a:func)
+    let meth_name = (a:0 ? a:1 : s:remove_prefix(a:func))
+  endif
+  let self[meth_name] = Func
+  if has_key(self, '__export__')
+    call add(self.__export__, meth_name)
+  endif
+endfunction
+let s:Object.__bind__ = function(s:SID . 'Object_bind')
+
+function! s:remove_prefix(func_name)
+  return substitute(a:func_name, '^<SNR>\d\+_\%(\u[^_]*_\)\+', '', '')
+endfunction
+
+function! s:Object_alias(alias, meth_name) dict
+  if has_key(self, a:meth_name) && type(self[a:meth_name]) == s:TYPE_FUNC
+    let self[a:alias] = self[a:meth_name]
+    if has_key(self, '__export__')
+      call add(self.__export__, a:alias)
+    endif
+  else
+    throw "vim-oop: " . a:meth_name . "() is not defined."
+  endif
+endfunction
+let s:Object.alias = function(s:SID . 'Object_alias')
+
+function! s:Object_extend(module, ...) dict
+  let mode = (a:0 ? a:1 : 'force')
+  let exported = {}
+  for func_name in a:module.__export__
+    let exported[func_name] = a:module[func_name]
+  endfor
+  call extend(self, exported, mode)
+endfunction
+let s:Object.extend = function(s:SID . 'Object_extend')
+
+let s:namespace.Object = s:Object
+unlet s:Object
 
 let &cpo = s:save_cpo

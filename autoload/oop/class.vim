@@ -35,6 +35,12 @@ set cpo&vim
 let s:TYPE_NUM  = type(0)
 let s:TYPE_FUNC = type(function('tr'))
 
+function! s:get_SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+let s:SID = s:get_SID()
+delfunction s:get_SID
+
 "-----------------------------------------------------------------------------
 " Class
 
@@ -52,7 +58,7 @@ function! oop#class#new(name, sid, ...)
   let class = copy(s:Class)
   let class.name = a:name
   let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
-  let class.__sid_prefix__ = printf('<SNR>%d_%s_', sid, a:name)
+  let class.__prefix__ = printf('<SNR>%d_%s_', sid, a:name)
   "=> <SNR>10_Foo_
   let class.__prototype__ = copy(s:Instance)
   let class.superclass = (a:0 ? a:1 : {})
@@ -71,36 +77,8 @@ function! oop#class#xnew(...)
   return class
 endfunction
 
-"-----------------------------------------------------------------------------
-
-function! s:get_SID()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-endfunction
-let s:SID = s:get_SID()
-delfunction s:get_SID
-
-let s:Class = { '__vim_oop__': 1, '__instanciator__': 'copy' }
-
-function! s:Object_extend(module, ...) dict
-  let mode = (a:0 ? a:1 : 'force')
-  call s:extend(self, a:module, mode)
-endfunction
-
-let s:Class.extend = function(s:SID . 'Object_extend')
-
-function! s:Class_include(module, ...) dict
-  let mode = (a:0 ? a:1 : 'force')
-  call s:extend(self.__prototype__, a:module, mode)
-endfunction
-let s:Class.include = function(s:SID . 'Class_include')
-
-function! s:extend(dict, module, mode)
-  let funcs = {}
-  for func_name in a:module.__funcs__
-    let funcs[func_name] = a:module[func_name]
-  endfor
-  call extend(a:dict, funcs, a:mode)
-endfunction
+let s:Class = copy(oop#get('Object'))
+let s:Class.__instanciator__ = 'copy'
 
 function! s:Class_ancestors() dict
   let ancestors = []
@@ -118,38 +96,36 @@ function! s:Class_is_descendant_of(class) dict
 endfunction
 let s:Class.is_descendant_of = function(s:SID . 'Class_is_descendant_of')
 
-function! s:Class_class_bind(func_name, ...) dict
-  let meth_name = (a:0 ? a:1 : a:func_name)
-  let self[meth_name] = function(self.__sid_prefix__  . a:func_name)
-endfunction
-let s:Class.__class_bind__ = function(s:SID . 'Class_class_bind')
-let s:Class.class_method = s:Class.__class_bind__ | " syntax sugar
+let s:Class.__class_bind__ = s:Class.__bind__
 
-function! s:Class_class_alias(alias, meth_name) dict
-  if has_key(self, a:meth_name) && type(self[a:meth_name]) == s:TYPE_FUNC
-    let self[a:alias] = self[a:meth_name]
-  else
-    throw "vim-oop: " . self.name . "." . a:meth_name . "() is not defined."
-  endif
+function! s:Class_class_method(func_name, ...) dict
+  let func_name = self.__prefix__ . a:func_name
+  call call(self.__class_bind__, [func_name] + a:000, self)
 endfunction
-let s:Class.class_alias = function(s:SID . 'Class_class_alias')
+let s:Class.class_method = function(s:SID . 'Class_class_method')
 
-function! s:Class_bind(func_name, ...) dict
-  let meth_name = (a:0 ? a:1 : a:func_name)
-  let self.__prototype__[meth_name] = function(self.__sid_prefix__  . a:func_name)
+let s:Class.class_alias = s:Class.alias
+
+function! s:Class_bind(...) dict
+  call call(self.__prototype__.__bind__, a:000, self.__prototype__)
 endfunction
 let s:Class.__bind__ = function(s:SID . 'Class_bind')
-let s:Class.method = s:Class.__bind__ | " syntax sugar
 
-function! s:Class_alias(alias, meth_name) dict
-  if has_key(self.__prototype__, a:meth_name) &&
-        \ type(self.__prototype__[a:meth_name]) == s:TYPE_FUNC
-    let self.__prototype__[a:alias] = self.__prototype__[a:meth_name]
-  else
-    throw "vim-oop: " . self.name . "#" . a:meth_name . "() is not defined."
-  endif
+function! s:Class_method(func_name, ...) dict
+  let func_name = self.__prefix__ . a:func_name
+  call call(self.__bind__, [func_name] + a:000, self)
+endfunction
+let s:Class.method = function(s:SID . 'Class_method')
+
+function! s:Class_alias(...) dict
+  call call(self.__prototype__.alias, a:000, self.__prototype__)
 endfunction
 let s:Class.alias = function(s:SID . 'Class_alias')
+
+function! s:Class_include(...) dict
+  call call(self.__prototype__.extend, a:000, self.__prototype__)
+endfunction
+let s:Class.include = function(s:SID . 'Class_include')
 
 function! s:Class_super(meth_name, args, _self) dict
   let is_class = oop#is_class(a:_self)
@@ -199,13 +175,11 @@ let s:Class.__promote__ = function(s:SID . 'Class___promote__')
 "-----------------------------------------------------------------------------
 " Instance
 
-let s:Instance = { '__vim_oop__': 1 }
+let s:Instance = copy(oop#get('Object'))
 
 function! s:Instance_initialize(...) dict
 endfunction
 let s:Instance.initialize = function(s:SID . 'Instance_initialize')
-
-let s:Instance.extend = function(s:SID . 'Object_extend')
 
 function! s:Instance_is_kind_of(class) dict
   return (self.class is a:class || self.class.is_descendant_of(a:class))

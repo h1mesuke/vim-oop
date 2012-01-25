@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-24
+" Updated : 2012-01-25
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -33,7 +33,12 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:TYPE_NUM  = type(0)
-let s:TYPE_FUNC = type(function('tr'))
+
+function! s:get_SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+let s:SID = s:get_SID()
+delfunction s:get_SID
 
 "-----------------------------------------------------------------------------
 " Module
@@ -52,39 +57,19 @@ function! oop#module#new(name, sid)
   let module = copy(s:Module)
   let module.name = a:name
   let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
-  let module.__sid_prefix__ = printf('<SNR>%d_%s_', sid, a:name)
+  let module.__prefix__ = printf('<SNR>%d_%s_', sid, a:name)
   "=> <SNR>10_Fizz_
-  let module.__funcs__ = []
+  let module.__export__ = []
   let ns[a:name] = module
   return module
 endfunction
 
-"-----------------------------------------------------------------------------
+let s:Module = copy(oop#get('Object'))
 
-function! s:get_SID()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+function! s:Module_function(func_name, ...) dict
+  let func_name = self.__prefix__ . a:func_name
+  call call(self.__bind__, [func_name] + a:000, self)
 endfunction
-let s:SID = s:get_SID()
-delfunction s:get_SID
-
-let s:Module = { '__vim_oop__': 1 }
-
-function! s:Module_bind(func_name, ...) dict
-  let func_name = (a:0 ? a:1 : a:func_name)
-  let self[func_name] = function(self.__sid_prefix__  . a:func_name)
-  call add(self.__funcs__, func_name)
-endfunction
-let s:Module.__bind__ = function(s:SID . 'Module_bind')
-let s:Module.function = s:Module.__bind__ | " syntax sugar
-
-function! s:Module_alias(alias, func_name) dict
-  if has_key(self, a:func_name) && type(self[a:func_name]) == s:TYPE_FUNC
-    let self[a:alias] = self[a:func_name]
-    call add(self.__funcs__, a:alias)
-  else
-    throw "vim-oop: " . self.name . "." . a:func_name . "() is not defined."
-  endif
-endfunction
-let s:Module.alias = function(s:SID . 'Module_alias')
+let s:Module.function = function(s:SID . 'Module_function')
 
 let &cpo = s:save_cpo

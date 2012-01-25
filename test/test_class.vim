@@ -103,13 +103,12 @@ function! s:tc.SETUP()
     return 1
   endfunction
   call s:Buzz.function('is_extended')
-
-  let self.Foo = s:Foo
-  let self.Bar = s:Bar
-  let self.Baz = s:Baz
 endfunction
 
 function! s:tc.setup()
+  let self.Foo = s:Foo
+  let self.Bar = s:Bar
+  let self.Baz = s:Baz
   let self.foo = s:Foo.new()
   let self.bar = s:Bar.new()
   let self.baz = s:Baz.new()
@@ -132,30 +131,34 @@ function! s:tc.oop_class_new___it_should_inherit_instance_methods_from_superclas
 endfunction
 
 " {Class}.extend()
+function! s:tc.setup_Class_extend()
+  let self.Foo = deepcopy(s:Foo)
+  call self.Foo.extend(s:Buzz)
+endfunction
+
 function! s:tc.Class_extend___it_should_include_module_functions_as_class_methods()
-  let Foo = deepcopy(s:Foo)
-  call self.assert_not(has_key(Foo, 'is_extended'))
+  call self.assert_has_key('is_extended', self.Foo)
+  call self.assert_is_Funcref(self.Foo.is_extended)
+endfunction
 
-  let Bind_func = Foo.__bind__
-  call Foo.extend(s:Buzz)
-
-  call self.assert(has_key(Foo, 'is_extended'))
-  call self.assert_is_Funcref(Foo.is_extended)
-  call self.assert_is(Bind_func, Foo.__bind__)
+function! s:tc.Class_extend___it_should_include_only_exported()
+  call self.assert_is(s:Foo.__bind__, self.Foo.__bind__)
 endfunction
 
 " {Class}.include()
-function! s:tc.Class_include___it_should_include_module_functions_as_instance_methods()
+function! s:tc.setup_Class_include()
   let Foo = deepcopy(s:Foo)
-  let foo = Foo.new()
-  call self.assert_not(has_key(foo, 'is_extended'))
-
   call Foo.include(s:Buzz)
+  let self.foo = Foo.new()
+endfunction
 
-  let foo = Foo.new()
-  call self.assert(has_key(foo, 'is_extended'))
-  call self.assert_is_Funcref(foo.is_extended)
-  call self.assert_not(has_key(foo, '__bind__'))
+function! s:tc.Class_include___it_should_include_module_functions_as_instance_methods()
+  call self.assert_has_key('is_extended', self.foo)
+  call self.assert_is_Funcref(self.foo.is_extended)
+endfunction
+
+function! s:tc.Class_include___it_should_include_only_exported()
+  call self.assert_not_has_key('function', self.foo)
 endfunction
 
 " {Class}.ancestors()
@@ -183,7 +186,7 @@ function! s:tc.Class_class_method___it_should_bind_Funcref_as_class_method_with_
   call self.assert_is_Funcref(s:Foo.nihao)
   call self.assert_equal("Foo's nihao", s:Foo.nihao())
 
-  call self.assert_not(has_key(s:Foo, 'hello_cn'))
+  call self.assert_not_has_key('hello_cn', s:Foo)
 endfunction
 
 " {Class}.class_alias()
@@ -201,7 +204,7 @@ function! s:tc.Class_method___it_should_bind_Funcref_as_instance_method_with_giv
   call self.assert_is_Funcref(self.foo.nihao)
   call self.assert_equal("Foo's nihao", self.foo.nihao())
 
-  call self.assert_not(has_key(self.foo, 'hello_cn'))
+  call self.assert_not_has_key('hello_cn', self.foo)
 endfunction
 
 " {Class}.alias()
@@ -249,18 +252,21 @@ endfunction
 
 " {Instance}.initialize()
 function! s:tc.Instance_initialize___instance_should_be_initialized()
-  call self.assert(has_key(self.foo, 'initialized'))
+  call self.assert_has_key('initialized', self.foo)
 endfunction
 
 " {Instance}.extend()
-function! s:tc.Instance_extend___it_should_include_module_functions_as_its_methods()
-  call self.assert_not(has_key(self.foo, 'is_extended'))
-
+function! s:tc.setup_Instance_extend()
   call self.foo.extend(s:Buzz)
+endfunction
 
-  call self.assert(has_key(self.foo, 'is_extended'))
+function! s:tc.Instance_extend___it_should_include_module_functions_as_its_methods()
+  call self.assert_has_key('is_extended', self.foo)
   call self.assert_is_Funcref(self.foo.is_extended)
-  call self.assert_not(has_key(self.foo, '__bind__'))
+endfunction
+
+function! s:tc.Instance_extend___it_should_include_only_exported()
+  call self.assert_not_has_key('function', self.foo)
 endfunction
 
 " {Instance}.is_a()
