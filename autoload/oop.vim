@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-23
+" Updated : 2012-01-25
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -78,7 +78,7 @@ function! s:demote_objects(value)
     call map(a:value, 's:demote_objects(v:val)')
   elseif type == s:TYPE_DICT
     if has_key(a:value, '__vim_oop__') && has_key(a:value, 'class')
-      call a:value.demote()
+      call a:value.__demote__()
     endif
     call map(values(a:value), 's:demote_objects(v:val)')
   endif
@@ -97,7 +97,7 @@ function! s:promote_objects(value)
   elseif type == s:TYPE_DICT
     if has_key(a:value, 'class')
       let class = oop#class#get(a:value.class)
-      call class.promote(a:value)
+      call class.__promote__(a:value)
     endif
     call map(values(a:value), 's:promote_objects(v:val)')
   endif

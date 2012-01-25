@@ -247,27 +247,6 @@ function! s:tc.xnew_Class_new___it_should_use_extend_to_instanciate()
   call self.assert_equal(10, xfoo.a)
 endfunction
 
-" {Class}.promote()
-function! s:tc.Class_promote___it_should_promote_Dict_to_Instance()
-  let attrs = { 'a': 10, 'b': 20, 'c': 30 }
-  let foo = s:Foo.promote(attrs)
-  call self.assert_is(attrs, foo)
-  call self.assert(oop#is_instance(foo))
-  call self.assert(foo.is_a(s:Foo))
-  call self.assert_equal("Foo's hello", foo.hello())
-  call self.assert_equal(10, foo.a)
-endfunction
-
-function! s:tc.Class_promote___it_should_not_call_initialize()
-  let attrs = { 'a': 10, 'b': 20, 'c': 30 }
-  let foo = s:Foo.promote(attrs)
-  call self.assert_not(has_key(foo, 'initialized'))
-
-  let attrs = self.foo.demote()
-  let foo = s:Foo.promote(attrs)
-  call self.assert_equal(1, foo.initialized)
-endfunction
-
 " {Instance}.initialize()
 function! s:tc.Instance_initialize___instance_should_be_initialized()
   call self.assert(has_key(self.foo, 'initialized'))
@@ -291,14 +270,6 @@ endfunction
 
 function! s:tc.Instance_is_a___foo_should_not_be_Bar()
   call self.assert_not(self.foo.is_a(s:Bar))
-endfunction
-
-" {Instance}.demote()
-function! s:tc.Instance_demote___it_should_demote_Instance_to_Dict()
-  call self.assert(oop#is_object(self.foo))
-  call self.foo.demote()
-  call self.assert_not(oop#is_object(self.foo))
-  call self.assert_is_String(self.foo.class)
 endfunction
 
 " {Instance}.serialize()

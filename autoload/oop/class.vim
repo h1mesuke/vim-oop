@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-24
+" Updated : 2012-01-25
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -189,12 +189,12 @@ function! s:Class_new(...) dict
 endfunction
 let s:Class.new = function(s:SID . 'Class_new')
 
-function! s:Class_promote(attrs) dict
+function! s:Class___promote__(attrs) dict
   let obj = extend(a:attrs, self.__prototype__, 'keep')
   let obj.class = self
   return obj
 endfunction
-let s:Class.promote = function(s:SID . 'Class_promote')
+let s:Class.__promote__ = function(s:SID . 'Class___promote__')
 
 "-----------------------------------------------------------------------------
 " Instance
@@ -213,13 +213,13 @@ endfunction
 let s:Instance.is_kind_of = function(s:SID . 'Instance_is_kind_of')
 let s:Instance.is_a = function(s:SID . 'Instance_is_kind_of')
 
-function! s:Instance_demote() dict
+function! s:Instance___demote__() dict
   let self.class = self.class.name
   call filter(self, 'type(v:val) != s:TYPE_FUNC')
   call remove(self, '__vim_oop__')
   return self
 endfunction
-let s:Instance.demote = function(s:SID . 'Instance_demote')
+let s:Instance.__demote__ = function(s:SID . 'Instance___demote__')
 
 function! s:Instance_serialize() dict
   return oop#string(self)
