@@ -70,6 +70,56 @@ function! oop#is_module(value)
         \ get(a:value, s:OBJECT_MARK, 0) == s:TYPE_MODULE
 endfunction
 
+function! oop#serialize(value)
+  let value = a:value
+  let type = type(a:value)
+  if type == s:TYPE_LIST || type == s:TYPE_DICT
+    let value = deepcopy(a:value)
+    call s:demote(value)
+  endif
+  return string(value)
+endfunction
+
+function! s:demote(value)
+  let type = type(a:value)
+  if type == s:TYPE_DICT && has_key(a:value, s:OBJECT_MARK)
+    if a:value[s:OBJECT_MARK] == s:TYPE_OBJECT
+      let a:value.class = a:value.class.name
+      call filter(a:value, 'type(v:val) != s:TYPE_FUNC')
+    else
+      throw "vim-oop: Class and module are not serializable."
+    endif
+  endif
+  if type == s:TYPE_LIST || type == s:TYPE_DICT
+    call map(a:value, 's:demote(v:val)')
+  endif
+  return a:value
+endfunction
+
+function! oop#deserialize(str, loader)
+  let cache = {}
+  sandbox let dict = eval(a:str)
+  return s:promote(dict, a:loader, cache)
+endfunction
+
+function! s:promote(value, loader, cache)
+  let type = type(a:value)
+  if type == s:TYPE_LIST || type == s:TYPE_DICT
+    call map(a:value, 's:promote(v:val, a:loader, a:cache)')
+  endif
+  if type == s:TYPE_DICT && has_key(a:value, s:OBJECT_MARK)
+    let name = a:value.class
+    if has_key(a:cache, name)
+      let class = a:cache[name]
+    else
+      let class = call(a:loader, [name])
+      let a:cache[name] = class
+    endif
+    call class.__promote__(a:value)
+  endif
+  return a:value
+endfunction
+
 function! oop#string(value)
   let value = a:value
   let type = type(a:value)
@@ -95,45 +145,6 @@ function! s:unlink(value, ...)
   endif
   if type == s:TYPE_LIST || type == s:TYPE_DICT
     call map(a:value, 's:unlink(v:val)')
-  endif
-  return a:value
-endfunction
-
-function! s:demote_objects(value)
-  let type = type(a:value)
-  if type == s:TYPE_LIST
-    call map(a:value, 's:demote_objects(v:val)')
-  elseif type == s:TYPE_DICT
-    if has_key(a:value, '__vim_oop__') && has_key(a:value, 'class')
-      call a:value.__demote__()
-    endif
-    call map(values(a:value), 's:demote_objects(v:val)')
-  endif
-  return a:value
-endfunction
-
-function! oop#deserialize(str, loader)
-  let cache = {}
-  sandbox let dict = eval(a:str)
-  return s:promote_objects(dict, a:loader, cache)
-endfunction
-
-function! s:promote_objects(value, loader, cache)
-  let type = type(a:value)
-  if type == s:TYPE_LIST
-    call map(a:value, 's:promote_objects(v:val, a:loader, a:cache)')
-  elseif type == s:TYPE_DICT
-    if has_key(a:value, 'class')
-      let class_name = a:value.class
-      if has_key(a:cache, class_name)
-        let class = a:cache[class_name]
-      else
-        let class = call(a:loader, [class_name])
-        let a:cache[class_name] = class
-      endif
-      call class.__promote__(a:value)
-    endif
-    call map(values(a:value), 's:promote_objects(v:val, a:loader, a:cache)')
   endif
   return a:value
 endfunction

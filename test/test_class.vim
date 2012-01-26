@@ -107,12 +107,10 @@ function! s:tc.SETUP()
 endfunction
 
 function! s:tc.setup()
-  let self.Foo = s:Foo
-  let self.Bar = s:Bar
-  let self.Baz = s:Baz
-  let self.foo = s:Foo.new()
-  let self.bar = s:Bar.new()
-  let self.baz = s:Baz.new()
+  let self.Foo  = s:Foo | let self.foo  = s:Foo.new()
+  let self.Bar  = s:Bar | let self.bar  = s:Bar.new()
+  let self.Baz  = s:Baz | let self.baz  = s:Baz.new()
+  let self.Buzz = s:Buzz
 endfunction
 
 " oop#class#new()
@@ -275,26 +273,29 @@ function! s:tc.Instance_is_a___foo_should_not_be_Bar()
 endfunction
 
 " {Instance}.serialize()
-"function! s:tc.Instance_serialize___it_should_serialize_Instance_to_String()
-"  let self.foo.value = 1
-"  let self.bar.value = 2
-"  let self.baz.value = 3
-"  let self.foo.children = [self.bar, self.baz]
+function! s:tc.Instance_serialize___it_should_serialize_Instance_to_String()
+  call self.make_object_network()
+  call self.assert(oop#is_instance(self.foo))
+  let str = self.foo.serialize()
+  call self.assert_not(oop#is_object(str))
+  call self.assert_is_String(str)
 
-"  call self.assert(oop#is_object(self.foo))
-"  let str = self.foo.serialize()
-"  call self.assert_not(oop#is_object(str))
-"  call self.assert_is_String(str)
+  let expected = {
+        \ '__vim_oop__': 1, 'class': 'Foo', 'initialized': 1, 'value': 1,
+        \ 'children': [
+        \   { '__vim_oop__': 1, 'class': 'Bar', 'initialized': 1, 'value': 2 },
+        \   { '__vim_oop__': 1, 'class': 'Baz', 'initialized': 1, 'value': 3 },
+        \ ],
+        \}
+  call self.assert_equal(expected, eval(str))
+endfunction
 
-"  let expected = {
-"        \ 'class': 'Foo', 'initialized': 1, 'value': 1,
-"        \ 'children': [
-"        \   { 'class': 'Bar', 'initialized': 1, 'value': 2 },
-"        \   { 'class': 'Baz', 'initialized': 1, 'value': 3 },
-"        \ ],
-"        \}
-"  call self.assert_equal(expected, eval(str))
-"endfunction
+function! s:tc.make_object_network()
+  let self.foo.value = 1
+  let self.bar.value = 2
+  let self.baz.value = 3
+  let self.foo.children = [self.bar, self.baz]
+endfunction
 
 " oop#is_object()
 function! s:tc.oop_is_object___Foo_should_be_Object()
@@ -323,14 +324,39 @@ function! s:tc.oop_is_instance___foo_should_be_Instance()
   call self.assert(oop#is_instance(self.foo))
 endfunction
 
+" oop#serialize()
+function! s:tc.oop_serialize___it_should_stringify_value()
+  call self.assert_equal(string(10), oop#serialize(10))
+  call self.assert_equal(string("String"), oop#serialize("String"))
+  call self.assert_equal(string([1, 2, 3]), oop#serialize([1, 2, 3]))
+  call self.assert_equal({'a': 1, 'b': 2}, eval(oop#serialize({'a': 1, 'b': 2}))) 
+endfunction
+
+function! s:tc.oop_serialize___it_should_throw_when_Class_is_given()
+  call self.assert_throw('^vim-oop: ', 'call oop#serialize(self.Foo)')
+endfunction
+
+function! s:tc.oop_serialize___it_should_throw_when_Module_is_given()
+  call self.assert_throw('^vim-oop: ', 'call oop#serialize(self.Buzz)')
+endfunction
+
+" oop#deserialize()
+function! s:tc.oop_deserialize___it_should_deserialize_Instance_from_String()
+  call self.make_object_network()
+  let str = self.foo.serialize()
+  call self.assert_equal(self.foo, oop#deserialize(str, s:SID . 'name_to_class'))
+endfunction
+
+function! s:name_to_class(name)
+  return s:tc[a:name]
+endfunction
+
 " oop#string()
 function! s:tc.oop_string___it_should_stringify_value()
   call self.assert_equal(string(10), oop#string(10))
   call self.assert_equal(string("String"), oop#string("String"))
   call self.assert_equal(string([1, 2, 3]), oop#string([1, 2, 3]))
-
-  let str = oop#string({'a': 1, 'b': 2})
-  call self.assert_equal({'a': 1, 'b': 2}, eval(str))
+  call self.assert_equal({'a': 1, 'b': 2}, eval(oop#string({'a': 1, 'b': 2})))
 endfunction
 
 function! s:tc.v_oop_string___it_should_stringify_Class()
@@ -357,13 +383,6 @@ function! s:tc.v_oop_string___it_should_stringify_Object_network()
   call self.puts(str)
 endfunction
 
-function! s:tc.make_object_network()
-  let self.foo.value = 1
-  let self.bar.value = 2
-  let self.baz.value = 3
-  let self.foo.children = [self.bar, self.baz]
-endfunction
-
 function! s:tc.v_oop_string___it_should_stringify_Module()
   let str = oop#string(s:Buzz)
   call self.assert_is_String(str)
@@ -371,21 +390,6 @@ function! s:tc.v_oop_string___it_should_stringify_Module()
   call self.puts("Dumped module Buzz:")
   call self.puts(str)
 endfunction
-
-" oop#deserialize()
-"function! s:tc.oop_deserialize___it_should_deserialize_Instance_from_String()
-"  let self.foo.value = 1
-"  let self.bar.value = 2
-"  let self.baz.value = 3
-"  let self.foo.children = [self.bar, self.baz]
-
-"  let str = self.foo.serialize()
-"  call self.assert_equal(self.foo, oop#deserialize(str, s:SID . 'name_to_class'))
-"endfunction
-
-"function! s:name_to_class(name)
-"  return s:tc[a:name]
-"endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

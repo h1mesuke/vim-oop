@@ -177,16 +177,8 @@ endfunction
 let s:Instance.is_kind_of = function(s:SID . 'Instance_is_kind_of')
 let s:Instance.is_a = function(s:SID . 'Instance_is_kind_of')
 
-function! s:Instance___demote__() dict
-  let self.class = self.class.name
-  call filter(self, 'type(v:val) != s:TYPE_FUNC')
-  call remove(self, '__vim_oop__')
-  return self
-endfunction
-let s:Instance.__demote__ = function(s:SID . 'Instance___demote__')
-
 function! s:Instance_serialize() dict
-  return oop#string(self)
+  return oop#serialize(self)
 endfunction
 let s:Instance.serialize = function(s:SID . 'Instance_serialize')
 
