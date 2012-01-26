@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-25
+" Updated : 2012-01-26
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -66,7 +66,8 @@ function! oop#class#xnew(...)
   return class
 endfunction
 
-let s:Class = copy(oop#__object__())
+let s:Class = copy(oop#__constant__('Object'))
+let s:Class[oop#__constant__('OBJECT_MARK')] = oop#__constant__('TYPE_CLASS')
 let s:Class.__instanciator__ = 'copy'
 
 function! s:Class_ancestors() dict
@@ -164,7 +165,7 @@ let s:Class.__promote__ = function(s:SID . 'Class___promote__')
 "-----------------------------------------------------------------------------
 " Instance
 
-let s:Instance = copy(oop#__object__())
+let s:Instance = copy(oop#__constant__('Object'))
 
 function! s:Instance_initialize(...) dict
 endfunction

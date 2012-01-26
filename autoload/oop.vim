@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-25
+" Updated : 2012-01-26
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -36,6 +36,15 @@ let s:TYPE_LIST = type([])
 let s:TYPE_DICT = type({})
 let s:TYPE_FUNC = type(function('tr'))
 
+let s:OBJECT_MARK = '__vim_oop__'
+let s:TYPE_OBJECT = 1
+let s:TYPE_CLASS  = 2
+let s:TYPE_MODULE = 3
+
+function! oop#__constant__(name)
+  return get(s:, a:name)
+endfunction
+
 function! s:get_SID()
   return matchstr(expand('<sfile>'), '<SNR>\d\+_')
 endfunction
@@ -43,22 +52,22 @@ let s:SID = s:get_SID()
 delfunction s:get_SID
 
 function! oop#is_object(value)
-  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__')
+  return type(a:value) == s:TYPE_DICT && has_key(a:value, s:OBJECT_MARK)
 endfunction
 
 function! oop#is_class(value)
-  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__') &&
-        \ has_key(a:value, '__prototype__')
+  return type(a:value) == s:TYPE_DICT &&
+        \ get(a:value, s:OBJECT_MARK, 0) == s:TYPE_CLASS
 endfunction
 
 function! oop#is_instance(value)
-  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__') &&
-        \ has_key(a:value, 'class')
+  return type(a:value) == s:TYPE_DICT &&
+        \ get(a:value, s:OBJECT_MARK, 0) == s:TYPE_OBJECT
 endfunction
 
 function! oop#is_module(value)
-  return type(a:value) == s:TYPE_DICT && has_key(a:value, '__vim_oop__') &&
-        \ !has_key(a:value, '__prototype__') && !has_key(a:value, 'class')
+  return type(a:value) == s:TYPE_DICT &&
+        \ get(a:value, s:OBJECT_MARK, 0) == s:TYPE_MODULE
 endfunction
 
 function! oop#string(value)
@@ -113,11 +122,8 @@ endfunction
 "-----------------------------------------------------------------------------
 " Object
 
-function! oop#__object__()
-  return s:Object
-endfunction
-
-let s:Object = { '__vim_oop__': 1 }
+let s:Object = {}
+let s:Object[s:OBJECT_MARK] = s:TYPE_OBJECT
 
 function! s:Object_bind(func, ...) dict
   if type(a:func) == s:TYPE_FUNC

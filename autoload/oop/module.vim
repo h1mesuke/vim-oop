@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-25
+" Updated : 2012-01-26
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -53,7 +53,8 @@ function! oop#module#new(name, sid)
   return module
 endfunction
 
-let s:Module = copy(oop#__object__())
+let s:Module = copy(oop#__constant__('Object'))
+let s:Module[oop#__constant__('OBJECT_MARK')] = oop#__constant__('TYPE_MODULE')
 
 function! s:Module_function(func_name, ...) dict
   let func_name = self.__prefix__ . a:func_name
