@@ -75,9 +75,28 @@ function! oop#string(value)
   let type = type(a:value)
   if type == s:TYPE_LIST || type == s:TYPE_DICT
     let value = deepcopy(a:value)
-    call s:demote_objects(value)
+    call s:unlink(value, 1)
   endif
   return string(value)
+endfunction
+
+function! s:unlink(value, ...)
+  let start = (a:0 ? a:1 : 0)
+  let type = type(a:value)
+  if !start && type == s:TYPE_DICT
+    let obj_type = get(a:value, s:OBJECT_MARK, 0)
+    if obj_type == s:TYPE_CLASS
+      return '<<Reference: class ' . a:value.name . '>>'
+    elseif obj_type == s:TYPE_MODULE
+      return '<<Reference: module ' . a:value.name . '>>'
+    else
+      call filter(a:value, 'type(v:val) != s:TYPE_FUNC')
+    endif
+  endif
+  if type == s:TYPE_LIST || type == s:TYPE_DICT
+    call map(a:value, 's:unlink(v:val)')
+  endif
+  return a:value
 endfunction
 
 function! s:demote_objects(value)

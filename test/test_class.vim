@@ -19,6 +19,7 @@ let s:tc = unittest#testcase#new("Class and Instances")
 function! s:tc.SETUP()
   runtime autoload/oop.vim
   runtime autoload/oop/class.vim
+  runtime autoload/oop/module.vim
 
   " class Foo
   let s:Foo = oop#class#new('Foo', s:SID)
@@ -274,26 +275,26 @@ function! s:tc.Instance_is_a___foo_should_not_be_Bar()
 endfunction
 
 " {Instance}.serialize()
-function! s:tc.Instance_serialize___it_should_serialize_Instance_to_String()
-  let self.foo.value = 1
-  let self.bar.value = 2
-  let self.baz.value = 3
-  let self.foo.children = [self.bar, self.baz]
+"function! s:tc.Instance_serialize___it_should_serialize_Instance_to_String()
+"  let self.foo.value = 1
+"  let self.bar.value = 2
+"  let self.baz.value = 3
+"  let self.foo.children = [self.bar, self.baz]
 
-  call self.assert(oop#is_object(self.foo))
-  let str = self.foo.serialize()
-  call self.assert_not(oop#is_object(str))
-  call self.assert_is_String(str)
+"  call self.assert(oop#is_object(self.foo))
+"  let str = self.foo.serialize()
+"  call self.assert_not(oop#is_object(str))
+"  call self.assert_is_String(str)
 
-  let expected = {
-        \ 'class': 'Foo', 'initialized': 1, 'value': 1,
-        \ 'children': [
-        \   { 'class': 'Bar', 'initialized': 1, 'value': 2 },
-        \   { 'class': 'Baz', 'initialized': 1, 'value': 3 },
-        \ ],
-        \}
-  call self.assert_equal(expected, eval(str))
-endfunction
+"  let expected = {
+"        \ 'class': 'Foo', 'initialized': 1, 'value': 1,
+"        \ 'children': [
+"        \   { 'class': 'Bar', 'initialized': 1, 'value': 2 },
+"        \   { 'class': 'Baz', 'initialized': 1, 'value': 3 },
+"        \ ],
+"        \}
+"  call self.assert_equal(expected, eval(str))
+"endfunction
 
 " oop#is_object()
 function! s:tc.oop_is_object___Foo_should_be_Object()
@@ -332,26 +333,59 @@ function! s:tc.oop_string___it_should_stringify_value()
   call self.assert_equal({'a': 1, 'b': 2}, eval(str))
 endfunction
 
-function! s:tc.oop_string___it_should_stringify_object()
-  let str = oop#string(self.foo)
+function! s:tc.v_oop_string___it_should_stringify_Class()
+  let str = oop#string(s:Bar)
   call self.assert_is_String(str)
-  call self.assert_equal({ 'class': 'Foo', 'initialized': 1 }, eval(str))
+  call self.puts()
+  call self.puts("Dumped class Bar:")
+  call self.puts(str)
 endfunction
 
-" oop#deserialize()
-function! s:tc.oop_deserialize___it_should_deserialize_Instance_from_String()
+function! s:tc.v_oop_string___it_should_stringify_Instance()
+  let str = oop#string(self.foo)
+  call self.assert_is_String(str)
+  call self.puts()
+  call self.puts("Dumped instance foo:")
+  call self.puts(str)
+endfunction
+
+function! s:tc.v_oop_string___it_should_stringify_Object_network()
+  let str = oop#string(self.foo)
+  call self.assert_is_String(str)
+  call self.puts()
+  call self.puts("Dumped object network:")
+  call self.puts(str)
+endfunction
+
+function! s:tc.make_object_network()
   let self.foo.value = 1
   let self.bar.value = 2
   let self.baz.value = 3
   let self.foo.children = [self.bar, self.baz]
-
-  let str = self.foo.serialize()
-  call self.assert_equal(self.foo, oop#deserialize(str, s:SID . 'name_to_class'))
 endfunction
 
-function! s:name_to_class(name)
-  return s:tc[a:name]
+function! s:tc.v_oop_string___it_should_stringify_Module()
+  let str = oop#string(s:Buzz)
+  call self.assert_is_String(str)
+  call self.puts()
+  call self.puts("Dumped module Buzz:")
+  call self.puts(str)
 endfunction
+
+" oop#deserialize()
+"function! s:tc.oop_deserialize___it_should_deserialize_Instance_from_String()
+"  let self.foo.value = 1
+"  let self.bar.value = 2
+"  let self.baz.value = 3
+"  let self.foo.children = [self.bar, self.baz]
+
+"  let str = self.foo.serialize()
+"  call self.assert_equal(self.foo, oop#deserialize(str, s:SID . 'name_to_class'))
+"endfunction
+
+"function! s:name_to_class(name)
+"  return s:tc[a:name]
+"endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
