@@ -1,7 +1,7 @@
 *vim-oop.txt*		OOP Support for Vim script
 
 Author  : h1mesuke <himesuke+vim@gmail.com>
-Updated : 2012-01-24
+Updated : 2012-01-27
 Version : 0.2.4
 License : MIT license {{{
 
@@ -27,20 +27,63 @@ License : MIT license {{{
 ==============================================================================
 CONTENTS					*vim-oop-contents*
 
+	Introduction			|vim-oop-introduction|
+	How to Use			|vim-oop-how-to-use|
+	  How to Define a Class		  |vim-oop-how-to-define-class|
+	  How to Define a Module	  |vim-oop-how-to-define-module|
+	  How to Bundle vim-oop		  |vim-oop-how-to-bundle|
+	Interface			|vim-oop-interface|
+	  Functions			  |vim-oop-functions|
+	    Class			    |vim-oop-class|
+	    Instance			    |vim-oop-instance|
+	    Module			    |vim-oop-module|
+	Issues				|vim-oop-issues|
+	ChangeLog			|vim-oop-changelog|
 
 ==============================================================================
 INTRODUCTION					*vim-oop-introduction*
 
 	*vim-oop* is a library that provides OOP support to Vim script.
 
+	Features: ~
+	* Classes and Inheritance
+	* Modules and Mixins
+
 ==============================================================================
+HOW TO USE					*vim-oop-how-to-use*
+
+------------------------------------------------------------------------------
 HOW TO DEFINE A CLASS				*vim-oop-how-to-define-class*
 
-==============================================================================
+	1. Create a new class with |oop#class#new()|.
+	2. Define script-local functions.
+	3. Bind the functions to the class as its methods with
+	   |vim-oop-Class.method()| and |vim-oop-Class.class_method()|.
+
+	You can create an instance of the class with its new() method.
+
+	See |vim-oop-Class.new()|.
+
+------------------------------------------------------------------------------
 HOW TO DEFINE A MODULE				*vim-oop-how-to-define-module*
 
-==============================================================================
-HOW TO BUNDLE VIM-OOP TO YOUR PLUGIN		*vim-oop-how-to-bundle*
+	1. Create a new module with |oop#module#new()|.
+	2. Define script-local functions.
+	3. Bind the functions to the module as its module functions with
+	   |vim-oop-Module.function()|.
+
+	Modules can be mixed into a class with |vim-oop-Class.include()| or
+	|vim-oop-Class.extend()|.
+
+------------------------------------------------------------------------------
+HOW TO BUNDLE VIM-OOP				*vim-oop-how-to-bundle*
+
+	You can bundle vim-oop to your plugin with bin/bundle.sh bash script.
+>
+		$ bin/bundle.sh path/to/{plugin}
+<
+	It copies vim-oop's scripts to your plugin's directory and replaces
+	all occurrences of prefix "oop#" with "{plugin}#oop#".
 
 ==============================================================================
 INTERFACE					*vim-oop-interface*
@@ -50,7 +93,8 @@ FUNCTIONS					*vim-oop-functions*
 
 	oop#is_object( {value})			*oop#is_object()*
 
-		Returns True if {value} is a vim-oop's object.
+		Returns True if {value} is a vim-oop's object, in other words,
+		{value} is a vim-oop's class, instance or module.
 
 	oop#is_class( {value})			*oop#is_class()*
 
@@ -66,20 +110,32 @@ FUNCTIONS					*vim-oop-functions*
 
 	oop#string( {value})			*oop#string()*
 
-		Returns {value} converted to a String.
+		Dumps {value} to a String like built-in |string()|. If {value}
+		is a vim-oop's object or collection that contains it, the
+		result can't be parsed back with |eval()|. This function has
+		been provided mainly for debugging purposes, and is not
+		intended for object serialization. To serialize objects, use
+		|vim-oop-Instance.serialize()| or |oop#serialize()|.
+
+	oop#serialize( {value})			*oop#serialize()*
+
+		Serializes {value} to a String. The result can be deserialized
+		back with |oop#deserialize()|. Note that classes and modules
+		are not serializable.
+
+		See also: |vim-oop-Instance.serialize()|
 
 	oop#deserialize( {str})			*oop#deserialize()*
 
-		Deserialize an object from {str}.
-
-		See also: |vim-oop-Instance.serialize()|
+		Deserializes an object from {str}. {str} MUST be the result of
+		|vim-oop-Instance.serialize()| or |oop#serialize()|.
 
 CLASS						*vim-oop-class*
 
 						*oop#class#new()*
 	oop#class#new( {name}, {sid} [, {superclass}])
 
-		Creates a new class. The second argument must be the SID
+		Creates a new class. The second argument MUST be the SID
 		number or prefix of the script where the class is defined.
 
 		Example: >
@@ -117,33 +173,12 @@ CLASS						*vim-oop-class*
 		let xfoo = s:XFoo.new(attrs, x, y)
 <
 		Note that in initialize() "self" IS the Dictionary that was
-		the first argument of new().
+		the first argument of new() and initialize() no longer accept
+		it as an argument.
 
-	oop#class#get( {name})			*oop#class#get()*
-
-		Returns a class with {name}.
-
-	{Class}.extend( {module} [, {mode}])		*vim-oop-Class.extend()*
-
-		Adds {module}'s functions to the class as class methods.
-		When {mode} is given, it works in the same way as {expr3}
-		of|extend()|.
-
-		Example: >
-		s:Foo.extend(s:Buzz)
-<
-	{Class}.include( {module} [, {mode}])		*vim-oop-Class.include()*
-
-		Adds {module}'s functions to the class as instance methods.
-		When {mode} is given, it works in the same way as {expr3}
-		of|extend()|.
-
-		Example: >
-		s:Foo.include(s:Buzz)
-<
 	{Class}.ancestors()			*vim-oop-Class.ancestors()*
 
-		Returns a List of ancestor classes.
+		Returns a List of ancestor classes of the class.
 
 	{Class}.is_descendant_of( {class})	*vim-oop-Class.is_descendant_of()*
 
@@ -160,17 +195,17 @@ CLASS						*vim-oop-class*
 		When {as-name} is given, the function is bound as method
 		{as-name}.
 
-		The name of the function to be bound must be prefixed by the
+		The name of the function to be bound MUST be prefixed by the
 		class name followed by one underscore. This convention helps
-		you to distinguish method functions from other functions.
+		you to determine where the error occurred on debgging.
 
 		Example: >
 		function! s:Foo_hello() dict
 		endfunction
 		call s:Foo.class_method('hello')
 <
-		Note that both {func-name} and the method name don't include
-		the prefix.
+		Note that however both {func-name} and the method name don't
+		include the prefix.
 
 		Example: >
 		call Foo.hello()
@@ -189,18 +224,18 @@ CLASS						*vim-oop-class*
 		Binds function {func-name} to the class an instance method.
 		When {as-name} is given, the function is bound as method
 		{as-name}.
-
-		The name of the function to be bound must be prefixed by the
+						*vim-oop-binding-convention*
+		The name of the function to be bound MUST be prefixed by the
 		class name followed by one underscore. This convention helps
-		you to distinguish method functions from other functions.
+		you to determine where the error occurred on debgging.
 
 		Example: >
 		function! s:Foo_hello() dict
 		endfunction
 		call s:Foo.method('hello')
 <
-		Note that both {func-name} and the method name don't include
-		the prefix.
+		Note that however both {func-name} and the method name don't
+		include the prefix.
 
 		Example: >
 		call foo.hello()
@@ -212,13 +247,40 @@ CLASS						*vim-oop-class*
 		Example: >
 		call s:Foo.alias('hi', 'hello')
 <
+	{Class}.extend( {module} [, {mode}])		*vim-oop-Class.extend()*
+
+		Adds {module}'s functions to the class as class methods.
+		When {mode} is given, it works in the same way as {expr3}
+		of built-in |extend()|.
+
+		Example: >
+		s:Foo.extend(s:Buzz)
+<
+	{Class}.include( {module} [, {mode}])		*vim-oop-Class.include()*
+
+		Adds {module}'s functions to the class as instance methods.
+		When {mode} is given, it works in the same way as {expr3}
+		of built-in |extend()|.
+
+		Example: >
+		s:Foo.include(s:Buzz)
+<
+	{Class}.new(...)			*vim-oop-Class.new()*
+
+		Instanciates an object. Arguments are delivered to
+		initialize().
+
+		Example: >
+		let foo = s:Foo.new(x, y)
+<
+		See also: |vim-oop-Instance.initialize()|
+
 						*vim-oop-Class.super()*
 	{Class}.super( {meth-name}, {args}, {self})
 
-		{Class}.super( {meth-name}, {args}, {self})
-
 		Calls the superclass's implementation of method {meth-name} in
-		the manner of built-in |call()|.
+		the manner of built-in |call()|. Note that the third argument
+		{self} is not optional and MUST be "self" of the scope.
 
 		Example: >
 		function! s:Bar_hello() dict
@@ -227,22 +289,15 @@ CLASS						*vim-oop-class*
 		call s:Bar.class_method('hello')
 		call s:Bar.method('hello')
 <
-	{Class}.new(...)			*vim-oop-Class.new()*
-
-		Instantiates an object.
-		Arguments are passed to initialize().
-
-		Example: >
-		let foo = s:Foo.new()
-<
 INSTANCE					*vim-oop-instance*
 
 	{instance}.initialize(...)		*vim-oop-Instance.initialize()*
 
 		Initializes the object. This method will be called for each
-		newly created instances as a part of its instanciation
-		process. User-defined classes should override this method for
-		their specific initialization.
+		newly created instance as a part of its instanciation process.
+		Arguments supplied to new() are delivered to here.
+		User-defined classes should override this method for their
+		specific initialization.
 
 		Example: >
 		let s:Foo = oop#class#new('Foo')
@@ -253,16 +308,22 @@ INSTANCE					*vim-oop-instance*
 		endfunction
 		call s:Foo.method('initialize')
 <
-	{instance}_extend( {module}, ...)	*vim-oop-Instance_extend()*
+		Example: >
+		let foo = s:Foo.new(x, y)
+<
+		See also: |vim-oop-Class.new()|
+
+	{instance}.extend( {module} [, {mode}])	*vim-oop-Instance_extend()*
 
 		Adds {module}'s functions to the object as its methods.
 		When {mode} is given, it works in the same way as {expr3}
-		of|extend()|.
+		of built-in |extend()|.
 
 		Example: >
 		foo.extend(s:Buzz)
 <
 	{instance}.is_kind_of( {class})		*vim-oop-Instance.is_kind_of()*
+	{instance}.is_a( {class})		*vim-oop-Instance.is_a()*
 
 		Returns True if the object is an instance of {class} or one of
 		its ancestors.
@@ -275,13 +336,13 @@ INSTANCE					*vim-oop-instance*
 
 		Serializes the object to a String.
 
-		See also: |oop#deserialize()|
+		See also: |oop#serialize()|, |oop#deserialize()|
 
 MODULE						*vim-oop-module*
 
 	oop#module#new( {name}, {sid})		*oop#module#new()*
 
-		Creates a new module. The second argument must be the SID
+		Creates a new module. The second argument MUST be the SID
 		number or prefix of the script where the module is defined.
 
 		Example: >
@@ -293,11 +354,6 @@ MODULE						*vim-oop-module*
 
 		s:Fizz = oop#module#new('Fizz', s:SID)
 <
-
-	oop#module#get( {name})			*oop#module#get()*
-
-		Returns a module with {name}.
-
 						*vim-oop-Module.function()*
 	{Module}.function( {func-name} [, {as-name}])
 
@@ -305,17 +361,17 @@ MODULE						*vim-oop-module*
 		When {as-name} is given, the function is bound as module
 		function {as-name}.
 
-		The name of the function to be bound must be prefixed by the
+		The name of the function to be bound MUST be prefixed by the
 		module name followed by one underscore. This convention helps
-		you to distinguish module functions from other functions.
+		you to determine where the error occurred on debgging.
 
 		Example: >
 		function! s:Fizz_hello() dict
 		endfunction
 		call s:Fizz.function('hello')
 <
-		Note that both {func-name} and the module function name don't
-		include the prefix.
+		Note that however both {func-name} and the module function
+		name don't include the prefix.
 
 		Example: >
 		call s:Fizz.hello()
@@ -336,8 +392,10 @@ ISSUES						*vim-oop-issues*
 ==============================================================================
 CHANGELOG					*vim-oop-changelog*
 
-0.0.1	2011-12-26
+0.3.0	2012-01-28
 
-	* Initial version
+	* Improved super()'s performance.
+	* Improved object serialization support.
+	* Added doc/vim-oop.txt
 
 vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:fdm=marker:
