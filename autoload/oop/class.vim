@@ -50,8 +50,10 @@ function! oop#class#new(name, sid, ...)
   let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
   let class.__prefix__ = printf('<SNR>%d_%s_', sid, a:name)
   "=> <SNR>10_Foo_
-  let class.__prototype__ = copy(s:Instance)
   let class.superclass = (a:0 ? a:1 : {})
+  let class.__prototype__ = copy(s:Instance)
+  let class.__prototype__.superclass =
+        \ (empty(class.superclass) ? {} : class.superclass.__prototype__)
   " Inherit methods from superclasses.
   for klass in class.ancestors()
     call extend(class, klass, 'keep')
@@ -117,30 +119,6 @@ function! s:Class_include(...) dict
 endfunction
 let s:Class.include = function(s:SID . 'Class_include')
 
-function! s:Class_super(meth_name, args, _self) dict
-  let is_class = oop#is_class(a:_self)
-  let meth_table = (is_class ? self : self.__prototype__)
-
-  let has_impl = (has_key(meth_table, a:meth_name) &&
-        \ type(meth_table[a:meth_name]) == s:TYPE_FUNC)
-
-  for klass in self.ancestors()
-      let kls_meth_table = (is_class ? klass : klass.__prototype__)
-    if has_key(kls_meth_table, a:meth_name)
-      if type(kls_meth_table[a:meth_name]) != s:TYPE_FUNC
-        let sep = (is_class ? '.' : '#')
-        throw "vim-oop: " . klass.name . sep . a:meth_name . " is not a method."
-      elseif !has_impl || (has_impl && meth_table[a:meth_name] != kls_meth_table[a:meth_name])
-        return call(kls_meth_table[a:meth_name], a:args, a:_self)
-      endif
-    endif
-  endfor
-  let sep = (is_class ? '.' : '#')
-  throw "vim-oop: " . self.name . sep .
-        \ a:meth_name . "()'s super implementation was not found."
-endfunction
-let s:Class.super = function(s:SID . 'Class_super')
-
 function! s:Class_new(...) dict
   if self.__instanciator__ ==# 'extend'
     let obj = extend(a:000[0], self.__prototype__, 'keep')
@@ -149,6 +127,7 @@ function! s:Class_new(...) dict
     let obj = copy(self.__prototype__)
     let args = a:000
   endif
+  unlet obj.superclass
   let obj.class = self
   call call(obj.initialize, args, obj)
   return obj
@@ -157,10 +136,28 @@ let s:Class.new = function(s:SID . 'Class_new')
 
 function! s:Class___promote__(attrs) dict
   let obj = extend(a:attrs, self.__prototype__, 'keep')
+  unlet obj.superclass
   let obj.class = self
   return obj
 endfunction
 let s:Class.__promote__ = function(s:SID . 'Class___promote__')
+
+function! s:Class_super(meth_name, args, self) dict
+  let meth_table = (oop#is_class(a:self) ? self : self.__prototype__)
+  let Start_impl = meth_table[a:meth_name]
+  let meth_table = meth_table.superclass
+  while !empty(meth_table)
+    if has_key(meth_table, a:meth_name)
+      let Super_impl = meth_table[a:meth_name]
+      if Super_impl != Start_impl
+        return call(Super_impl, a:args, a:self)
+      endif
+    endif
+    let meth_table = meth_table.superclass
+  endwhile
+  throw "vim-oop: " . a:meth_name . "()'s super implementation was not found."
+endfunction
+let s:Class.super = function(s:SID . 'Class_super')
 
 "-----------------------------------------------------------------------------
 " Instance
