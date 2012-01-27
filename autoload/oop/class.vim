@@ -54,6 +54,8 @@ function! oop#class#new(name, sid, ...)
   let class.__prototype__ = copy(s:Instance)
   let class.__prototype__.superclass =
         \ (empty(class.superclass) ? {} : class.superclass.__prototype__)
+  let class.__super__ = {}
+  let class.__prototype__.__super__ = {}
   " Inherit methods from superclasses.
   for klass in class.ancestors()
     call extend(class, klass, 'keep')
@@ -128,6 +130,7 @@ function! s:Class_new(...) dict
     let args = a:000
   endif
   unlet obj.superclass
+  unlet obj.__super__
   let obj.class = self
   call call(obj.initialize, args, obj)
   return obj
@@ -137,20 +140,25 @@ let s:Class.new = function(s:SID . 'Class_new')
 function! s:Class___promote__(attrs) dict
   let obj = extend(a:attrs, self.__prototype__, 'keep')
   unlet obj.superclass
+  unlet obj.__super__
   let obj.class = self
   return obj
 endfunction
 let s:Class.__promote__ = function(s:SID . 'Class___promote__')
 
 function! s:Class_super(meth_name, args, self) dict
-  let meth_table = (oop#is_class(a:self) ? self : self.__prototype__)
-  let Start_impl = meth_table[a:meth_name]
-  let meth_table = meth_table.superclass
+  let scope = (oop#is_class(a:self) ? self : self.__prototype__)
+  if has_key(scope.__super__, a:meth_name)
+    return call(scope.__super__[a:meth_name], a:args, a:self)
+  endif
+  let Meth = scope[a:meth_name]
+  let meth_table = scope.superclass
   while !empty(meth_table)
     if has_key(meth_table, a:meth_name)
-      let Super_impl = meth_table[a:meth_name]
-      if Super_impl != Start_impl
-        return call(Super_impl, a:args, a:self)
+      let Super = meth_table[a:meth_name]
+      if Super != Meth
+        let scope.__super__[a:meth_name] = Super
+        return call(Super, a:args, a:self)
       endif
     endif
     let meth_table = meth_table.superclass
