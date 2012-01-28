@@ -5,7 +5,7 @@
 " File    : autoload/oop/assertions.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
 " Updated : 2012-01-26
-" Version : 0.2.4
+" Version : 0.3.0
 " License : MIT license {{{
 "
 "   Permission is hereby granted, free of charge, to any person obtaining
