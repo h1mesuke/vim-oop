@@ -4,7 +4,7 @@
 "
 " File    : autoload/oop/assertions.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-25
+" Updated : 2012-01-26
 " Version : 0.2.4
 " License : MIT license {{{
 "
@@ -83,8 +83,7 @@ function! s:Assertions_assert_is_Object(value, ...) dict
   let hint = (a:0 ? a:1 : "")
   if !oop#is_object(a:value)
     call self.report_failure(
-          \ "Object expected, but was\n" .
-          \ self.__typestr__(a:value),
+          \ printf("Object expected, but was\n%s", self.__typestr__(a:value)),
           \ hint)
   else
     call self.report_success()
@@ -97,8 +96,7 @@ function! s:Assertions_assert_is_Class(value, ...) dict
   let hint = (a:0 ? a:1 : "")
   if !oop#is_class(a:value)
     call self.report_failure(
-          \ "Class expected, but was\n" .
-          \ self.__typestr__(a:value),
+          \ printf("Class expected, but was\n%s", self.__typestr__(a:value)),
           \ hint)
   else
     call self.report_success()
@@ -111,8 +109,7 @@ function! s:Assertions_assert_is_Instance(value, ...) dict
   let hint = (a:0 ? a:1 : "")
   if !oop#is_instance(a:value)
     call self.report_failure(
-          \ "Instance expected, but was\n" .
-          \ self.__typestr__(a:value),
+          \ printf("Instance expected, but was\n%s", self.__typestr__(a:value)),
           \ hint)
   else
     call self.report_success()
@@ -125,8 +122,7 @@ function! s:Assertions_assert_is_Module(value, ...) dict
   let hint = (a:0 ? a:1 : "")
   if !oop#is_module(a:value)
     call self.report_failure(
-          \ "Module expected, but was\n" .
-          \ self.__typestr__(a:value),
+          \ printf("Module expected, but was\n%s", self.__typestr__(a:value)),
           \ hint)
   else
     call self.report_success()
@@ -139,7 +135,8 @@ function! s:Assertions_assert_is_kind_of(class, value, ...) dict
   let hint = (a:0 ? a:1 : "")
   if !a:value.is_kind_of(a:class)
     call self.report_failure(
-          \ self.__string__(a:value) . " is not kind of " . a:class.name,
+          \ printf("%s is not kind of %s, but was\n%s",
+          \   self.__string__(a:value), a:class.name, a:value.class.name),
           \ hint)
   else
     call self.report_success()
@@ -153,7 +150,8 @@ function! s:Assertions_assert_is_instance_of(class, value, ...) dict
   let hint = (a:0 ? a:1 : "")
   if a:value.class isnot a:class
     call self.report_failure(
-          \ self.__string__(a:value) . " is not an instance of " . a:class.name,
+          \ printf("%s is not an instance of %s, but was\n%s's instance.",
+          \   self.__string__(a:value), a:class.name, a:value.class.name),
           \ hint)
   else
     call self.report_success()
