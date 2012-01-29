@@ -6,7 +6,7 @@
 # File    : bin/bundle.sh
 # Author  : h1mesuke <himesuke+vim@gmail.com>
 # Updated : 2012-01-19
-# Version : 0.3.0
+# Version : 0.5.0
 # License : MIT license {{{
 #
 #   Permission is hereby granted, free of charge, to any person obtaining
