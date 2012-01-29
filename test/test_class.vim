@@ -133,6 +133,16 @@ function! s:tc.oop_class_new___it_should_inherit_instance_methods_from_superclas
   call self.assert_equal("Foo's ciao", self.baz.ciao())
 endfunction
 
+function! s:tc.oop_class_new___it_should_throw_TypeError_when_superclass_is_not_class()
+  call self.assert_throw('^vim-oop: TypeError: ', 'call self.define_class_with_type_error()')
+endfunction
+function! s:tc.define_class_with_type_error()
+  function! s:define()
+    call oop#class#new('Boo', 10)
+  endfunction
+  call s:define()
+endfunction
+
 " {Class}.extend()
 function! s:tc.setup_Class_extend()
   let self.Foo = deepcopy(s:Foo)

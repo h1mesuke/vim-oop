@@ -55,6 +55,9 @@ function! oop#class#new(name, ...)
   "=> <SNR>10_Foo_
   let class.superclass = (a:0 ? a:1 : {})
   let class.__prototype__ = copy(s:Instance)
+  if !empty(class.superclass) && !oop#is_class(class.superclass)
+    throw "vim-oop: TypeError: Class required."
+  endif
   let class.__prototype__.superclass =
         \ (empty(class.superclass) ? {} : class.superclass.__prototype__)
   let class.__super__ = {}
