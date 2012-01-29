@@ -45,8 +45,7 @@ delfunction s:get_SID
 " Class
 
 function! oop#class#new(name, ...)
-  let sid = matchstr(expand('<sfile>'),
-        \ '<SNR>\d\+_\zedefine\%(\.\.oop#class#xnew\)\=\.\.oop#class#new$')
+  let sid = matchstr(expand('<sfile>'), '<SNR>\d\+_\zedefine\.\.oop#class#x\=new')
   if empty(sid)
     throw "vim-oop: Call of oop#class#new() must be wrapped by s:define()"
   endif

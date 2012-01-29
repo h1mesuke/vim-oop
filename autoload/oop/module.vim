@@ -44,7 +44,7 @@ delfunction s:get_SID
 " Module
 
 function! oop#module#new(name)
-  let sid = matchstr(expand('<sfile>'), '<SNR>\d\+_\zedefine\.\.oop#module#new$')
+  let sid = matchstr(expand('<sfile>'), '<SNR>\d\+_\zedefine\.\.oop#module#new')
   if empty(sid)
     throw "vim-oop: Call of oop#module#new() must be wrapped by s:define()"
   endif
