@@ -47,7 +47,7 @@ delfunction s:get_SID
 function! oop#class#new(name, ...)
   let sid = matchstr(expand('<sfile>'), '<SNR>\d\+_\zedefine\.\.oop#class#x\=new')
   if empty(sid)
-    throw "vim-oop: Call of oop#class#new() must be wrapped by s:define()"
+    throw "vim-oop: ScopeError: Call of oop#class#new() must be wrapped by s:define()"
   endif
   let class = copy(s:Class)
   let class.name = a:name
@@ -169,7 +169,7 @@ function! s:Class_super(meth_name, args, self) dict
     endif
     let meth_table = meth_table.superclass
   endwhile
-  throw "vim-oop: " . a:meth_name . "()'s super implementation was not found."
+  throw "vim-oop: RuntimeError: " . a:meth_name . "()'s super implementation was not found."
 endfunction
 let s:Class.super = function(s:SID . 'Class_super')
 

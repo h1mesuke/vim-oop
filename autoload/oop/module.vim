@@ -46,7 +46,7 @@ delfunction s:get_SID
 function! oop#module#new(name)
   let sid = matchstr(expand('<sfile>'), '<SNR>\d\+_\zedefine\.\.oop#module#new')
   if empty(sid)
-    throw "vim-oop: Call of oop#module#new() must be wrapped by s:define()"
+    throw "vim-oop: ScopeError: Call of oop#module#new() must be wrapped by s:define()"
   endif
   let module = copy(s:Module)
   let module.name = a:name

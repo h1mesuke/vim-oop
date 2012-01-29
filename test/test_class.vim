@@ -234,14 +234,16 @@ function! s:tc.Class_super___it_should_call_super_implementation()
   call self.assert_equal("Baz's hello < Bar's hello < Foo's hello", self.baz.hello())
 endfunction
 
-function! s:tc.Class_super___it_should_throw_if_not_method()
+function! s:tc.Class_super___it_should_throw_something_if_not_method()
   call self.assert_throw_something('call self.Baz.super("superclass", [], self.Baz)')
   call self.assert_throw_something('call self.Baz.super("class", [], self.baz)')
 endfunction
 
-function! s:tc.Class_super___it_should_throw_if_no_super_implementation()
-  call self.assert_throw('^vim-oop: ', 'call self.Baz.super("bonjour", [], self.Baz)')
-  call self.assert_throw('^vim-oop: ', 'call self.Baz.super("bonjour", [], self.baz)')
+function! s:tc.Class_super___it_should_throw_RuntimeError_if_super_impl_not_found()
+  call self.assert_throw('^vim-oop: RuntimeError: ',
+        \ 'call self.Baz.super("bonjour", [], self.Baz)')
+  call self.assert_throw('^vim-oop: RuntimeError: ',
+        \ 'call self.Baz.super("bonjour", [], self.baz)')
 endfunction
 
 " {Class}.new()

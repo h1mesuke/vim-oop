@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-26
+" Updated : 2012-01-29
 " Version : 0.5.0
 " License : MIT license {{{
 "
@@ -87,7 +87,7 @@ function! s:demote(value)
       let a:value.class = a:value.class.name
       call filter(a:value, 'type(v:val) != s:TYPE_FUNC')
     else
-      throw "vim-oop: Class and module are not serializable."
+      throw "vim-oop: TypeError: Class and module are not serializable."
     endif
   endif
   if type == s:TYPE_LIST || type == s:TYPE_DICT
@@ -181,7 +181,7 @@ function! s:Object_alias(alias, meth_name) dict
       call add(self.__export__, a:alias)
     endif
   else
-    throw "vim-oop: " . a:meth_name . "() is not defined."
+    throw "vim-oop: RuntimeError: " . a:meth_name . "() is not defined."
   endif
 endfunction
 let s:Object.alias = function(s:SID . 'Object_alias')
