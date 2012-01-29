@@ -34,9 +34,9 @@ CONTENTS					*vim-oop-contents*
 	  How to Bundle vim-oop		  |vim-oop-how-to-bundle|
 	Interface			|vim-oop-interface|
 	  Functions			  |vim-oop-functions|
-	    Class			    |vim-oop-class|
-	    Instance			    |vim-oop-instance|
-	    Module			    |vim-oop-module|
+	  Class				  |vim-oop-class|
+	  Instance			  |vim-oop-instance|
+	  Module			  |vim-oop-module|
 	Issues				|vim-oop-issues|
 	ChangeLog			|vim-oop-changelog|
 
@@ -130,15 +130,15 @@ FUNCTIONS					*vim-oop-functions*
 		Deserializes an object from {str}. {str} MUST be the result of
 		|vim-oop-Instance.serialize()| or |oop#serialize()|.
 
+------------------------------------------------------------------------------
 CLASS						*vim-oop-class*
 
-						*oop#class#new()*
-	oop#class#new( {name} [, {superclass}])
+	oop#class#new( {name} [, {superclass}])	*oop#class#new()*
 
 		Creates a new class. You need to wrap the call of this
 		function by script-local function s:define(). By following
 		this convention, oop#class#new() can detect the SID of the
-		scipt where the class's definition is.
+		script where the class's definition is.
 
 		Example: >
 		function! s:define()
@@ -194,15 +194,15 @@ CLASS						*vim-oop-class*
 		endif
 <
 						*vim-oop-Class.class_method()*
-	{Class}.class_method( {func-name} [, {as-name}])
+	{Class}.class_method( {func-name} [, {method-name}])
 
 		Binds function {func-name} to the class as a class method.
-		When {as-name} is given, the function is bound as method
-		{as-name}.
+		When {method-name} is given, the function is bound as method
+		{method-name}.
 
 		The name of the function to be bound MUST be prefixed by the
 		class name followed by one underscore. This convention helps
-		you to determine where the error occurred on debgging.
+		you to determine where the error occurred on debugging.
 
 		Example: >
 		function! s:Foo_hello() dict
@@ -224,15 +224,15 @@ CLASS						*vim-oop-class*
 		call s:Foo.class_alias('hi', 'hello')
 <
 						*vim-oop-Class.method()*
-	{Class}.method( {func-name} [, {as-name}])
+	{Class}.method( {func-name} [, {method-name}])
 
 		Binds function {func-name} to the class an instance method.
-		When {as-name} is given, the function is bound as method
-		{as-name}.
+		When {method-name} is given, the function is bound as method
+		{method-name}.
 						*vim-oop-binding-convention*
 		The name of the function to be bound MUST be prefixed by the
 		class name followed by one underscore. This convention helps
-		you to determine where the error occurred on debgging.
+		you to determine where the error occurred on debugging.
 
 		Example: >
 		function! s:Foo_hello() dict
@@ -252,7 +252,7 @@ CLASS						*vim-oop-class*
 		Example: >
 		call s:Foo.alias('hi', 'hello')
 <
-	{Class}.extend( {module} [, {mode}])		*vim-oop-Class.extend()*
+	{Class}.extend( {module} [, {mode}])	*vim-oop-Class.extend()*
 
 		Adds {module}'s functions to the class as class methods.
 		When {mode} is given, it works in the same way as {expr3}
@@ -261,7 +261,7 @@ CLASS						*vim-oop-class*
 		Example: >
 		s:Foo.extend(s:Buzz)
 <
-	{Class}.include( {module} [, {mode}])		*vim-oop-Class.include()*
+	{Class}.include( {module} [, {mode}])	*vim-oop-Class.include()*
 
 		Adds {module}'s functions to the class as instance methods.
 		When {mode} is given, it works in the same way as {expr3}
@@ -270,6 +270,10 @@ CLASS						*vim-oop-class*
 		Example: >
 		s:Foo.include(s:Buzz)
 <
+	{Class}.name				*vim-oop-Class.name*
+
+		The name of the class.
+
 	{Class}.new(...)			*vim-oop-Class.new()*
 
 		Instanciates an object. Arguments are delivered to
@@ -294,6 +298,23 @@ CLASS						*vim-oop-class*
 		call s:Bar.class_method('hello')
 		call s:Bar.method('hello')
 <
+	{Class}.superclass			*vim-oop-Class.superclass*
+
+		The superclass of the class.
+
+	RESERVED ATTRIBUTES ~
+					*vim-oop-Class-reserved-attributes*
+	The following attributes are used internally by vim-oop. Be careful
+	not to overwrite or remove them.
+
+	* __bind__
+	* __instanciator__
+	* __prefix__
+	* __prototype__
+	* __super__
+	* __vim_oop__
+
+------------------------------------------------------------------------------
 INSTANCE					*vim-oop-instance*
 
 	{instance}.initialize(...)		*vim-oop-Instance.initialize()*
@@ -317,6 +338,10 @@ INSTANCE					*vim-oop-instance*
 		let foo = s:Foo.new(x, y)
 <
 		See also: |vim-oop-Class.new()|
+
+	{instance}.class			*vim-oop-Instance.class*
+
+		The class of the object.
 
 	{instance}.extend( {module} [, {mode}])	*vim-oop-Instance_extend()*
 
@@ -343,6 +368,14 @@ INSTANCE					*vim-oop-instance*
 
 		See also: |oop#serialize()|, |oop#deserialize()|
 
+	RESERVED ATTRIBUTES ~
+					*vim-oop-Instance-reserved-attributes*
+	The following attributes are used internally by vim-oop. Be careful
+	not to overwrite or remove them.
+
+	* __bind__
+	* __vim_oop__
+
 ------------------------------------------------------------------------------
 MODULE						*vim-oop-module*
 
@@ -351,7 +384,7 @@ MODULE						*vim-oop-module*
 		Creates a new module. You need to wrap the call of this
 		function by script-local function s:define(). By following
 		this convention, oop#module#new() can detect the SID of the
-		scipt where the class's definition is.
+		script where the class's definition is.
 
 		Example: >
 		function! s:define()
@@ -360,15 +393,15 @@ MODULE						*vim-oop-module*
 		call s:define()
 <
 						*vim-oop-Module.function()*
-	{Module}.function( {func-name} [, {as-name}])
+	{Module}.function( {func-name} [, {mfunc-name}])
 
 		Binds function {func-name} to the module as a module function.
-		When {as-name} is given, the function is bound as module
-		function {as-name}.
+		When {mfunc-name} is given, the function is bound as module
+		function {mfunc-name}.
 
 		The name of the function to be bound MUST be prefixed by the
 		module name followed by one underscore. This convention helps
-		you to determine where the error occurred on debgging.
+		you to determine where the error occurred on debugging.
 
 		Example: >
 		function! s:Fizz_hello() dict
@@ -388,6 +421,20 @@ MODULE						*vim-oop-module*
 		Example: >
 		call s:Fizz.alias('hi', 'hello')
 <
+	{Module}.name				*vim-oop-Module.name*
+
+		The name of the module.
+
+	RESERVED ATTRIBUTES ~
+					*vim-oop-Module-reserved-attributes*
+	The following attributes are used internally by vim-oop. Be careful
+	not to overwrite or remove them.
+
+	* __bind__
+	* __export__
+	* __prefix__
+	* __vim_oop__
+
 ==============================================================================
 ISSUES						*vim-oop-issues*
 
@@ -396,6 +443,11 @@ ISSUES						*vim-oop-issues*
 
 ==============================================================================
 CHANGELOG					*vim-oop-changelog*
+
+0.5.0	2012-01-29
+
+	* New convention: We must wrap the calls of oop#class#new() and
+	  oop#module#new() by s:define()
 
 0.3.0	2012-01-28
 
