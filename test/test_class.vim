@@ -3,12 +3,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:get_SID()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-endfunction
-let s:SID = s:get_SID()
-delfunction s:get_SID
-
 "-----------------------------------------------------------------------------
 
 " h1mesuke/vim-unittest - GitHub
@@ -22,7 +16,10 @@ function! s:tc.SETUP()
   runtime autoload/oop/module.vim
 
   " class Foo
-  let s:Foo = oop#class#new('Foo', s:SID)
+  function! s:define()
+    let s:Foo = oop#class#new('Foo')
+  endfunction
+  call s:define()
 
   function! s:Foo_initialize() dict
     let self.initialized = get(self, 'initialized', 0) + 1
@@ -51,7 +48,10 @@ function! s:tc.SETUP()
   call s:Foo.method('hello_cn', 'nihao')
 
   " class Bar < Foo
-  let s:Bar = oop#class#new('Bar', s:SID, s:Foo)
+  function! s:define()
+    let s:Bar = oop#class#new('Bar', s:Foo)
+  endfunction
+  call s:define()
 
   function! s:Bar_initialize() dict
     call s:Bar.super('initialize', [], self)
@@ -65,7 +65,10 @@ function! s:tc.SETUP()
   call s:Bar.method('hello')
 
   " class Baz < Bar
-  let s:Baz = oop#class#new('Baz', s:SID, s:Bar)
+  function! s:define()
+    let s:Baz = oop#class#new('Baz', s:Bar)
+  endfunction
+  call s:define()
 
   function! s:Baz_initialize() dict
     call s:Baz.super('initialize', [], self)
@@ -85,7 +88,10 @@ function! s:tc.SETUP()
   call s:Baz.method('bonjour')
 
   " class XFoo
-  let s:XFoo = oop#class#xnew('XFoo', s:SID)
+  function! s:define()
+    let s:XFoo = oop#class#xnew('XFoo')
+  endfunction
+  call s:define()
 
   function! s:XFoo_initialize() dict
     let self.initialized = get(self, 'initialized', 0) + 1
@@ -98,7 +104,10 @@ function! s:tc.SETUP()
   call s:XFoo.method('hello')
 
   " module Buzz
-  let s:Buzz = oop#module#new('Buzz', s:SID)
+  function! s:define()
+    let s:Buzz = oop#module#new('Buzz')
+  endfunction
+  call s:define()
 
   function! s:Buzz_is_extended() dict
     return 1
@@ -336,7 +345,11 @@ endfunction
 function! s:tc.oop_deserialize___it_should_deserialize_Instance_from_String()
   call self.make_object_network()
   let str = self.foo.serialize()
-  call self.assert_equal(self.foo, oop#deserialize(str, s:SID . 'name_to_class'))
+  call self.assert_equal(self.foo, oop#deserialize(str, s:SID() . 'name_to_class'))
+endfunction
+
+function! s:SID()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID')
 endfunction
 
 function! s:name_to_class(name)

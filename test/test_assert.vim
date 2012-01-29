@@ -12,12 +12,6 @@
 "
 "-----------------------------------------------------------------------------
 
-function! s:get_SID()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-endfunction
-let s:SID = s:get_SID()
-delfunction s:get_SID
-
 " h1mesuke/vim-unittest - GitHub
 " https://github.com/h1mesuke/vim-unittest
 "
@@ -28,12 +22,15 @@ function! s:tc.SETUP()
   runtime autoload/oop/assertions.vim
   call self.extend(oop#assertions#export())
 
-  " class Foo
-  let s:Foo = oop#class#new('Foo', s:SID)
-  " class Bar < Foo
-  let s:Bar = oop#class#new('Bar', s:SID, s:Foo)
-  " module Fizz
-  let s:Fizz = oop#module#new('Fizz', s:SID)
+  function! s:define()
+    " class Foo
+    let s:Foo = oop#class#new('Foo')
+    " class Bar < Foo
+    let s:Bar = oop#class#new('Bar', s:Foo)
+    " module Fizz
+    let s:Fizz = oop#module#new('Fizz')
+  endfunction
+  call s:define()
 endfunction
 
 function! s:tc.setup()

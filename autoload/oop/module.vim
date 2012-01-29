@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-26
+" Updated : 2012-01-29
 " Version : 0.3.0
 " License : MIT license {{{
 "
@@ -43,11 +43,14 @@ delfunction s:get_SID
 "-----------------------------------------------------------------------------
 " Module
 
-function! oop#module#new(name, sid)
+function! oop#module#new(name)
+  let sid = matchstr(expand('<sfile>'), '<SNR>\d\+_\zedefine\.\.oop#module#new$')
+  if empty(sid)
+    throw "vim-oop: Call of oop#module#new() must be wrapped by s:define()"
+  endif
   let module = copy(s:Module)
   let module.name = a:name
-  let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
-  let module.__prefix__ = printf('<SNR>%d_%s_', sid, a:name)
+  let module.__prefix__ = sid . substitute(a:name, '\W', '_', 'g') . '_'
   "=> <SNR>10_Fizz_
   let module.__export__ = []
   return module

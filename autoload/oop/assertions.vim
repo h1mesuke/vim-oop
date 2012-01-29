@@ -4,7 +4,7 @@
 "
 " File    : autoload/oop/assertions.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-26
+" Updated : 2012-01-29
 " Version : 0.3.0
 " License : MIT license {{{
 "
@@ -39,12 +39,6 @@ let s:TYPE_LIST = type([])
 let s:TYPE_DICT = type({})
 let s:TYPE_FLT  = type(0.0)
 
-function! s:get_SID()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-endfunction
-let s:SID = s:get_SID()
-delfunction s:get_SID
-
 "-----------------------------------------------------------------------------
 " Assertions
 
@@ -52,7 +46,10 @@ function! oop#assertions#export()
   return s:Assertions
 endfunction
 
-let s:Assertions = oop#module#new('Assertions', s:SID)
+function! s:define()
+  let s:Assertions = oop#module#new('Assertions')
+endfunction
+call s:define()
 
 function! s:Assertions___typestr__(value)
   let type = type(a:value)

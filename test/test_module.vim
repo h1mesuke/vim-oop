@@ -3,12 +3,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:get_SID()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-endfunction
-let s:SID = s:get_SID()
-delfunction s:get_SID
-
 "-----------------------------------------------------------------------------
 
 " h1mesuke/vim-unittest - GitHub
@@ -21,7 +15,10 @@ function! s:tc.SETUP()
   runtime autoload/oop/module.vim
 
   " module Fizz
-  let s:Fizz = oop#module#new('Fizz', s:SID)
+  function! s:define()
+    let s:Fizz = oop#module#new('Fizz')
+  endfunction
+  call s:define()
 
   function! s:Fizz_hello() dict
     return "Fizz's hello"

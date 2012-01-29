@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-26
+" Updated : 2012-01-29
 " Version : 0.3.0
 " License : MIT license {{{
 "
@@ -44,11 +44,15 @@ delfunction s:get_SID
 "-----------------------------------------------------------------------------
 " Class
 
-function! oop#class#new(name, sid, ...)
+function! oop#class#new(name, ...)
+  let sid = matchstr(expand('<sfile>'),
+        \ '<SNR>\d\+_\zedefine\%(\.\.oop#class#xnew\)\=\.\.oop#class#new$')
+  if empty(sid)
+    throw "vim-oop: Call of oop#class#new() must be wrapped by s:define()"
+  endif
   let class = copy(s:Class)
   let class.name = a:name
-  let sid = (type(a:sid) == s:TYPE_NUM ? a:sid : matchstr(a:sid, '\d\+'))
-  let class.__prefix__ = printf('<SNR>%d_%s_', sid, a:name)
+  let class.__prefix__ = sid . substitute(a:name, '\W', '_', 'g') . '_'
   "=> <SNR>10_Foo_
   let class.superclass = (a:0 ? a:1 : {})
   let class.__prototype__ = copy(s:Instance)
