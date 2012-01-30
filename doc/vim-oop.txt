@@ -1,7 +1,7 @@
 *vim-oop.txt*		OOP Support for Vim script
 
 Author  : h1mesuke <himesuke+vim@gmail.com>
-Updated : 2012-01-29
+Updated : 2012-01-30
 Version : 0.5.0
 License : MIT license {{{
 
@@ -135,10 +135,10 @@ CLASS						*vim-oop-class*
 
 	oop#class#new( {name} [, {superclass}])	*oop#class#new()*
 
-		Creates a new class. You need to wrap the call of this
-		function by script-local function s:define(). By following
-		this convention, oop#class#new() can detect the SID of the
-		script where the class's definition is.
+		Creates a new class. You MUST wrap calls of this function by
+		script-local function "define". This convention enables
+		oop#class#new() to detect the SID of the script where the
+		class's definition is, so you don't have to care about it.
 
 		Example: >
 		function! s:define()
@@ -381,10 +381,10 @@ MODULE						*vim-oop-module*
 
 	oop#module#new( {name})			*oop#module#new()*
 
-		Creates a new module. You need to wrap the call of this
-		function by script-local function s:define(). By following
-		this convention, oop#module#new() can detect the SID of the
-		script where the class's definition is.
+		Creates a new module. You MUST wrap calls of this function by
+		script-local function "define". This convention enables
+		oop#module#new() to detect the SID of the script where the
+		module's definition is, so you don't have to care about it.
 
 		Example: >
 		function! s:define()
@@ -446,7 +446,7 @@ CHANGELOG					*vim-oop-changelog*
 
 0.5.0	2012-01-29
 
-	* New convention: We must wrap the calls of oop#class#new() and
+	* New convention: We MUST wrap calls of oop#class#new() and
 	  oop#module#new() by s:define()
 
 0.3.0	2012-01-28
