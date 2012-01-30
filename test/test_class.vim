@@ -1,10 +1,5 @@
 " vim-oop's test suite
 
-let s:save_cpo = &cpo
-set cpo&vim
-
-"-----------------------------------------------------------------------------
-
 " h1mesuke/vim-unittest - GitHub
 " https://github.com/h1mesuke/vim-unittest
 "
@@ -408,5 +403,4 @@ function! s:tc.v_oop_string___it_should_stringify_Module()
   call self.puts(str)
 endfunction
 
-let &cpo = s:save_cpo
-unlet s:save_cpo
+unlet s:tc

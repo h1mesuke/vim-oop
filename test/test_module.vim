@@ -1,10 +1,5 @@
 " vim-oop's test suite
 
-let s:save_cpo = &cpo
-set cpo&vim
-
-"-----------------------------------------------------------------------------
-
 " h1mesuke/vim-unittest - GitHub
 " https://github.com/h1mesuke/vim-unittest
 "
@@ -61,6 +56,3 @@ function! s:tc.oop_is_module___Fizz_should_be_Module()
 endfunction
 
 unlet s:tc
-
-let &cpo = s:save_cpo
-unlet s:save_cpo
