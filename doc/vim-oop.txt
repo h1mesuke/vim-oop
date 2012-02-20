@@ -1,7 +1,7 @@
 *vim-oop.txt*		OOP Support for Vim script
 
 Author  : h1mesuke <himesuke+vim@gmail.com>
-Updated : 2012-01-30
+Updated : 2012-02-20
 Version : 0.5.0
 License : MIT license {{{
 
@@ -155,32 +155,6 @@ CLASS						*vim-oop-class*
 		endfunction
 		call s:define()
 <
-						*oop#class#xnew()*
-	oop#class#xnew( {name} [, {superclass}])
-
-		Same as |oop#class#new()| but it creates a new class that
-		instanciates an object by |extend()| not |copy()|. The class's
-		new() requires a Dictionary as the first argument and promote
-		it to an its instance.
-
-		Example: >
-		function! s:define()
-		  let s:XFoo = oop#class#xnew('XFoo')
-		endfunction
-		call s:define()
-
-		function! s:XFoo_initialize(x, y) dict
-		  let self.x = a:x
-		  let self.y = a:y
-		endfunction
-		call s:XFoo.method('initialize')
-
-		let xfoo = s:XFoo.new(attrs, x, y)
-<
-		Note that in initialize() "self" IS the Dictionary that was
-		the first argument of new() and initialize() no longer accept
-		it as an argument.
-
 	{Class}.ancestors()			*vim-oop-Class.ancestors()*
 
 		Returns a List of ancestor classes of the class.
@@ -308,7 +282,6 @@ CLASS						*vim-oop-class*
 	not to overwrite or remove them.
 
 	* __bind__
-	* __instanciator__
 	* __prefix__
 	* __prototype__
 	* __super__
@@ -443,6 +416,10 @@ ISSUES						*vim-oop-issues*
 
 ==============================================================================
 CHANGELOG					*vim-oop-changelog*
+
+0.5.1	2012-02-20
+
+	* Removed: oop#class#xnew()
 
 0.5.0	2012-01-29
 

@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-01-29
+" Updated : 2012-02-20
 " Version : 0.5.0
 " License : MIT license {{{
 "
@@ -70,15 +70,8 @@ function! oop#class#new(name, ...)
   return class
 endfunction
 
-function! oop#class#xnew(...)
-  let class = call('oop#class#new', a:000)
-  let class.__instanciator__ = 'extend'
-  return class
-endfunction
-
 let s:Class = copy(oop#__constant__('Object'))
 let s:Class[oop#__constant__('OBJECT_MARK')] = oop#__constant__('TYPE_CLASS')
-let s:Class.__instanciator__ = 'copy'
 
 function! s:Class_ancestors() dict
   let ancestors = []
@@ -128,17 +121,11 @@ endfunction
 let s:Class.include = function(s:SID . 'Class_include')
 
 function! s:Class_new(...) dict
-  if self.__instanciator__ ==# 'extend'
-    let obj = extend(a:000[0], self.__prototype__, 'keep')
-    let args = a:000[1:-1]
-  else
-    let obj = copy(self.__prototype__)
-    let args = a:000
-  endif
+  let obj = copy(self.__prototype__)
   unlet obj.superclass
   unlet obj.__super__
   let obj.class = self
-  call call(obj.initialize, args, obj)
+  call call(obj.initialize, a:000, obj)
   return obj
 endfunction
 let s:Class.new = function(s:SID . 'Class_new')
