@@ -1,7 +1,7 @@
 *vim-oop.txt*		OOP Support for Vim script
 
 Author  : h1mesuke <himesuke+vim@gmail.com>
-Updated : 2012-02-20
+Updated : 2012-02-23
 Version : 0.5.1
 License : MIT license {{{
 
@@ -278,14 +278,8 @@ CLASS						*vim-oop-class*
 
 	RESERVED ATTRIBUTES ~
 					*vim-oop-Class-reserved-attributes*
-	The following attributes are used internally by vim-oop. Be careful
-	not to overwrite or remove them.
-
-	* __bind__
-	* __prefix__
-	* __prototype__
-	* __super__
-	* __vim_oop__
+	The attributes whose names are surrounded by two underscores like
+	"__foo__" are reserved by vim-oop for its internal use.
 
 ------------------------------------------------------------------------------
 INSTANCE					*vim-oop-instance*
@@ -343,11 +337,8 @@ INSTANCE					*vim-oop-instance*
 
 	RESERVED ATTRIBUTES ~
 					*vim-oop-Instance-reserved-attributes*
-	The following attributes are used internally by vim-oop. Be careful
-	not to overwrite or remove them.
-
-	* __bind__
-	* __vim_oop__
+	The attributes whose names are surrounded by two underscores like
+	"__foo__" are reserved by vim-oop for its internal use.
 
 ------------------------------------------------------------------------------
 MODULE						*vim-oop-module*
@@ -400,13 +391,8 @@ MODULE						*vim-oop-module*
 
 	RESERVED ATTRIBUTES ~
 					*vim-oop-Module-reserved-attributes*
-	The following attributes are used internally by vim-oop. Be careful
-	not to overwrite or remove them.
-
-	* __bind__
-	* __export__
-	* __prefix__
-	* __vim_oop__
+	The attributes whose names are surrounded by two underscores like
+	"__foo__" are reserved by vim-oop for its internal use.
 
 ==============================================================================
 ISSUES						*vim-oop-issues*
