@@ -62,7 +62,26 @@ let s:Module[oop#__constant__('OBJECT_MARK')] = oop#__constant__('TYPE_MODULE')
 function! s:Module_function(func_name, ...) dict
   let func_name = self.__prefix__ . a:func_name
   call call(self.__bind__, [func_name] + a:000, self)
+  call add(self.__export__, a:func_name)
 endfunction
 let s:Module.function = function(s:SID . 'Module_function')
+
+let s:Module.__alias__ = s:Module.alias
+
+function! s:Module_alias(alias, func_name) dict
+  call call(self.__alias__, [a:alias, a:func_name], self)
+  call add(self.__export__, a:alias)
+endfunction
+let s:Module.alias = function(s:SID . 'Module_alias')
+
+function! s:Module_mixin(object, ...) dict
+  let mode = (a:0 ? a:1 : 'force')
+  let exports = {}
+  for func_name in self.__export__
+    let exports[func_name] = self[func_name]
+  endfor
+  call extend(a:object, exports, mode)
+endfunction
+let s:Module.__mixin__ = function(s:SID . 'Module_mixin')
 
 let &cpo = s:save_cpo

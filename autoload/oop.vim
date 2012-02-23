@@ -164,9 +164,6 @@ function! s:Object_bind(func, ...) dict
     let meth_name = (a:0 ? a:1 : s:remove_prefix(a:func))
   endif
   let self[meth_name] = Func
-  if has_key(self, '__export__')
-    call add(self.__export__, meth_name)
-  endif
 endfunction
 let s:Object.__bind__ = function(s:SID . 'Object_bind')
 
@@ -177,9 +174,6 @@ endfunction
 function! s:Object_alias(alias, meth_name) dict
   if has_key(self, a:meth_name) && type(self[a:meth_name]) == s:TYPE_FUNC
     let self[a:alias] = self[a:meth_name]
-    if has_key(self, '__export__')
-      call add(self.__export__, a:alias)
-    endif
   else
     throw "vim-oop: NoMethodError: Undefined method `" . a:meth_name . "'"
   endif
@@ -188,11 +182,7 @@ let s:Object.alias = function(s:SID . 'Object_alias')
 
 function! s:Object_extend(module, ...) dict
   let mode = (a:0 ? a:1 : 'force')
-  let exported = {}
-  for func_name in a:module.__export__
-    let exported[func_name] = a:module[func_name]
-  endfor
-  call extend(self, exported, mode)
+  call a:module.__mixin__(self, mode)
 endfunction
 let s:Object.extend = function(s:SID . 'Object_extend')
 
