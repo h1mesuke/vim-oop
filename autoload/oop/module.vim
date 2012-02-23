@@ -4,7 +4,7 @@
 "
 " File    : oop/module.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-29
+" Updated : 2012-02-23
 " Version : 0.5.1
 " License : MIT license {{{
 "
@@ -46,7 +46,7 @@ delfunction s:get_SID
 function! oop#module#new(name)
   let sid = matchstr(expand('<sfile>'), '<SNR>\d\+_\zedefine\.\.oop#module#new')
   if empty(sid)
-    throw "vim-oop: ScopeError: Call of oop#module#new() must be wrapped by s:define()"
+    throw "vim-oop: GetSIDError: Call of oop#module#new() must be wrapped by s:define()"
   endif
   let module = copy(s:Module)
   let module.name = a:name

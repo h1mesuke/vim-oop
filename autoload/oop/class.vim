@@ -4,7 +4,7 @@
 "
 " File    : oop/class.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2012-02-20
+" Updated : 2012-02-23
 " Version : 0.5.1
 " License : MIT license {{{
 "
@@ -47,7 +47,7 @@ delfunction s:get_SID
 function! oop#class#new(name, ...)
   let sid = matchstr(expand('<sfile>'), '<SNR>\d\+_\zedefine\.\.oop#class#x\=new')
   if empty(sid)
-    throw "vim-oop: ScopeError: Call of oop#class#new() must be wrapped by s:define()"
+    throw "vim-oop: GetSIDError: Call of oop#class#new() must be wrapped by s:define()"
   endif
   let class = copy(s:Class)
   let class.name = a:name
@@ -56,7 +56,7 @@ function! oop#class#new(name, ...)
   let class.superclass = (a:0 ? a:1 : {})
   let class.__prototype__ = copy(s:Instance)
   if !empty(class.superclass) && !oop#is_class(class.superclass)
-    throw "vim-oop: TypeError: Class required."
+    throw "vim-oop: TypeError: Class object expected."
   endif
   let class.__prototype__.superclass =
         \ (empty(class.superclass) ? {} : class.superclass.__prototype__)
@@ -156,7 +156,7 @@ function! s:Class_super(meth_name, args, self) dict
     endif
     let meth_table = meth_table.superclass
   endwhile
-  throw "vim-oop: RuntimeError: " . a:meth_name . "()'s super implementation was not found."
+  throw "vim-oop: NoMethodError: No superclass method `" . a:meth_name . "'"
 endfunction
 let s:Class.super = function(s:SID . 'Class_super')
 

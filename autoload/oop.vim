@@ -4,7 +4,7 @@
 "
 " File    : oop.vim
 " Author  : h1mesuke <himesuke+vim@gmail.com>
-" Updated : 2012-01-29
+" Updated : 2012-02-23
 " Version : 0.5.1
 " License : MIT license {{{
 "
@@ -181,7 +181,7 @@ function! s:Object_alias(alias, meth_name) dict
       call add(self.__export__, a:alias)
     endif
   else
-    throw "vim-oop: RuntimeError: " . a:meth_name . "() is not defined."
+    throw "vim-oop: NoMethodError: Undefined method `" . a:meth_name . "'"
   endif
 endfunction
 let s:Object.alias = function(s:SID . 'Object_alias')
