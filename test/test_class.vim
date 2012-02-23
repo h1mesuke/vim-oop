@@ -102,6 +102,10 @@ function! s:tc.setup()
 endfunction
 
 " oop#class#new()
+function! s:tc.oop_class_new___it_should_throw_GetSIDError_unless_called_in_s_define()
+  call self.assert_throw('^vim-oop: GetSIDError: ', 'call oop#class#new("Qux")')
+endfunction
+
 function! s:tc.oop_class_new___it_should_inherit_class_methods_from_superclasses()
   call self.assert_equal("Foo's ciao", s:Bar.ciao())
   call self.assert_equal("Foo's ciao", s:Baz.ciao())

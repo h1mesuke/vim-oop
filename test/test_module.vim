@@ -27,6 +27,11 @@ function! s:tc.SETUP()
   call s:Fizz.function('hello_cn', 'nihao')
 endfunction
 
+" oop#module#new()
+function! s:tc.oop_module_new___it_should_throw_GetSIDError_unless_called_in_s_define()
+  call self.assert_throw('^vim-oop: GetSIDError: ', 'call oop#module#new("Qux")')
+endfunction
+
 " {Module}.function()
 function! s:tc.Module_function___it_should_bind_Funcref_as_module_function()
   call self.assert_is_Funcref(s:Fizz.hello)
